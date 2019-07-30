@@ -328,6 +328,9 @@ public PageReference saveAndNext() {
 				Event tempEvent2 = new Event();
 				tempEvent2 = tempEvent.clone(false, true);
 				tempEvent2.SalesHD_Next_Encounter__c = null;
+				tempEvent2.Result__c=null;
+				tempEvent2.SalesHD_Close_Customer_Commitment__c=null;
+				tempEvent2.SalesHD_Complete__c=false;
 				tempEvent2.SalesHD_Last_Encounter__c = tempEvent.SalesHD_Next_Encounter__c;
 				insert tempEvent2;
 				additionalRelatedContacts(tempEvent2);
@@ -340,6 +343,9 @@ public PageReference saveAndNext() {
 				Event tempEvent = new Event();
 				tempEvent = thisEvent.clone(false, true);
 				tempEvent.SalesHD_Next_Encounter__c = null;
+				tempEvent.Result__c=null;
+				tempEvent.SalesHD_Close_Customer_Commitment__c=null;
+				tempEvent.SalesHD_Complete__c=false;
 				tempEvent.SalesHD_Last_Encounter__c = thisEvent.SalesHD_Next_Encounter__c;
 				insert tempEvent;
 				additionalRelatedContacts(tempEvent);
