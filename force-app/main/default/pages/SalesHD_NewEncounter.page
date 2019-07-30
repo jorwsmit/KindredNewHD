@@ -805,10 +805,15 @@
 							<div style="margin-top:20px;">
 								<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNew}" onclick="storeHtml();" oncomplete="loadPage();"
 								 value="Save" rerender="containerBlock" id="saveNew" style="vertical-align:bottom; margin-top:0px!important;" />
-								<apex:commandButton styleClass="btn btn-primary" id="saveAndNew" status="statusSpinner" oncomplete="loadPage();" style="margin-left:10px!important; {!IF(ISBLANK(event.SalesHD_Next_Encounter__c), 'display:none;', IF($CurrentPage.parameters.duplicate='true', 'display:none;', 'display:inline-block'))}"
-								 action="{!saveAndNew}" value="Save and New Encounter" rerender="containerBlock" />
+								 <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveAndNew}" onclick="storeHtml();" oncomplete="loadPage();"
+								 value="Save and New" rerender="containerBlock" id="saveAndNew" style="vertical-align:bottom; margin-top:0px!important; margin-left:10px!important;" />
 								<apex:commandButton styleClass="btn btn-secondary" value="Cancel" oncomplete="loadPage();" style="margin-top:0px!important; margin-left:10px!important;"
 								 onclick="window.history.back();" rerender="containerBlock" />
+								 <apex:commandButton styleClass="btn btn-success" id="saveAndNext" status="statusSpinner" oncomplete="loadPage();"
+								 style="margin-left:10px!important;
+								 {!IF(ISBLANK(event.SalesHD_Next_Encounter__c), 'display:none;',
+								 IF($CurrentPage.parameters.duplicate='true', 'display:none;', 'display:inline-block;'))} vertical-align:bottom; margin-top:0px!important;"
+								 action="{!saveAndNext}" value="Save and Next" rerender="containerBlock" />
 							</div>
 
 
@@ -918,7 +923,7 @@
 
 			function showNextEncounter() {
 				if ('{!$CurrentPage.parameters.duplicate}' != 'true') {
-					document.getElementById('{!$Component.encounterForm.saveAndNew}').style.display = 'inline-block';
+					document.getElementById('{!$Component.encounterForm.saveAndNext}').style.display = 'inline-block';
 				}
 			}
 

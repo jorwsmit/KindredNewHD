@@ -707,11 +707,13 @@
 							/>
 							<div style="margin-top:20px;">
 								<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" style="margin-top:-7px!important;" action="{!completeEvent}"
-								 value="Complete Encounter" rerender="containerBlock" />
-								<apex:commandButton styleClass="btn btn-primary" id="saveAndNew" status="statusSpinner" style="margin-top:-7px!important; margin-left:10px!important; {!IF(ISBLANK(event.SalesHD_Next_Encounter__c), 'display:none;', IF($CurrentPage.parameters.duplicate='true', 'display:none;', 'display:inline-block'))}"
-								 action="{!completeAndNew}" value="Complete and New Encounter" rerender="containerBlock" />
+								 value="Complete" rerender="containerBlock" />
+								 <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" style="margin-top:-7px!important;margin-left:10px!important;" action="{!completeAndNew}"
+								 value="Complete and New" rerender="containerBlock" />
 								<apex:commandButton styleClass="btn btn-secondary" value="Cancel" style="margin-top:-7px!important;margin-left:10px!important;"
 								 onclick="window.history.back();" rerender="containerBlock" />
+								 <apex:commandButton styleClass="btn btn-success" id="saveAndNew" status="statusSpinner" style="margin-top:-7px!important; margin-left:10px!important; {!IF(ISBLANK(event.SalesHD_Next_Encounter__c), 'display:none;', IF($CurrentPage.parameters.duplicate='true', 'display:none;', 'display:inline-block'))}"
+								 action="{!completeAndNext}" value="Complete and Next" rerender="containerBlock" />
 							</div>
 
 

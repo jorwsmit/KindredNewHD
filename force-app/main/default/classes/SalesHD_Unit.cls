@@ -105,18 +105,18 @@ global with sharing class SalesHD_Unit {
 
 	@RemoteAction global static String getEncounters(Id unitId){
 
-		List<Event> pastEvents = new List<Event>();
-		List<Event> futureEvents = new List<Event>();
+		List<EventRelation> pastEvents = new List<EventRelation>();
+		List<EventRelation> futureEvents = new List<EventRelation>();
 
-		pastEvents = [select id, subject, startDateTime, SalesHD_Complete__c, description,
-		who.name, SalesHD_Call_Objective__c, what.Name, SalesHD_Account_Unit__r.Unit__r.Name,
-		SalesHD_Open_Ended_Questions__c, createdby.Name, createdby.SmallPhotoUrl, ActivityDate from event
-		where SalesHD_Account_Unit__c=:unitId and activityDateTime<TODAY order by activityDateTime desc limit 100 ];
+		pastEvents = [select eventId, event.subject, event.startDateTime, event.SalesHD_Complete__c, event.description,
+		relation.name, event.SalesHD_Call_Objective__c, event.what.Name, event.SalesHD_Account_Unit__r.Unit__r.Name,
+		event.SalesHD_Open_Ended_Questions__c, event.createdby.Name, event.createdby.SmallPhotoUrl, event.ActivityDate from eventRelation
+		where event.SalesHD_Account_Unit__c=:unitId and event.activityDateTime<TODAY and isWhat=false order by event.activityDateTime desc limit 100 ];
 
-		futureEvents = [select id, subject, startDateTime, SalesHD_Complete__c, description,
-		who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, what.Name,
-		SalesHD_Account_Unit__r.Unit__r.Name, createdby.Name, createdby.SmallPhotoUrl, ActivityDate from event
-		where SalesHD_Account_Unit__c=:unitId and activityDateTime>=TODAY order by activityDateTime desc limit 100];
+		futureEvents = [select eventId, event.subject, event.startDateTime, event.SalesHD_Complete__c, event.description,
+		relation.name, event.SalesHD_Call_Objective__c, event.what.Name, event.SalesHD_Account_Unit__r.Unit__r.Name,
+		event.SalesHD_Open_Ended_Questions__c, event.createdby.Name, event.createdby.SmallPhotoUrl, event.ActivityDate from eventRelation
+		where event.SalesHD_Account_Unit__c=:unitId and event.activityDateTime>=TODAY and isWhat=false order by event.activityDateTime desc limit 100 ];
 
 		return '{"pastEvents" : '+JSON.serialize(pastEvents)+', "futureEvents" : '+JSON.serialize(futureEvents)+'}';
 	}

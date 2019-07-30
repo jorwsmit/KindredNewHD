@@ -154,8 +154,7 @@ private static Integer getRecurrenceWeekdayMask(Integer weekday){
 	return null;
 }
 
-public PageReference saveNew() {
-
+public PageReference saveEvent(){
 	thisEvent.WhoId = contactId;
 	thisEvent.WhatId = accountId;
 	thisEvent.SalesHD_Account_Unit__c = unitId;
@@ -219,6 +218,13 @@ public PageReference saveNew() {
 		ApexPages.addMessages(ex);
 	}
 
+	return eventPage;
+
+}
+
+public PageReference saveNew() {
+	PageReference eventPage = null;
+	eventPage = saveEvent();
 	if(eventPage!=null) eventPage.setRedirect(true);
 	return eventPage;
 }
@@ -244,8 +250,7 @@ private void additionalRelatedContacts(Event e ){
 		insert additionalEventContacts;
 	}
 }
-
-public PageReference completeEvent() {
+public PageReference saveCompleteEvent() {
 	PageReference eventPage = null;
 	try{
 		thisEvent.SalesHD_Complete__c=true;
@@ -255,11 +260,23 @@ public PageReference completeEvent() {
 	catch(DmlException ex) {
 		ApexPages.addMessages(ex);
 	}
+	return eventPage;
+}
+
+public PageReference completeEvent() {
+	PageReference eventPage = saveCompleteEvent();
 	if(eventPage!=null) eventPage.setRedirect(true);
 	return eventPage;
 }
 
 public PageReference completeAndNew() {
+	saveCompleteEvent();
+	PageReference eventPage = new PageReference('/apex/SalesHD_NewEncounter');
+	eventPage.setRedirect(true);
+	return eventPage;
+}
+
+public PageReference completeAndNext() {
 	PageReference eventPage = null;
 	try{
 		thisEvent.SalesHD_Complete__c=true;
@@ -285,7 +302,7 @@ public PageReference completeAndNew() {
 	return eventPage;
 }
 
-public PageReference saveAndNew() {
+public PageReference saveAndNext() {
 
 	thisEvent.WhoId = contactId;
 	thisEvent.WhatId = accountId;
@@ -338,6 +355,13 @@ public PageReference saveAndNew() {
 	return eventPage;
 }
 
+public PageReference saveAndNew() {
+	saveEvent();
+	PageReference eventPage = new PageReference('/apex/SalesHD_NewEncounter');
+	eventPage.setRedirect(true);
+	return eventPage;
+}
+
 public PageReference deleteEvent() {
 	PageReference eventPage = null;
 	try{
@@ -379,7 +403,7 @@ public Boolean complete;
 
 	String startDay = String.valueOf(firstDay.format('EEEE'));
 	Date lowDate = Date.newInstance(firstDay.year(), firstDay.month(), firstDay.day());
-	Date highDate = Date.newInstance(firstDay.year(), firstDay.addDays(numberOfDays-1).month(), firstDay.addDays(numberOfDays-1).day());
+	Date highDate = Date.newInstance(firstDay.year(), firstDay.addDays(numberOfDays).month(), firstDay.addDays(numberOfDays).day());
 
 	List<Event> eventList = [select id, subject, startDateTime, SalesHD_Complete__c, Description, who.name, who.title from event where ownerId=:userId and startDateTime>=:lowDate and endDateTime<=:highDate];
 	List<Id> whoIds = new List<Id>();

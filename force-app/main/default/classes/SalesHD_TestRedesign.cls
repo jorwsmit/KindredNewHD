@@ -376,6 +376,26 @@ private class SalesHD_TestRedesign {
 		Test.stopTest();
 	}
 
+	@isTest static void Event_saveAndNext() {
+		PageReference pageRef = Page.SalesHD_NewEncounter;
+		Test.setCurrentPage(pageRef);
+		Contact con = [select Id from contact where name='Test Contact' limit 1];
+		Account acct = [select Id from account where Name='Test Account' limit 1];
+		Account_Unit__c au = [select Id, Active__c from Account_Unit__c where
+		Account__c=:acct.Id and Unit__r.Name!='Administrative' limit 1];
+
+		Event e = new Event(ownerId=UserInfo.getUserId(), StartDateTime=System.now(),
+		EndDateTime=system.now()+5, Type='Follow-up', whoId=con.Id, whatId=acct.Id,
+		SalesHD_Account_Unit__c=au.Id, SalesHD_Call_Objective__c='Other',
+		SalesHD_Open_Ended_Questions__c='test');
+		Test.startTest();
+		ApexPages.StandardController sc = new ApexPages.standardController(e);
+		SalesHD_Event controller = new SalesHD_Event(sc);
+		controller.thisEvent = e;
+		controller.saveAndNext();
+		Test.stopTest();
+	}
+
 	@isTest static void Event_saveAndNewDuplicate() {
 		PageReference pageRef = Page.SalesHD_NewEncounter;
 		Test.setCurrentPage(pageRef);
@@ -396,6 +416,29 @@ private class SalesHD_TestRedesign {
 		SalesHD_Event controller = new SalesHD_Event(sc);
 		controller.thisEvent = e;
 		controller.saveAndNew();
+		Test.stopTest();
+	}
+
+	@isTest static void Event_saveAndNextDuplicate() {
+		PageReference pageRef = Page.SalesHD_NewEncounter;
+		Test.setCurrentPage(pageRef);
+		Contact con = [select Id from contact where name='Test Contact' limit 1];
+		Account acct = [select Id from account where Name='Test Account' limit 1];
+		Account_Unit__c au = [select Id, Active__c from Account_Unit__c where
+		Account__c=:acct.Id and Unit__r.Name!='Administrative' limit 1];
+
+		Event e = new Event(ownerId=UserInfo.getUserId(), StartDateTime=System.now(),
+		EndDateTime=system.now()+5, Type='Follow-up', whoId=con.Id, whatId=acct.Id,
+		SalesHD_Account_Unit__c=au.Id, SalesHD_Call_Objective__c='Other',
+		SalesHD_Open_Ended_Questions__c='test');
+
+		Test.startTest();
+		pageRef.getParameters().put('duplicate','true');
+
+		ApexPages.StandardController sc = new ApexPages.standardController(e);
+		SalesHD_Event controller = new SalesHD_Event(sc);
+		controller.thisEvent = e;
+		controller.saveAndNext();
 		Test.stopTest();
 	}
 
@@ -492,6 +535,30 @@ private class SalesHD_TestRedesign {
 		ApexPages.StandardController sc = new ApexPages.standardController(e);
 		SalesHD_Event controller = new SalesHD_Event(sc);
 		controller.completeAndNew();
+		Test.stopTest();
+	}
+
+	@isTest static void Event_CompleteAndNext() {
+		PageReference pageRef = Page.SalesHD_NewEncounter;
+		Test.setCurrentPage(pageRef);
+		Contact con = [select Id from contact where name='Test Contact' limit 1];
+		Account acct = [select Id from account where Name='Test Account' limit 1];
+		Account_Unit__c au = [select Id, Active__c from Account_Unit__c where
+		Account__c=:acct.Id and Unit__r.Name!='Administrative' limit 1];
+
+		Event e = new Event(ownerId=UserInfo.getUserId(), ActivityDateTime=System.now(),
+		EndDateTime=system.now()+5, Type='Follow-up', whoId=con.Id, whatId=acct.Id,
+		SalesHD_Account_Unit__c=au.Id, SalesHD_Call_Objective__c='Other',
+		SalesHD_Open_Ended_Questions__c='test');
+
+		Test.startTest();
+		insert e;
+
+		pageRef.getParameters().put('id',e.id);
+
+		ApexPages.StandardController sc = new ApexPages.standardController(e);
+		SalesHD_Event controller = new SalesHD_Event(sc);
+		controller.completeAndNext();
 		Test.stopTest();
 	}
 

@@ -1230,23 +1230,25 @@ function loadPage(){
 		var events = JSON.parse(callback);
 		$("#pastevents").html('');
 		$("#futureevents").html('');
-		for(var event of events.pastEvents){
+		for(var eventRelation of events.pastEvents){
+			var event = eventRelation.Event;
 			var account = '<i class="fas fa-times"></i>';
 			var unit = '<i class="fas fa-times"></i>';
 			if(event.hasOwnProperty('What')) account = event.What.Name;
 			if(event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name
 			$("#pastevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id='+event.Id+'\'">'+
 			'<img src="'+event.CreatedBy.SmallPhotoUrl+'" class="event-userimage"/><b>'+event.CreatedBy.Name+'</b> - '+event.ActivityDate+'<br/><b>'
-			+event.Subject+': '+event.Who.Name+' at '+account+' - '+unit+'</b><br/>'+event.SalesHD_Call_Objective__c+'</li>');
+			+event.Subject+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b><br/>'+event.SalesHD_Call_Objective__c+'</li>');
 		}
-		for(var event of events.futureEvents){
+		for(var eventRelation of events.futureEvents){
+			var event = eventRelation.Event;
 			var account = '<i class="fas fa-times"></i>';
 			var unit = '<i class="fas fa-times"></i>';
 			if(event.hasOwnProperty('What')) account = event.What.Name;
 			if(event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name
 			$("#futureevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id='+event.Id+'\'">'+
 			'<img src="'+event.CreatedBy.SmallPhotoUrl+'" class="event-userimage"/><b>'+event.CreatedBy.Name+'</b> - '+event.ActivityDate+'<br/><b>'
-			+event.Subject+': '+event.Who.Name+' at '+account+' - '+unit+'</b><br/>'+event.SalesHD_Call_Objective__c+'</li>');
+			+event.Subject+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b><br/>'+event.SalesHD_Call_Objective__c+'</li>');
 		}
 	}, {escape:false});
 
