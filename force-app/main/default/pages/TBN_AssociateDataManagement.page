@@ -1,0 +1,1998 @@
+<apex:page controller="TBN_AssociateDataManagementController" sidebar="false" cache="false">
+    
+    <meta http-equiv='cache-control' content='no-cache'/>
+    <meta http-equiv='expires' content='0'/>
+    <meta http-equiv='pragma' content='no-cache'/>
+    
+    <apex:includeScript value="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/jQuery-1.11.3.min.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/jquery-ui-1.11.3.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/BootstrapJS.js')}" />
+    <apex:includeScript value="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/DataTables.js')}" />
+    
+    <apex:includeScript value="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/DataManagement/JS/JS_DataManagement.js')}"/>
+    
+    <apex:stylesheet value="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/Bootstrap.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/DataManagement/CSS/CSS_DataManagement.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/cupertinoJquery.css')}"/>
+    
+    <style>
+       
+         .modal {
+         position:   fixed; 
+         display: none;
+         z-index:    1000;
+         top:        0;
+         left:       0;
+         height:     100%;
+         width:      100%;
+         background: rgba( 255, 255, 255, .8 ) 
+                     url("{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/images/loading1.gif')}")  
+                     50% 50% 
+                     no-repeat;
+            }
+ 
+        .displayNone {
+            
+            display: none;
+        }
+        
+        .displayBlock {
+            
+            display: block;
+        }
+        
+        .width50 {
+            
+            max-width: 90px !important;
+            width: 75% !important;
+        }
+        
+        .widthSFID {
+            
+            max-width: 128px !important;
+            width: 100% !important;
+        }
+        
+        .width100 {
+            
+            max-width: 110px !important;
+            width: 70% !important;
+        }
+        
+        .width150 {
+            
+            max-width: 180 px !important;
+            width: 82% !important;
+        }
+        
+    </style>
+   
+    <script language="javascript" type="text/javascript">
+    
+        var j$ = jQuery.noConflict();
+        
+        j$(function() {
+          
+            j$("body").bind("click", function(){
+                
+                if((document.activeElement.id != 'inputUser' && document.activeElement.id != 'reassignUser' &&
+                            document.activeElement.id != 'AccountId'))
+                    onBodyClick();
+            });
+        }); 
+        
+    </script>
+    
+    <apex:outputpanel Id="displayConfirmation">
+    <div class="modal"></div>
+        
+    </apex:outputpanel>
+    <div id="OverlapBS">
+        <apex:outputPanel id="popup">
+           <!-- <apex:outputPanel id="popInnerOutputPnl" styleClass="customPopup " layout="block" rendered="{!displayPopUp}">-->
+           <div id ="popupDivId" style="display:none;" Class="panel panel-default customPopup">
+                <div style="padding-top: 10px;"><b class="text-primary" >An Error has occured in the page. Unable to connect to the server (transaction aborted: timeout)</b></div><br/>
+                <div><b class="text-primary" >To try to refetch the data, click on load button</b></div><br/><br/>
+                <div align="center">
+                    <button Id="reloadData" type="button"  class="btn btn-info btn-sm" onclick="j$('#popupDivId').hide(); j$('#divFormId').removeClass('parentDisable'); checkfiltersAppliedforReferrals();">Load</button> &nbsp;
+                    <button Id="closPopup" type="button"  class="btn btn-info btn-sm" onclick="j$('#popupDivId').hide(); j$('#divFormId').removeClass('parentDisable');">Close</button>
+                </div>
+            </div>
+            <div id ="popupDivIdReassign" style="display:none;" Class="panel panel-default customPopup ">
+                <div style="padding-top: 10px;"><b class="text-primary">An Error has occured in the page. Unable to connect to the server (transaction aborted: timeout)</b></div><br/>
+                <div><b class="text-primary">To try to refetch the data, click on load button</b></div><br/><br/>
+                <div align="center">
+                    <button Id="reloadData" type="button"  class="btn btn-info btn-sm" onclick="j$('#popupDivIdReassign').hide(); j$('#divFormId').removeClass('parentDisable'); checkfiltersAppliedforReassignReferrals();">Load</button> &nbsp;
+                    <button Id="closPopup" type="button"  class="btn btn-info btn-sm" onclick="j$('#popupDivIdReassign').hide(); j$('#divFormId').removeClass('parentDisable');">Close</button>
+                </div>
+            </div>
+       </apex:outputPanel>
+       
+        <apex:form id="idForm">
+            <div id="divFormId">
+                
+                <apex:outputPanel id="accountErrorMessage"> 
+                                    
+                   <div class="alert alert-warning alert-dismissible" id="customValidationMsg" role="alert" style="{!IF((LEN(strCustomError) > 0), 'display:block', 'display:none;')}; width:50%; margin-left: 2%; margin-bottom:-1%; margin-top: 1%;">
+                       <button type="button" class="close" data-dismiss="alert" aria-label="Close" onclick="removeErrorMessage('{!$Component.accountErrorMessage}');"><span aria-hidden="true">&times;</span></button>
+                       <strong>Error: </strong>
+                       <apex:outputText escape="false" value="{!strCustomError}"/>
+                   </div>
+               </apex:outputPanel>
+           
+                <div style = "width:100%;height:15px;">
+                    <div id="Showfadding" style = "display:none; margin-left: 2.5%;padding:5px; width:50%; background-color:#337AB7; border:1.5px solid #17140d;">
+                        <span id = "SaveMessage" style = "vertical-align:middle; color:#fff;"></span>
+                    </div>
+                    <div id="confirmAssignment" style = "display:none; margin-left: 2.5%; padding:5px; width:50%; background-color:#337AB7; border:1.5px solid #17140d;">
+                        <span style = "vertical-align:middle; color:#fff;"><apex:outputLabel value="{!$Label.S2_Page_assignment_Confirmation}" /></span>
+                    </div>
+                    <div id="noReferralsSelect" style = "display:none; margin-left: 2.5%; padding:5px; width:50%; background-color:#337AB7; border:1.5px solid #17140d;">
+                        <span style = "vertical-align:middle; color:#fff;"><apex:outputLabel value="{!$Label.S2_Page_No_Referrals_selected}" /></span>
+                    </div>
+                </div>
+             
+                <apex:pageMessages id="pgMsgs"/>
+                
+                <!-- Output Panel for Action Functions -->
+                <apex:outputPanel id="functionsOP">
+                
+                    <apex:actionFunction name="saveUserRec" action="{!saveUser}" reRender="accountErrorMessage, displayConfirmation" oncomplete="showConfirmation('{!isSuccess}','{!isValidationVisible}'); setVarName('inputUser', 'true'); ">
+                        <apex:param name="accId" value=""/>
+                    </apex:actionFunction>
+                    
+                    <apex:actionFunction name="updateUserRole" action="{!updateUserRole}" reRender="accountErrorMessage, CurrentId, displayConfirmation" oncomplete="showConfirmation('{!isSuccess}','{!isValidationVisible}');">
+                        <apex:param name="selectedUserRole" value="" assignTo="{!objUser.UserRoleId}"/>
+                    </apex:actionFunction>
+                    
+                    <apex:actionFunction name="onUserSelectFunc" action="{!fetchUserData}" rerender="detailsOP, functionsOP, assignAccountValues, CurrentId" oncomplete="disableSelect(); showHomeFacilility('{!homeFacilityfield}'); if(j$('#OrgAlign').attr('class') == 'active') fetchHierarchyRoles(j$('#inputUser_Hidden').val(), j$('#userRole_Hidden').val(),{!objS2CustomPermissions.Org_Alignment__c});">
+                        <apex:param value="" assignTo="{!strSelectedUser}" name="selectedUser"/>
+                    </apex:actionFunction>
+                  
+                    <apex:actionFunction name="ReferralSources" action="{!fetchReferralSourceCount}" oncomplete="getReferralSourcesTableSorteronLoad('Name', 'ascending', '', '', 'true', '', j$('#inputUser_Hidden').val(), 'CurrentlyAssigned', 'All', 'AllAccandCont'); setSecondFilter('{!strSelectedDistance}');"  
+                                         rerender="referralSourcesOP, functionsOP">
+                        <apex:param value="" assignTo="{!strSelectedUser}" name="selectedUser3"/>
+                    </apex:actionfunction>
+                    
+                    <apex:actionFunction name="ReferralSourceCount" action="{!fetchReferralsCountonReassignment}" rerender="functionsOP, totalAssignedOP, userSearchTextPanelforSalesRep"/>   
+                    
+                    <apex:actionFunction name="onReassignmentSelect" action="{!fetchReferralsCountonReassignment}" oncomplete="getReassignReferralSourcesTableSorter('ReassignName', 1,'ascending', '', '', '', '', 'true', j$('#reassignUser_Hidden').val(), 0);" rerender="functionsOP,reAssignSourcesTotalAssignments,reassignReferralOP,reassignReferralTotals,reassignUserOP" >
+                        <apex:param value="" assignTo="{!strReassignUser}" name="selectedUser2"/>
+                    </apex:actionFunction>
+                    
+                    <apex:actionFunction name="setFirstPicklistFilter">
+                        <apex:param value="" assignTo="{!strSelectedDistance}" name="strSelectedFirstDistance"/>
+                    </apex:actionFunction>
+                    
+                    <apex:actionFunction name="setSecondPicklistFilter">   
+                        <apex:param value="" assignTo="{!strSubReferralSearch}" name="strSelectedSecondDistance"/>
+                    </apex:actionFunction>
+                    
+                </apex:outputpanel> 
+                
+                <apex:outputpanel >
+                    <div style="margin: 30px;width: 70%;">
+                        <table>
+                            <tr>
+                                <td  id="lstOption1" width="47%" style="display:none;">
+                                    
+                                    <div id="userSearchTextPanelDiv"> 
+                                    <div>From this User</div>
+                                    <div class="input-group formElementsWidth">
+                                    
+                                        <div contenteditable="true" class="form-control combobox" id="reassignUser" onclick="clearValue(this.id);"
+                                                                onkeydown="j$('[id$=reassignUser_Hidden]').val('');" style="width:100%;"></div>
+                                        <c:TBN_AutocompleteComponent autocomplete_textbox="reassignUser"/>
+                                        <input type="hidden" id="reassignUser_Hidden" value="{!strReassignUser}"/>
+                                        <span class="input-group-addon dropdown-toggle" data-dropdown="dropdown" onclick="showFocus('reassignUser');"> <span class="caret"></span>  </span>
+                                    </div>
+                                    </div>
+                                </td>
+                                <td width="6%" style="min-width: 25px;display:none;"  id="lstOption2">&nbsp;</td>
+                                <td width="47%">
+                                    <div id="toUserPanelDiv">
+                                        <apex:outputpanel id="userSearchTextPanel">
+                                            <div id="fromUserHeadingDiv"></div>
+                                            <apex:outputPanel rendered="{!!isSalesRep}">
+                                                
+                                                    <div class="input-group formElementsWidth">
+                                                        <div contenteditable="true" class="form-control combobox ui-autocomplete-input" id="inputUser" onclick="clearValue(this.id);"
+                                                                style="width:100%;"></div>
+                                                        <c:TBN_AutocompleteComponent autocomplete_textbox="inputUser"/>
+                                                        <input type="hidden" id="inputUser_Hidden" value="{!strSelectedUser}"/>
+                                                        <span class="input-group-addon dropdown-toggle" data-dropdown="dropdown" onclick="toggleDropdown('inputUser');"> <span class="caret"></span>  </span>
+                                                    </div>
+                                           </apex:outputPanel>
+                                        </apex:outputpanel>
+                                    </div> 
+                                    <apex:outputPanel id="UserIpanelSalesRep">
+                                        <apex:outputPanel rendered="{!isSalesRep}">
+                                            <div id="toUserPanelforSalesRep"  >
+                                                <apex:outputpanel id="userSearchTextPanelforSalesRep">
+                                                    <div class="form-control" contenteditable="false" id="inputtextId" style="width:100%;"></div>
+                                                    <input type="hidden" id="inputUser_HiddenSalesRep" value="{!strlogginUserId}"/>
+                                                </apex:outputpanel>
+                                            </div>   
+                                        </apex:outputPanel>
+                                    </apex:outputPanel>     
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </apex:outputpanel>
+                
+                <div id="tabsDivs" style="{!IF((LEN(strSelectedUser) > 0), '', 'display:none;')}">
+                    <div class="bs-example">
+                        <!--Tabs that are shown on select of user-->
+                        <ul class="nav nav-tabs tabsFont" role="tablist" id="tabs">
+                          
+                            <li id="details" class="active"><a data-toggle="tab" href="#Details" onclick="loading(); detailsSelect(); setTimeout('stoploading()',1000);">Details</a></li>
+                            <li id="OrgAlign"><a data-toggle="tab" href="#OrganizationAlignment" onclick="loading(); j$('#customValidationMsg').hide();fetchHierarchyRoles(j$('#inputUser_Hidden').val(), j$('#userRole_Hidden').val(),{!objS2CustomPermissions.Org_Alignment__c}); setTimeout('stoploading()',1000);">Organization Alignment</a></li>
+                            <li id="referrals">
+                                <a data-toggle="tab" href="#referralSourceAssignment" onclick="j$('#customValidationMsg').hide(); j$('.referralsTableForSort').children().children().next().children().children().val(''); j$('.tableFilter').val(''); setSecondFilter(); ReferralSources(j$('#inputUser_Hidden').val()); loading(); ">Referral Sources</a>
+                            </li> 
+                            <li style="{!IF(objS2CustomPermissions.Reassign_Referral_Sources__c==false,'display:none;', 'display:block;')}"><a data-toggle="tab" href="#referralSourceReassignment" onclick=" loading();  fetchref(); setTimeout('stoploading()',1000);" >Reassign Referral Sources</a></li>
+                        </ul> 
+                        <!--End of tabs list-->
+                    </div>
+                    
+                    <div class="tab-content"> 
+                    
+                        <!-- Details div be rendered on select of the User from the user dropdown -->
+                        <div id="Details" class="tab-pane fade in active marginTop tabHeight">
+                            <apex:outputPanel id="detailsOP">
+                                <apex:outputPanel rendered="{!objUser.Id != null}"> 
+                                
+                                    <script> 
+                                        document.getElementById('AccountId').innerHTML='{!homeFacilityfield}'; 
+                                        j$("#AccountId_Hidden").val('{!objUserRelatedAccount.Id}'); 
+                                        setVarName('AccountId', true);
+                                    </script>
+                                    
+                                    <apex:inputHidden value="{!objUser.Id}" id="theHiddenInputForUserId"/>
+                                    
+                                    <!--table to show all the user fields-->
+                                    <table width="60%" class="smallMarginLeft smallMarginTop smallMarginBottom" >
+                                        <apex:repeat value="{!$ObjectType.User.fieldsets.UserDetails}" var="fieldValue">
+                                            <tr width="100%">
+                                                <td width="50%">
+                                                    <div style="height: 70px;width: 55%;">
+                                                        <label class="slds-form-element__label">{!fieldValue.label}</label>
+                                                        <apex:outputPanel rendered="{!objS2CustomPermissions.User_Request__c}">
+                                                            <div>
+                                                                <apex:inputField value="{!objUser[fieldValue.fieldPath]}" styleClass="form-control inputFieldWidth"/>
+                                                            </div>
+                                                        </apex:outputPanel>
+                                                        
+                                                        <apex:outputPanel rendered="{!!objS2CustomPermissions.User_Request__c}">
+                                                            <div>
+                                                                <div class="form-control" contenteditable="false" style="width:75%;">{!objUser[fieldValue.fieldPath]}</div>
+                                                            </div>
+                                                        </apex:outputPanel>
+                                                        
+                                                    </div>  
+                                                </td>
+                                            </tr>
+                                        </apex:repeat>
+                                        <tr>
+                                            <td>
+                                                <div style="height:70px; width: 51%;">
+                                                    <label class="slds-form-element__label">Home Facility</label>
+                                                    <apex:outputpanel rendered="{!!objS2CustomPermissions.User_Request__c}">
+                                                        <div>
+                                                            <div class="form-control" id="homefacilitySalesRep" contenteditable="false" style="width:80%;">{!homeFacilityfield}</div>
+                                                        </div>
+                                                    </apex:outputpanel>
+                                                    
+                                                    <apex:outputpanel style="{!IF(objS2CustomPermissions.User_Request__c==true,'display: block;', 'display: none;')}">
+                                                        <div class="input-group" >
+                                                           <div contenteditable="true" class="form-control combobox" id="AccountId" onmousedown="clearValue(this.id);"
+                                                                onkeydown="j$('[id$=AccountId_Hidden]').val('');" style="width:100%;"></div>      
+                                                            <c:TBN_AutocompleteComponent autocomplete_textbox="AccountId"/>
+                                                            <input type="hidden" id="AccountId_Hidden" value=""/>
+                                                            <span class="input-group-addon dropdown-toggle" data-dropdown="dropdown" onclick="toggleDropdown('AccountId');"> <span class="caret"></span>  </span>
+                                                        </div>
+                                                    </apex:outputpanel>
+                                                </div>
+                                            </td>
+                                        </tr> 
+                                        <tr>
+                                            <td ><button type="button" class="btn btn-info" onclick="this.disabled; saveUserRec(document.getElementById('AccountId_Hidden').value); loading(); window.scrollTo(0,0);" style="{!IF(objS2CustomPermissions.User_Request__c==true,'display: block;', 'display: none;')}">Submit</button></td>
+                                        </tr>
+                                    </table>
+                                    <!--end of user detail table-->
+                                </apex:outputPanel>
+                            </apex:outputPanel>
+                        </div>
+                        <!--End of user Details div--> 
+                    
+                        <!-- OrganizationAlignment will be rendered on select on "Organization Alignment" section -->
+                        <div id="OrganizationAlignment" class="tab-pane fade marginTop tabHeight">
+                            <apex:outputPanel id="orgAlignmentOP">
+                                <apex:outputPanel styleclass="smallMarginLeft" style="padding-top: 30px;" id="CurrentId" layout="block">
+                                    <input type="hidden" id="userRole_Hidden" value="{!objUser.UserRole.Id}"/>
+                                     <apex:outputpanel rendered="{!objUser.UserRole.Name != null}">
+                                        <h2 style="font-size: 16px;"> Current Role : {!objUser.UserRole.Name}</h2>
+                                    </apex:outputpanel>
+                                    <apex:outputLabel rendered="{!objUser.UserRole.Name == null}">
+                                        <h2 style="font-size: 16px;" > Currently there is no role assigned to User</h2>
+                                    </apex:outputLabel>
+                                </apex:outputPanel>
+                                <br/>
+                                
+                                <div style = "width:70%;" id="orgAlignmentOuterDiv">
+                                    <!--Table where inner content will be filled by Javascript dynamically-->
+                                    <table width="100%" class="smallMarginLeft" id="mainOrgAlignmentDiv">
+                                    </table>
+                                </div>
+                                <br/><br/>
+                            </apex:outputPanel>
+                        </div>
+                        <!--End OrganizationAlignment div-->
+                        
+                        <!-- ReferralSourceAssignment div will be rendered on select on "Referral Source Assignment" section -->
+                        <div id="referralSourceAssignment" class="tab-pane fade marginTop tabHeight">
+                            <apex:outputPanel id="referralSourcesOP">
+                                <div class="form-group smallMarginLeft smallMarginTop">
+                                    <table width="100%" id="referralsAssignTable">
+                                        <tr>
+                                            <td width="75%" Id="lstOptions">
+                                                <table class = "browserWidthlstOptions" width="100%">
+                                                    <tr class = "browserWidthlstOptions" width="60%">
+                                                        <td width="18%" class = "browserWidth">
+                                                            <label for="selectedReferralFilter">View</label>
+                                                            <apex:selectList id="selectedReferralFilter" value="{!strSelectedDistance}" onchange="loading(); setSecondFilter(this.value); clearStateVal(); checkFilter('Name','ascending', '', '', '', 'true', '', '{!strSelecteduser}', this.value, document.getElementById('{!$Component.sourceSystemPicklist}').value, '{!strSubReferralSearch}');" 
+                                                                            size="1" styleClass="form-control input-xlarge">
+                                                                <apex:selectOptions value="{!lstDistanceOptions}"/>
+                                                            </apex:selectList>
+                                                        </td>
+                                                        <td width="2%" style="min-width: 25px;">&nbsp;</td>
+                                                        <td width="18%" class ="browserWidth">
+                                                            <label for="sourceSystemPicklist">Source System</label>
+                                                            <apex:selectList id="sourceSystemPicklist" size="1" styleClass="form-control input-xlarge" onchange="loading(); checkFilter('Name','ascending', '', '', '', 'true', '', '{!strSelecteduser}', document.getElementById('{!$Component.selectedReferralFilter}').value, this.value, document.getElementById('{!$Component.secPicklist}').value);">
+                                                                <apex:selectOptions value="{!lstSourceSystemOptions}"/>
+                                                            </apex:selectList>
+                                                        </td>
+                                                         
+                                                        <td width="2%" style="min-width: 25px;">&nbsp;</td>
+                                                        <td width="18%" class ="browserWidth">
+                                                            <label for="secPicklist">Active / Not Active</label>
+                                                            <apex:selectList id="secPicklist" value="{!strSubReferralSearch}" size="1" onchange="loading(); checkFilter('Name','ascending', '', '', '', 'true', '', '{!strSelecteduser}', document.getElementById('{!$Component.selectedReferralFilter}').value, document.getElementById('{!$Component.sourceSystemPicklist}').value, this.value);"
+                                                                        styleClass="form-control input-xlarge">
+                                                                <apex:selectOptions value="{!lstDistanceSubOptions}"/>
+                                                            </apex:selectList>
+                                                        </td>
+                                                        
+                                                        <td width="2%" style="min-width: 25px;">&nbsp;</td>
+                                                        <td width="18%">
+                                                            <label for="statePicklist">State</label>
+                                                            <div class="form-item-container">
+                                                                <apex:selectList id="statePicklist" value="{!strSelectedState}" size="1" onchange="loading(); setTimeout('checkStateVal()',100); checkFilter('Name','ascending', '', '', '', 'true', '', '{!strSelecteduser}', document.getElementById('{!$Component.selectedReferralFilter}').value, document.getElementById('{!$Component.sourceSystemPicklist}').value, '{!strSubReferralSearch}');"
+                                                                            styleClass="form-control input-xlarge"> 
+                                                                    <apex:selectOptions value="{!lstStates}"/>
+                                                                </apex:selectList>
+                                                            </div>
+                                                        </td>
+                                                        <td width="42%">&nbsp;</td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td width="44%">&nbsp;</td>
+                                            <td width="20%" colspan="2"></td> 
+                                        </tr>
+                                        <tr><td>
+                                            &nbsp;
+                                        </td> </tr>
+                                    </table>
+                                    
+                                    <div id="refSourcesTotalAssignmentTd" style="float: right;padding-right: 5%;">
+                                        <apex:outputPanel id="totalAssignedOP">
+                                            Total Assigned: <span id ="referralAssignmentCount">{!totalAssignments}</span>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+                                <br/>
+                             
+                                <div id="referralTableDiv">
+                                    <div>
+                                        <input type="button" value="Search" class="btn btn-info smallMarginLeft" onclick="checkfiltersAppliedforReferrals();"/>
+                                        <input type="button" value="Reset" class="btn btn-info smallMarginLeft reset " onclick="clearFilters();"/>
+                                    </div><br/>
+                                    
+                                    <div style="margin-left: 6px;margin-bottom: 15px;">
+                                        <input type="radio" name="Radio" value="Demographic View" Id = "Address" checked="checked" onclick="DisplayAddressFields(checked, false, 'assign');" />
+                                        <label for="Address" class="middleAlign" style="padding-right: 10px;">Demographic View</label>
+                                        <input type="radio" name="Radio" value="HMS Data view 1" Id = "hmsView1" onclick="DisplayHmsView1(checked, 'assign');" style="margin-left:10px;"/>
+                                        <label for="hmsView1" class="middleAlign">Metric Totals </label>
+                                        <input type="radio" name="Radio" value="HMS Data view 2" Id = "hmsView2" onclick="DisplayHmsView2(checked, 'assign');" style="margin-left:10px;"/>
+                                        <label for="hmsView2" class="middleAlign">Home Health </label>
+                                        <input type="radio" name="Radio" value="HMS Data view " Id = "hmsView" onclick="DisplayHmsView(checked, 'assign');" style="margin-left:10px;"/>
+                                        <label for="hmsView" class="middleAlign">Hospice </label>
+                                        <input type="radio" name="Radio" value="System IDs" Id = "SysId" onclick="DisplayHMSSystemIds(checked, 'assign');" style="margin-left:10px;"/>
+                                        <label for="SysId" class="middleAlign">System IDs</label>
+                                    </div>
+                                    
+                                    <div id="DivAssignAccandContact">
+                                        <table class="table table-hover referralTable tablesorter referralsTableForSort" id="referralsTableForSort" style="table-layout:fixed;" data-page-length="20">
+                                            <thead id="tableHead">
+                                                
+                                                <tr width="100%" role="row" id="referralTableHeadders" class="tablesorter-headerRow">
+                                                    <th class="filter-false sorter-false" id = "referralAllAssignTH" data-sorter="false" style="width:6%">
+                                                        <div>
+                                                            <input type="checkbox" value="" id="referralAllAssign" onclick="toggleCheckbox('referralAllAssign', 'tableBody');"/>
+                                                            <label for="referralAllAssign" class="middleAlign">Assign</label>
+                                                        </div>    
+                                                    </th>
+                                                    <th class="tablesorter-header wrapword" style="width:20%" data-column="1" id="Name-Assign">Name</th>
+                                                    <th class="tablesorter-header classAddress" data-column="2" id="NPI__c-Assign">NPI</th>
+                                                    <th class="tablesorter-header classAddress" style="width: 18% !important;" data-column="3" id="ShippingStreet-Assign">Address</th>
+                                                    <th class="tablesorter-header classAddress" data-column="4" id="ShippingCity-Assign">City</th>
+                                                    <th class="tablesorter-header classAddress" data-column="5" id="ShippingState-Assign">State</th>
+                                                    <th class="tablesorter-header classAddress" data-column="6" id="ShippingPostalCode-Assign">Zip</th>
+                                                    <th class="tablesorter-header classAddress" data-column="7" id="strType-Assign">Type</th>
+                                                    <th class="tablesorter-header classAddress" style="width: 10% !important;" data-column="8" id="strSpecialties-Assign">Specialty</th>
+                                                    
+                                                    <th class="tablesorter-header clsHMS1" data-column="9" style="display:none;" id="KAH_HMS_Total_Patient_Volume_DR__c-Assign"><br/>HMS<br/>TPV</th>
+                                                    <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter tdBgColor" data-column="10" style="display:none;" id="KAH_HH_Admits_YTD__c-Assign">HH<br/>YTD<br/>Admits</th>
+                                                    <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter tdBgColor"  data-column="11" style="display:none;"  id="HH_Admits_PY__c-Assign"><br/>PY<br/>Admits</th>
+                                                    <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter"  data-column="12" style="display:none;"  id="KAH_HP_Admits_YTD__c-Assign">HP<br/>YTD<br/>Admits</th>
+                                                    <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter" data-column="13" style="display:none;"  id="HP_Admits_PY__c-Assign"><br/>PY<br/>Admits</th>
+                                                    <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter tdBgColor"  data-column="14" style="display:none;"  id="KAH_HD_Admits_YTD__c-Assign">HD<br/>YTD<br/>Admits</th>
+                                                    <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter tdBgColor"   data-column="15" style="display:none;" id="HD_Admits_PY__c-Assign"><br/>PY<br/>Admits</th>
+                                                    
+                                                    <th class="tablesorter-header clsHMS2 clsWithoutWidgetFilter" style="width:8%; display:none;" data-column="16" id="KAH_HH_PPS_Admits_YTD__c-Assign">PPS YTD<br/>Admits</th>
+                                                    <th class="tablesorter-header clsHMS2 clsWithoutWidgetFilter" style="width:8%; display:none;" data-column="18" id="KAH_HH_PPS_Prior_Year_Admits_Prior__c-Assign">PPS PY<br/> Admits</th>
+                                                    <th class="tablesorter-header clsHMS2" data-column="20" style="display:none;" id="KAH_HH_Referrals_YTD__c-Assign">YTD<br/>Referrals</th>
+                                                    <th class="tablesorter-header clsHMS2" data-column="17" style="display:none;" id="KAH_HH_Discounted_Qualified_Admits_YTD__c-Assign">Disc. Qual.<br/>YTD Admits</th>
+                                                    <th class="tablesorter-header clsHMS2" data-column="19" style="display:none;"  id="KAH_HH_Discounted_Qualified_Admits_PY__c-Assign">Disc. Qual.<br/>PY Admits</th> 
+                                                    <th class="tablesorter-header clsHMS2" data-column="21" style="display:none;" id="KAH_HMS_Total_Patient_Volume_DR__c-AssiHH">HMS<br/>TPV</th>
+                                                    <th class="tablesorter-header clsHMS2" data-column="22" style="display:none;" id="KAH_HMS_ALL_HH_DR__c-Assign">All HH</th> 
+                                                    <th class="tablesorter-header clsHMS2" data-column="23" style="display:none;" id="KAH_HMS_HH_Cancer_Bold_Vascular_DR__c-Assign">CBV</th>
+                                                    <th class="tablesorter-header clsHMS2" data-column="24" style="display:none;" id="KAH_HMS_HH_CHF_Stroke_COPD_DR__c-Assign">CCS</th>
+                                                    <th class="tablesorter-header clsHMS2" data-column="25" style="display:none;" id="KAH_HMS_HH_Endo_Wounds_DR__c-Assign">EW</th>
+                                                    <th class="tablesorter-header clsHMS2" data-column="26" style="display:none;" id="KAH_HMS_HH_Urinary_Kidney_GI_DR__c-Assign">UKGI</th>
+                                                    <th class="tablesorter-header clsHMS2" data-column="27" style="display:none;" id="KAH_HMS_HH_Ortho_DR__c-Assign">Ortho</th>
+                                                    
+                                                    <th class="tablesorter-header clsHMS clsWithoutWidgetFilter" style="width:8%; display:none;" id="KAH_HP_Qualified_Admits_YTD__c-Assign" data-column="28">Qualified <br/>YTD Admits</th>
+                                                    <th class="tablesorter-header clsHMS clsWithoutWidgetFilter" style="width:8%; display:none;" id="KAH_HP_Qualified_Admits_PY__c-Assign" data-column="29">Qualified <br/>PY Admits</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="30" style="display:none;" id="KAH_HP_Referrals_YTD__c-Assign">YTD<br/>Referrals</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="31" style="display:none;" id="KAH_HP_Admits_YTD-Assign">YTD<br/>Admits</th> 
+                                                    <th class="tablesorter-header clsHMS" data-column="32" style="display:none;" id="strLengthOfStay-Assign">Length<br/>of Stay</th> 
+                                                    <th class="tablesorter-header clsHMS" data-column="33" style="display:none;" id="KAH_HMS_Total_Patient_Volume_DR__c-AssiHP">HMS<br/>TPV</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="34" style="display:none;" id="KAH_HMS_All_HP_DR__c-Assign">All HP</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="35" style="display:none;" id="KAH_HMS_HP_Influencer_Network_DR__c-Assign">Inf net</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="36" style="display:none;" id="KAH_HMS_HP_Cancer_DR__c-Assign">Cancer</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="37" style="display:none;" id="KAH_HMS_HP_CHF_DR__c-Assign">CHF</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="38" style="display:none;" id="KAH_HMS_HP_COPD_DR__c-Assign">COPD</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="39" style="display:none;" id="KAH_HMS_HP_Dementia_DR__c-Assign">Dementia</th>
+                                                    <th class="tablesorter-header clsHMS" data-column="40" style="display:none;" id="KAH_HMS_HP_Debility_DR__c-Assign">Debility</th>
+                                                    
+                                                    <th class="tablesorter-header clsHMSIDs" data-column="41" style="display:none;" id="SFID-Assign">SFID</th>
+                                                    <th class="tablesorter-header clsHMSIDs" data-column="42" style="display:none;" id="NPI_ID-Assign">NPI ID</th>
+                                                    <th class="tablesorter-header clsHMSIDs" data-column="43" style="display:none;" id="HMS_ID-Assign">HMS ID</th>
+                                                    <th class="tablesorter-header clsHMSIDs clsWithoutWidgetFilter" data-column="44" style="display:none;" id="HPAS_ID-Assign">HPAS ID</th>
+                                                    <th class="tablesorter-header clsHMSIDs clsWithoutWidgetFilter" data-column="45" style="display:none;" id="Horizon_ID-Assign">Horizon ID</th>
+                                                    <th class="tablesorter-header clsHMSIDs clsWithoutWidgetFilter" data-column="46" style="display:none;" id="Meditech_ID-Assign">Meditech ID</th>
+                                                    <th class="tablesorter-header clsHMSIDs clsWithoutWidgetFilter" data-column="47" style="display:none;" id="Unity_ID-Assign">Unity ID</th>
+                                                </tr>
+                                            </thead>
+                                            
+                                            <thead>
+                                                <tr id="tableFilterRow" class="tablesorter-headerRow">
+                                                    <td data-column="0" class="assignClass">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td data-column="1" id="Name" class="nameClass">
+                                                        <input placeholder="" class="width150 tableFilter" data-column="1" value="" />
+                                                    </td>
+                                                    <td onclick="return false;" data-column="2" class="classAddress" id="NPI__c">
+                                                        <input placeholder="" class="width100 tableFilter" data-column="2" value="" />
+                                                    </td>
+                                                    <td onclick="return false;" data-column="3" class="classAddress" id="ShippingStreet">
+                                                        <input placeholder="" class="tableFilter" style="width: 188px;" data-column="3" value="" />
+                                                    </td>
+                                                    <td onclick="return false;" data-column="4" class="classAddress" id="ShippingCity">
+                                                        <input placeholder="" class="width100 tableFilter" data-column="4" value="" />
+                                                    </td>
+                                                    <td onclick="return false;" data-column="5" class="classAddress"  id="ShippingState">
+                                                        <input id="inputState" placeholder="" class="width100 tableFilter" data-column="5" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" data-column="6" class="classAddress" id="ShippingPostalCode">
+                                                        <input placeholder="" class="width100 tableFilter" data-column="6" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" data-column="7" class="classAddress" id="strType">
+                                                        <input placeholder="" class="width100 tableFilter" data-column="7" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" data-column="8" class="classAddress" id="strSpecialties">
+                                                        <input placeholder="" class="tableFilter" style="width: 110px;" data-column="8" value=""/>
+                                                    </td>
+                                                    
+                                                    <td onclick="return false;" style="display: none;" data-column="9" class="clsHMS1" id="KAH_HMS_Total_Patient_Volume_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="9" value=""/>
+                                                    </td>
+                                                    <td class="tdBgColor clsHMS1" style="display: none;" onclick="return false;" data-column="10"  id="KAH_HH_Admits_YTD__c" >&nbsp;
+                                                    </td>
+                                                    <td class="tdBgColor clsHMS1" style="display: none;" onclick="return false;" data-column="11"  id="HH_Admits_PY__c">&nbsp;
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="12" id="KAH_HP_Admits_YTD__c" >&nbsp;
+                                                        <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="12" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="13"  id="HP_Admits_PY__c" >&nbsp;
+                                                        <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="13" value=""/>
+                                                    </td>
+                                                    <td class="tdBgColor clsHMS1" style="display: none;" onclick="return false;" data-column="14"  id="KAH_HD_Admits_YTD__c">&nbsp;
+                                                    </td>
+                                                    <td class="tdBgColor clsHMS1" style="display: none;" onclick="return false;" data-column="15" id="HD_Admits_PY__c">&nbsp;
+                                                    </td>
+                                                    
+                                                    <td onclick="return false;" style="display: none;" data-column="16" class="clsHMS2" id="KAH_HH_PPS_Admits_YTD__c" >&nbsp;
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="18" class="clsHMS2" id="KAH_HH_PPS_Prior_Year_Admits_Prior__c" >&nbsp;
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="20" class="clsHMS2" id="KAH_HH_Referrals_YTD__c">
+                                                        <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="20" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="17" class="clsHMS2" id="KAH_HH_Discounted_Qualified_Admits_YTD__c">
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="19" class="clsHMS2" id="KAH_HH_Discounted_Qualified_Admits_PY__c">
+                                                        
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="21" class="clsHMS2" id="KAH_HMS_Total_Patient_Volume_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="21" value=""/>
+                                                    </td>
+                                                    
+                                                    <td onclick="return false;" style="display: none;" data-column="22" class="clsHMS2" id="KAH_HMS_ALL_HH_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="22" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="23" class="clsHMS2" id="KAH_HMS_HH_Cancer_Bold_Vascular_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="23" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="24" class="clsHMS2"  id="KAH_HMS_HH_CHF_Stroke_COPD_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="24" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="25" class="clsHMS2" id="KAH_HMS_HH_Endo_Wounds_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="25" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="26" class="clsHMS2" id="KAH_HMS_HH_Urinary_Kidney_GI_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="26" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="27" class="clsHMS2" id="KAH_HMS_HH_Ortho_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="27" value=""/>
+                                                    </td>
+                                                    
+                                                    <td onclick="return false;" style="display: none;" data-column="28" class="clsHMS" id="KAH_HP_Qualified_Admits_YTD__c">&nbsp;
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="29" class="clsHMS" id="KAH_HP_Qualified_Admits_PY__c">&nbsp;
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="30" class="clsHMS" id="KAH_HP_Referrals_YTD__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="29" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="31" class="clsHMS" id="KAH_HP_Admits_YTD">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="30" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="32" class="clsHMS" id="strLengthOfStay">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="31" value=""/>
+                                                    </td>
+                                                    
+                                                    <td onclick="return false;" style="display: none;" data-column="33" class="clsHMS" id="KAH_HMS_Total_Patient_Volume_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="32" value=""/>
+                                                    </td>
+                                                    
+                                                    <td onclick="return false;" style="display: none;" data-column="34" class="clsHMS" id="KAH_HMS_All_HP_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="33" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="35" class="clsHMS" id="KAH_HMS_HP_Influencer_Network_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="34" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="36" class="clsHMS"  id="KAH_HMS_HP_Cancer_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="35" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="37" class="clsHMS" id="KAH_HMS_HP_CHF_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="36" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="38" class="clsHMS" id="KAH_HMS_HP_COPD_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="37" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="39" class="clsHMS" id="KAH_HMS_HP_Dementia_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="38" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="40" class="clsHMS" id="KAH_HMS_HP_Debility_DR__c">
+                                                        <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="39" value=""/>
+                                                    </td>
+                                                    
+                                                    <td onclick="return false;" style="display: none;" data-column="41" class="clsHMSIDs clsSFID" id="SFID">
+                                                        <input placeholder="" class="widthSFID tableFilter" style="display: none;" data-column="41" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="42" class="clsHMSIDs" id="NPI_ID">
+                                                        <input placeholder="" class="widthID width100 tableFilter" style="display: none;" data-column="42" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="43" class="clsHMSIDs" id="HMS_ID">
+                                                        <input placeholder="" class="widthID width100 tableFilter" style="display: none;" data-column="43" value=""/>
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="44" class="clsHMSIDs" id="HPAS_ID">&nbsp;
+                                                        <!--<input placeholder="" class="width100 tableFilter" style="display: none;" data-column="44" value=""/>-->
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="45" class="clsHMSIDs" id="Horizon_ID">&nbsp;
+                                                        <!--<input placeholder="" class="width100 tableFilter" style="display: none;" data-column="45" value=""/>-->
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="46" class="clsHMSIDs" id="Meditech_ID">&nbsp;
+                                                        <!--<input placeholder="" class="width100 tableFilter" style="display: none;" data-column="46" value=""/>-->
+                                                    </td>
+                                                    <td onclick="return false;" style="display: none;" data-column="47" class="clsHMSIDs" id="Unity_ID">&nbsp;
+                                                        <!--<input placeholder="" class="width100 tableFilter" style="display: none;" data-column="47" value=""/>-->
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            
+                                            <tbody id="tableBody">
+                                                
+                                            </tbody>
+                                        </table>
+                                        <script>
+                                            
+                                            //Function is called on click of table header on referral sources tab to sort data in ascending/descending order based on the column
+                                            j$('.referralsTableForSort').find('.tablesorter-header').click(function() {
+                                                
+                                                if( !j$("#allSelectDivMsgId").is(':visible') ){
+                                                    
+                                                    loading();
+                                                    var dataColValue;
+                                                    j$('#'+this.id).addClass("clsSortedField");
+                                                    j$(this).siblings().removeClass('clsSortedField');
+                                                    var thisId = this.id;
+                                                    var dataColValue = j$('#'+thisId).data('column');     
+                                                    thisId = thisId.substring(0, thisId.length - 7);
+                                                    var sortedClass = j$(".clsSortedField").attr('id');
+                                                    var varAriaSort = j$('#'+sortedClass).attr('aria-sort');
+                                                    if(varAriaSort == undefined)
+                                                        varAriaSort = 'descending';
+                                                    else if(varAriaSort == 'ascending')
+                                                        varAriaSort = 'descending';
+                                                    else if(varAriaSort == 'descending')    
+                                                        varAriaSort = 'ascending';
+                                                    onPaginationTableSorter(thisId, dataColValue, varAriaSort, true, j$('#inputUser_Hidden').val(), document.getElementById('{!$Component.selectedReferralFilter}').value, document.getElementById('{!$Component.sourceSystemPicklist}').value, document.getElementById('{!$Component.secPicklist}').value,'', 0);
+                                                }
+                                            });
+    
+                                            function checkfiltersAppliedforReferrals(){
+                                                
+                                                try {
+                                                    var strTdId;
+                                                    var sortedClass = j$(".clsSortedField").attr('id');
+                                                    var sortedClassId = sortedClass;
+                                                    var dataColValue;
+                                                    if(sortedClass !=undefined){
+                                                        dataColValue = j$('#'+sortedClass).data('column'); 
+                                                        if(sortedClass.indexOf("assign") > -1 || sortedClass.indexOf("assiHH") > -1 || sortedClass.indexOf("assiHP") > -1);
+                                                            sortedClass = sortedClass.substring(0, sortedClass.length - 7);
+                                                        strTdId = sortedClass;
+                                                    }
+                                                    else{
+                                                        strTdId = 'Name'; 
+                                                        dataColValue =1;
+                                                    }
+                                                    //for IE issue regarding DT_CellIndex
+                                                    var table = j$('.referralsTableForSort').DataTable(); table.clear().draw();
+                                                    var ariaSortVal = j$('#'+sortedClassId).attr('aria-sort');    
+                                                    loading(); 
+                                                    onPaginationTableSorter(strTdId, dataColValue, ariaSortVal, false, j$('#inputUser_Hidden').val(), document.getElementById('{!$Component.selectedReferralFilter}').value, document.getElementById('{!$Component.sourceSystemPicklist}').value, document.getElementById('{!$Component.secPicklist}').value,'Search', 0);
+                                                }
+                                                catch(err) {
+                                        
+                                                    alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+                                                }
+                                            }
+                                            
+                                        </script>
+                                        <table width="100%" id="referralPaginaitionButtons" >
+                                            <tr>
+                                                <td width="33%">&nbsp;</td>
+                                                <td width="50%" class="noWrapping">
+                                                    <span id="paginateBtns" class="pager">
+                                                        <button type="button" class="btn btn-info smallMarginLeft" onclick="assignReferralUsers('{!strSelectedUser}', document.getElementById('{!$Component.selectedReferralFilter}').value, document.getElementById('{!$Component.secPicklist}').value, document.getElementById('{!$Component.sourceSystemPicklist}').value ); loading(); window.scrollTo(0,0);">Assign/Unassign</button>
+                                                        <input type="button" disabled="disabled" id="firstBtn" class="btn btn-default first" value="«" onclick="toggleHeaderCheckboxReferrals(); j$('#referralsTableForSort_first').click();"/>     
+                                                        <input type="button" disabled="disabled"  id="preBtn" class="btn btn-default prev" value="‹" onclick="toggleHeaderCheckboxReferrals(); j$('#referralsTableForSort_previous').click();"/>
+                                                        <input type ="button" disabled="disabled" id="nxtBtn" class="btn btn-default next" value="›" onclick="toggleHeaderCheckboxReferrals(); j$('#referralsTableForSort_next').click();"/>  
+                                                        <input type="button" disabled="disabled" id="endBtn" class="btn btn-default last" value="»" onclick="toggleHeaderCheckboxReferrals(); j$('#referralsTableForSort_last').click();"/>
+                                                        <div id="recordCountMessage" style="display:none; padding-left:43%; margin-top: -3.5%; color: #A9A9A9;">
+                                                            <apex:outputLabel value="{!$Label.S2_Page_Pagination_Message}" />
+                                                        </div>
+                                                    </span>
+                                                </td>
+                                                <td width="17%">&nbsp;</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div id="noRreferralsMsg" style="display:none;">
+                                    <div class="alert alert-warning alert-dismissible" role="alert" style="width:30%; margin-left: 35%; margin-bottom:-1%; margin-top: 1%;">
+                                        <strong><apex:outputLabel value="{!$Label.S2_Page_No_Records_for_applied_filters}" /></strong>
+                                    </div>  
+                                </div>
+                                
+                                <div id="noHomeFacilityMsg" style="display:none;">
+                                    <apex:outputPanel rendered="{!objS2CustomPermissions.User_Request__c}">
+                                        <div class="alert alert-warning alert-dismissible" role="alert" style="width: 41%;margin-left: 30%;margin-bottom:-1%;margin-top: 1%;">
+                                            <strong>
+                                                <div>There is no Home Facility for selected user, Configure Home Facility by clicking <a href="#Details" data-toggle="tab" onclick="showDetalisTab(); loading(); detailsSelect(); setTimeout('stoploading()',1000);"><b>here</b></a>.</div>
+                                            </strong>  
+                                        </div>  
+                                    </apex:outputPanel>
+                                    
+                                    <apex:outputPanel rendered="{!!objS2CustomPermissions.User_Request__c}">
+                                        <div class="alert alert-warning alert-dismissible" role="alert" style="width: 41%;margin-left: 30%;margin-bottom:-1%;margin-top: 1%;">
+                                            <strong>
+                                                <apex:outputLabel value="{!$Label.S2_Page_no_Home_facility_Contact_support}" />
+                                            </strong>  
+                                        </div>
+                                    </apex:outputPanel>
+                                </div>
+                                
+                                <div id="noStateSelected" style="display:none;">
+                                    <div class="alert alert-warning alert-dismissible" role="alert" style="width: 41%;margin-left: 30%;margin-bottom:-1%;margin-top: 1%;">
+                                        <strong><apex:outputLabel value="{!$Label.S2_Select_State_Filter}" /></strong>  
+                                    </div>
+                                </div>
+                                
+                                <div id="allSelectDivMsgId" style="display:none;">
+                                    <div class="alert alert-warning alert-dismissible" role="alert" style="width:30%; margin-left: 35%; margin-bottom:-1%; margin-top: 1%;">
+                                        <strong><apex:outputLabel value="{!$Label.S2_Page_No_Filter_Applied}" /></strong>
+                                    </div>
+                                </div>
+                            </apex:outputPanel>
+                        </div>
+                        <!--End of referral sources div-->
+                           
+                           
+                        <!-- ReferralSourceReassignment div will be rendered on select on "Referral Source Reassignment" section -->
+                        <div id="referralSourceReassignment" class="tab-pane fade marginTop tabHeight">
+                            <br/>
+                            <apex:outputPanel id="reassignReferralTotals">
+                                <table width="100%">
+                                    <tr >
+                                        <td colspan="1" width="20%">&nbsp;</td>
+                                        <td colspan="1" width="50%"></td>
+                                        <td colspan="1" width="15%">
+                                            <apex:outputPanel id="reAssignSourcesTotalAssignments">
+                                                <apex:outputPanel id="totalAssignedOPReassign">
+                                                Total Assigned: <span id ="reassignCount">{!totalAssignments}</span>
+                                                </apex:outputPanel>
+                                            </apex:outputPanel>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                            </apex:outputPanel>
+                            
+                            <div id="reassignViewButtons" style = "display:none">
+                                <div>
+                                    <input type="button" value="Search" class="btn btn-info smallMarginLeft" onclick="checkfiltersAppliedforReassignReferrals();"/>
+                                    
+                                </div>
+                                <br/>
+                                <div style="margin-left: 6px;margin-bottom: 15px;">
+                                    <input type="radio" name="Radio" value="Demographic View" Id = "ReassignAddress" checked="checked" onclick="DisplayAddressFields(checked, false, 'reassign');" />
+                                    <label for="ReassignAddress" class="middleAlign">Demographic View</label>
+                                    <input type="radio" name="Radio" value="HMS Data view 1" Id = "ReassignhmsView1" onclick="DisplayHmsView1(checked, 'reassign');" style="margin-left:10px;"/>
+                                    <label for="ReassignhmsView1" class="middleAlign">Metric Totals </label>
+                                    <input type="radio" name="Radio" value="HMS Data view 2" Id = "ReassignhmsView2" onclick="DisplayHmsView2(checked, 'reassign');" style="margin-left:10px;"/>
+                                    <label for="ReassignhmsView2" class="middleAlign">Home Health </label>
+                                    <input type="radio" name="Radio" value="HMS Data view " Id = "ReassignhmsView" onclick="DisplayHmsView(checked, 'reassign');" style="margin-left:10px;"/>
+                                    <label for="ReassignhmsView" class="middleAlign">Hospice </label> 
+                                </div>
+                            </div>    
+                            <div>
+                                <apex:outputPanel id="reassignReferralOP">
+                                        <div id="hasReassingment">
+                                            
+                                            <table id="reassignReferralTable" class="table table-hover referralTable tablesorter reassignReferralTable" data-page-length="20">
+                                                <thead id = "tableHeadReassign">
+                                                    <tr width="100%" id="tableHeadRassign" class="tablesorter-headerRow">
+                                                        <th width="10%" class="filter-false sorter-false" id = "reassignReferralAllAssignTH" data-sorter="false">
+                                                            <input type="checkbox" class="Checkbox" id="referralAllReassign"
+                                                                    onclick="toggleCheckbox('referralAllReassign', 'reassignTableBody');"/>
+                                                            <label for="referralAllReassign" class="middleAlign">Assign</label>
+                                                        </th>
+                                                        <th width="15%" class="tablesorter-header" id = "ReassignName-reassign" data-column="1">Name</th>
+                                                        <th width="10%" class="tablesorter-header classAddress" data-column="2" id = "ReassignNPI__c-reassign">NPI</th>
+                                                        <th width="15%" class="tablesorter-header classAddress" data-column="3" id = "ReassignShippingStreet-reassign">Address</th>
+                                                        <th width="10%" class="tablesorter-header classAddress" data-column="4" id = "ReassignShippingCity-reassign">City</th>
+                                                        <th width="10%" class="tablesorter-header classAddress" data-column="5" id = "ReassignShippingState-reassign">State</th>
+                                                        <th width="10%" class="tablesorter-header classAddress" data-column="6" id = "ReassignShippingPostalCode-reassign">Zip</th>
+                                                        <th width="10%" class="tablesorter-header classAddress" data-column="7" id = "ReassignstrType-reassign">Type</th>
+                                                        <th width="10%" class="tablesorter-header classAddress"  data-column="8" id = "ReassignstrSpecialties-reassign">Specialty</th>
+                                                        
+                                                        <th class="tablesorter-header clsHMS1" data-column="9" style="display:none;" id="ReassignKAH_HMS_Total_Patient_Volume_DR__c-reassign"><br/>HMS<br/>TPV</th>
+                                                        <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter tdBgColor" data-column="10" style="display:none;" id="ReassignKAH_HH_Admits_YTD__c-reassign">HH<br/>YTD<br/>Admits</th>
+                                                        <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter tdBgColor" data-column="11" style="display:none;" id="ReassignHH_Admits_PY__c-reassign" ><br/>PY<br/>Admits</th>
+                                                        <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter" data-column="12" style="display:none;" id="ReassignKAH_HP_Admits_YTD__c-reassign">HP<br/>YTD<br/>Admits</th>
+                                                        <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter" data-column="13" style="display:none;" id="ReassignHP_Admits_PY__c-reassign"><br/>PY<br/>Admits</th>
+                                                        <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter tdBgColor"  data-column="14" style="display:none;" id="ReassignKAH_HD_Admits_YTD__c-reassign">HD<br/>YTD<br/>Admits</th>
+                                                        <th class="tablesorter-header clsHMS1 clsWithoutWidgetFilter tdBgColor" data-column="15" style="display:none;"  id="ReassignHD_Admits_PY__c-reassign"><br/>PY<br/>Admits</th>
+                                                        
+                                                        <th class="tablesorter-header clsHMS2 clsWithoutWidgetFilter" style="width:8%; display:none;" data-column="16" id="KAH_HH_PPS_Admits_YTD__c-reassign">PPS YTD<br/>Admits</th>
+                                                        <th class="tablesorter-header clsHMS2 clsWithoutWidgetFilter" style="width:8%; display:none;"  data-column="18"  id="ReassignKAH_HH_PPS_Prior_Year_Admits_Prior__c-reassign">PPS PY<br/> Admits</th>
+                                                        <th class="tablesorter-header clsHMS2" data-column="19" style="display:none;" id="ReassignKAH_HH_Referrals_YTD__c-reassign">YTD<br/>Referrals</th>
+                                                        <th class="tablesorter-header clsHMS2" data-column="17" style="display:none;" id="ReassignKAH_HH_Discounted_Qualified_Admits_YTD__c-reassign">Disc. Qual.<br/>YTD Admits</th>
+                                                        <th class="tablesorter-header clsHMS2" data-column="20" style="display:none;" id="ReassignKAH_HH_Discounted_Qualified_Admits_PY__c-reassign">Disc. Qual.<br/>PY Admits</th> 
+                                                        <th class="tablesorter-header clsHMS2" data-column="21" style="display:none;" id="ReassignKAH_HMS_Total_Patient_Volume_DR__c-reassiHH">HMS<br/>TPV</th>
+                                                        <th class="tablesorter-header clsHMS2" data-column="22" style="display:none;" id="ReassignKAH_HMS_ALL_HH_DR__c-reassign">All HH</th> 
+                                                        <th class="tablesorter-header clsHMS2" data-column="23" style="display:none;" id="ReassignKAH_HMS_HH_Cancer_Bold_Vascular_DR__c-reassign">CBV</th>
+                                                        <th class="tablesorter-header clsHMS2" data-column="24" style="display:none;" id="ReassignKAH_HMS_HH_CHF_Stroke_COPD_DR__c-reassign">CCS</th>
+                                                        <th class="tablesorter-header clsHMS2" data-column="25" style="display:none;" id="ReassignKAH_HMS_HH_Endo_Wounds_DR__c-reassign">EW</th>
+                                                        <th class="tablesorter-header clsHMS2" data-column="26" style="display:none;" id="ReassignKAH_HMS_HH_Urinary_Kidney_GI_DR__c-reassign">UKGI</th>
+                                                        <th class="tablesorter-header clsHMS2" data-column="27" style="display:none;" id="ReassignKAH_HMS_HH_Ortho_DR__c-reassign">Ortho</th>
+                                                        
+                                                        <th class="tablesorter-header clsHMS clsWithoutWidgetFilter" style="width:8%; display:none;" data-column="28" id="ReassignKAH_HP_Qualified_Admits_YTD__c-reassign">Qualified<br/>YTD Admits</th>
+                                                        <th class="tablesorter-header clsHMS clsWithoutWidgetFilter" style="width:8%; display:none;" data-column="29" id="ReassignKAH_HP_Qualified_Admits_PY__c-reassign">Qualified<br/>PY Admits</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="30" style="display:none;" id="ReassignKAH_HP_Referrals_YTD__c-reassign">YTD<br/>Referrals</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="31" style="display:none;" id="ReassignKAH_HP_Admits_YTD-reassign">YTD<br/>Admits</th> 
+                                                        <th class="tablesorter-header clsHMS" data-column="32" style="display:none;" id="ReassignstrLengthOfStay-reassign">Length<br/>of Stay</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="33" style="display:none;" id="ReassignKAH_HMS_Total_Patient_Volume_DR__c-reassiHP">HMS<br/>TPV</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="34" style="display:none;" id="ReassignKAH_HMS_All_HP_DR__c-reassign">All HP</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="35" style="display:none;" id="ReassignKAH_HMS_HP_Influencer_Network_DR__c-reassign">Inf net</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="36" style="display:none;" id="ReassignKAH_HMS_HP_Cancer_DR__c-reassign">Cancer</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="37" style="display:none;" id="ReassignKAH_HMS_HP_CHF_DR__c-reassign">CHF</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="38" style="display:none;" id="ReassignKAH_HMS_HP_COPD_DR__c-reassign">COPD</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="39" style="display:none;" id="ReassignKAH_HMS_HP_Dementia_DR__c-reassign">Dementia</th>
+                                                        <th class="tablesorter-header clsHMS" data-column="40" style="display:none;" id="ReassignKAH_HMS_HP_Debility_DR__c-reassign">Debility</th>
+                                                    </tr> 
+                                                </thead>
+                                                <thead>
+                                                    <tr id="tableFilterRowReassign" clas="tablesorter-headerRow">
+                                                        <td data-column="0">
+                                                            &nbsp;
+                                                        </td>
+                                                        <td data-column="1" id = "ReassignName">
+                                                            <input placeholder="" class="width150 tableFilter" data-column="1" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" data-column="2" class="classAddress" id = "ReassignNPI__c" >
+                                                            <input placeholder="" class="width100 tableFilter" data-column="2" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" data-column="3" class="classAddress"  id = "ReassignShippingStreet">
+                                                            <input placeholder="" class="width100 tableFilter" data-column="3" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" data-column="4" class="classAddress"  id = "ReassignShippingCity">
+                                                            <input placeholder="" class="width100 tableFilter" data-column="4" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" data-column="5" class="classAddress"  id = "ReassignShippingState">
+                                                            <input placeholder="" class="width100 tableFilter" data-column="5" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" data-column="6" class="classAddress" id = "ReassignShippingPostalCode">
+                                                            <input placeholder="" class="width100 tableFilter" data-column="6" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" data-column="7" class="classAddress" id = "ReassignstrType" >
+                                                            <input placeholder="" class="width100 tableFilter" data-column="7" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" data-column="8" class="classAddress" id = "ReassignstrSpecialties">
+                                                            <input placeholder="" class="width100 tableFilter" data-column="8" value=""/>
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="9" class="clsHMS1" id="ReassignKAH_HMS_Total_Patient_Volume_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="9" value=""/>
+                                                        </td>
+                                                        <td class="tdBgColor clsHMS1" style="display: none;" onclick="return false;" data-column="10" id="ReassignKAH_HH_Admits_YTD__c">&nbsp;
+                                                        </td>
+                                                        <td class="tdBgColor clsHMS1" style="display: none;" onclick="return false;" data-column="11" id="ReassignHH_Admits_PY__c" >&nbsp;
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none; visibility: hidden;" data-column="12" id="ReassignKAH_HP_Admits_YTD__c" >
+                                                            <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="12" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none; visibility: hidden;" data-column="13" id="ReassignHP_Admits_PY__c">
+                                                            <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="13" value=""/>
+                                                        </td>
+                                                        <td class="tdBgColor clsHMS1" style="display: none;" onclick="return false;" data-column="14" id="ReassignKAH_HD_Admits_YTD__c">&nbsp;
+                                                        </td>
+                                                        <td class="tdBgColor clsHMS1" style="display: none;" onclick="return false;" data-column="15"  id="ReassignHD_Admits_PY__c">&nbsp;
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="16"  id="ReassignKAH_HH_PPS_Admits_YTD__c">&nbsp;
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="18"  id="ReassignKAH_HH_PPS_Prior_Year_Admits_Prior__c">&nbsp;
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="20" class="clsHMS2" id="ReassignKAH_HH_Referrals_YTD__c" >
+                                                            <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="20" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="17" class="clsHMS2" id="ReassignKAH_HH_Discounted_Qualified_Admits_YTD__c">
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="19" class="clsHMS2" id="ReassignKAH_HH_Discounted_Qualified_Admits_PY__c">
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="21" class="clsHMS2" id="ReassignKAH_HMS_Total_Patient_Volume_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="21" value=""/>
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="22" class="clsHMS2" id="ReassignKAH_HMS_ALL_HH_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="22" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="23" class="clsHMS2" id="ReassignKAH_HMS_HH_Cancer_Bold_Vascular_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="23" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="24" class="clsHMS2" id="ReassignKAH_HMS_HH_CHF_Stroke_COPD_DR__c" >
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="24" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="25" class="clsHMS2" id="ReassignKAH_HMS_HH_Endo_Wounds_DR__c" >
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="25" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="26" class="clsHMS2" id="ReassignKAH_HMS_HH_Urinary_Kidney_GI_DR__c" >
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="26" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="27" class="clsHMS2" id="ReassignKAH_HMS_HH_Ortho_DR__c" >
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="27" value=""/>
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="28" id="ReassignKAH_HP_Qualified_Admits_YTD__c" >&nbsp;
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="29" id="ReassignKAH_HP_Qualified_Admits_PY__c" >&nbsp;
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="30" class="clsHMS" id="ReassignKAH_HP_Referrals_YTD__c">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="30" value=""/>
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="31" class="clsHMS" id="ReassignKAH_HP_Admits_YTD">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="29" value=""/>
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="32" class="clsHMS" id="ReassignstrLengthOfStay">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="38" value=""/>
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="33" class="clsHMS" id="ReassignKAH_HMS_Total_Patient_Volume_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="31" value=""/>
+                                                        </td>
+                                                        
+                                                        <td onclick="return false;" style="display: none;" data-column="34" class="clsHMS" id="ReassignKAH_HMS_All_HP_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="32" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="35" class="clsHMS"  id="ReassignKAH_HMS_HP_Influencer_Network_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter" style="display: none;" data-column="38" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="36" class="clsHMS" id="ReassignKAH_HMS_HP_Cancer_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="33" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="37" class="clsHMS" id="ReassignKAH_HMS_HP_CHF_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="34" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="38" class="clsHMS"  id="ReassignKAH_HMS_HP_COPD_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="35" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="39" class="clsHMS" id="ReassignKAH_HMS_HP_Dementia_DR__c">
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="36" value=""/>
+                                                        </td>
+                                                        <td onclick="return false;" style="display: none;" data-column="40" class="clsHMS" id="ReassignKAH_HMS_HP_Debility_DR__c" >
+                                                            <input placeholder="" class="width100 tableFilter"  style="display: none;" data-column="37" value=""/>
+                                                        </td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="reassignTableBody">
+                                                  
+                                                </tbody>
+                                                <script>
+                                                        
+                                                      //Function is called on click of table header on reassign referral sources tab to sort data in ascending/descending order based on the column
+                                                      j$('.reassignReferralTable').find('.tablesorter-header').click(function() {
+                                                          
+                                                            j$('#'+this.id).addClass("clsSortedFieldReassign");
+                                                            j$(this).siblings().removeClass('clsSortedFieldReassign');
+                                                            
+                                                            var thisId = this.id;
+                                                            var dataColNumber = j$('#'+thisId).data('column');
+                                                            thisId = thisId.substring(0, thisId.length - 9);
+                                                            var sortedClass = j$(".clsSortedFieldReassign").attr('id');
+                                                            var varAriaSort = j$('#'+sortedClass).attr('aria-sort');
+                                                            
+                                                            if(varAriaSort == undefined)
+                                                                varAriaSort = 'descending';
+                                                            else if(varAriaSort == 'ascending')
+                                                                varAriaSort = 'descending';
+                                                            else if(varAriaSort == 'descending')    
+                                                                varAriaSort = 'ascending';
+                                                            loading();
+                                                            //for IE issue regarding DT_CellIndex
+                                                            var table = j$('.reassignReferralTable').DataTable(); table.clear().draw();
+                                                            onPaginationTableSorterReassign(thisId, dataColNumber, varAriaSort, j$('#reassignUser_Hidden').val(), 0, '');
+                                                     });
+                                                      
+                                                     function checkfiltersAppliedforReassignReferrals(){
+                                                         
+                                                         try {
+                                                             
+                                                            var sortedClass = j$(".clsSortedFieldReassign").attr('id');
+                                                            var sortedClassId = sortedClass;
+                                                            var dataColNumber;
+                                                            var strTdId;
+                                                            if(sortedClass !=undefined){
+                                                                
+                                                                dataColNumber = j$('#'+sortedClass).data('column');
+                                                                if(sortedClass.indexOf("reassign") > -1 || sortedClass.indexOf("reassiHH") > -1 || sortedClass.indexOf("reassiHP") > -1);
+                                                                    sortedClass = sortedClass.substring(0, sortedClass.length - 9);
+                                                                strTdId = sortedClass;
+                                                            }  
+                                                            else{
+                                                                
+                                                                strTdId = 'ReassignName'; 
+                                                                dataColNumber = 1; 
+                                                            }
+                                                                
+                                                            
+                                                            var ariaSortVal = j$('#'+sortedClassId).attr('aria-sort');
+                                                            //for IE issue regarding DT_CellIndex
+                                                            var table = j$('.reassignReferralTable').DataTable(); table.clear().draw();
+                                                            loading(); 
+                                                            setTimeout(function() {onPaginationTableSorterReassign(strTdId, dataColNumber, ariaSortVal, j$('#reassignUser_Hidden').val(), 0, 'search')}, 500 );  
+                                                         }
+                                                         catch(err) {
+                                        
+                                                            alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+                                                        }
+                                                     } 
+                                                </script>
+                                            </table>
+                                            
+                                            <table width="100%" >
+                                                <tr>
+                                                    <td width="33%">&nbsp;</td>
+                                                    <td width="50%">
+                                                        <span id="paginateBtnsReassignment" class="pager">
+                                                            <button type="button" class="btn btn-info" onclick="reAssignReferralUser(j$('#inputUser_Hidden').val(), j$('#reassignUser_Hidden').val());">Reassign</button>
+                                                            <input type="button" disabled="disabled" id="firstBtnReassign" class="btn btn-default first" value="«" onclick="setTimeout('toggleHeaderCheckbox()',50); j$('#reassignReferralTable_first').click();"/>     
+                                                            <input type="button" disabled="disabled" id="preBtnReassign" class="btn btn-default prev" value="‹" onclick="setTimeout('toggleHeaderCheckbox()',50); j$('#reassignReferralTable_previous').click();"/>
+                                                            <input type ="button" disabled="disabled" id="nxtBtnReassign" class="btn btn-default next" value="›" onclick="setTimeout('toggleHeaderCheckbox()',50); j$('#reassignReferralTable_next').click();"/>  
+                                                            <input type="button" disabled="disabled" id="endBtnReassign" class="btn btn-default last" value="»" onclick="setTimeout('toggleHeaderCheckbox()',50); j$('#reassignReferralTable_last').click();"/>
+                                                            <div id="recordCountMessageReassign" style="display:none; padding-left:25%; margin-top: -2%; color: #A9A9A9;">
+                                                            <apex:outputLabel value="{!$Label.S2_Page_Pagination_Message}" />
+                                                        </div>
+                                                        </span>
+                                                    </td>
+                                                    <td width="17%">&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        
+                                        <div id="noReassignmentuser">
+                                                <div class="alert alert-warning alert-dismissible" role="alert" style="width:30%; margin-left: 35%; margin-bottom:-1%; margin-top: 1%;">
+                                                    <strong><apex:outputLabel value="{!$Label.S2_Page_No_Reassignment_Referrals}" /></strong>
+                                                </div>  
+                                        </div>
+                                </apex:outputPanel>
+                            </div>
+                        </div>
+                        <!--End of reassignment div-->
+                    </div>
+                </div>
+                
+                
+                <!-- Start - StatusBar -->
+                <apex:actionstatus id="loading" startText="Requesting...">
+                    <apex:facet name="start">
+                        <div id="salesforceSource_blurybackground" style="position:absolute; left:1px; top:1px; width:100%; height:100%; text-align:center; vertical-align: middle; z-index:300;background-color: #dcdcdc; opacity:0.5;filter:alpha(opacity=60) "></div>
+                        <div id="ManageMembersViewport_loading" class="waitingSearchDiv" style="width: 100%; height: 80%; display: ''; ">
+                            <div style="width: 144px;vertical-align: middle;" class="waitingHolder">
+                                <table align="center" valign="top" style="width: 100%; height: 30%">
+                                    <tr align="center" valign="top" style="width: 100%; height: 30%">
+                                    <td valign="top"><img style="background: rgba( 255, 255, 255, .8 )" src="{!URLFOR($Resource.TBN_Supporting_JS_CSS2, '/images/loading1.gif')}"/><span class="waitingDescription"></span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="ManageMembersViewport_loading" class="waitingSearchDiv" style="width: 100%; height: 100%; display: ''; "/>
+                        <script>document.getElementById('ManageMembersViewport_loading').height = window.innerHeight * (3/4);</script>
+                    </apex:facet>
+                    <apex:facet name="stop"></apex:facet>
+                </apex:actionstatus>
+                <!-- End - StatusBar -->
+            </div>
+        </apex:form>
+    </div>
+    
+   
+    <script> 
+        
+        // Initialize the autocomplete search for user
+        j$(document).ready(function() {
+            
+            //To display home facility in the details tab if logged in user is a sales rep. 
+            if(j$('#inputtextId').is(":visible"))
+                document.getElementById('inputtextId').innerHTML='{!strSalesRepName}'; 
+
+            j$("#userSearchTextPanelDiv").hide();
+            j$("#hasReassingment").hide();
+            j$(".dataTables_length").hide();
+            //To the user and lstOption2 'td' will be hidden
+            document.getElementById('lstOption1').style.display = "none";
+            document.getElementById('lstOption2').style.display = "none";
+            j$("#inputUser").autocomplete( "search", "" );
+            
+            var simpleDialogVar = new SimpleDialog("Test"+Dialogs.getNextId(), false);   
+                              
+            simpleDialogVar.setTitle("Kindred Team Members");   
+            simpleDialogVar.createDialog();   
+            window.parent.simpleDialogVar = simpleDialogVar; 
+
+            simpleDialogVar.setContentInnerHTML("<div id='box' class='scroll'></div><center><button class='btn' style='margin-top:20px;' onclick='window.parent.simpleDialogVar.hide(); return false;'>OK</button>");
+            
+            j$('#toUserPanelforSalesRep').is(":visible"); 
+            onUserSelectFunc();
+            
+            
+        });
+        
+        // Function is called for controlling of enabling/disabling characteristic of 'Active/Not Active' picklist based on 'View Type'
+        function setSecondFilter( strSelVal ) {
+            
+            try {
+                if(strSelVal == 'CurrentlyAssigned') {
+                    var ele = document.getElementById('{!$Component.idForm.secPicklist}');
+                    ele.disabled = true;
+                    
+                }
+                else {
+                    
+                    var ele = document.getElementById('{!$Component.idForm.secPicklist}');
+                    ele.disabled = false;
+                }
+                
+                document.getElementById('{!$Component.idForm.secPicklist}').value = 'AllAccandCont';
+                document.getElementById('{!$Component.idForm.sourceSystemPicklist}').value = 'All';
+            }
+            catch(err) {
+                                    
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            }
+        }
+        
+        // Function to escape apex component Id 
+        function escApexId(myid) {
+            try {
+            return '#' + myid.replace(/(:|\.)/g,'\\\\$1');
+            }
+            catch(err) {
+                                    
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            }
+        }
+        
+        //Function is called on sorting or searching on reassign tab.
+        function onPaginationTableSorterReassign(sorterFieldId, dataColNumber, varAriaSort, selUserId, pageNumber, fromReassgin){
+            
+            try {
+                var sortedClass;  
+                var dataColValue; 
+                var ariaSortVal; 
+                sortedClass = j$(".clsSortedFieldReassign").attr('id');
+                dataColValue = j$('#'+sortedClass).data('column');
+                ariaSortVal = j$('#'+sortedClass).attr('aria-sort');
+                if(fromReassgin == 'reassign' || fromReassgin == 'search'){
+                    var sortcol = j$('.reassignReferralTable').dataTable({}).fnSettings().aaSorting;
+                    var sortColVal = sortcol[0];
+                    if(sortColVal[0] != ''){
+                        sortedClass = sortColVal[0] +'-'+ 'unassign';
+                        dataColValue = sortColVal[0];
+                        if(sortColVal[1]  == 'desc')
+                            varAriaSort = 'descending';
+                        else if(sortColVal[1] == 'asc') 
+                            varAriaSort = 'ascending';
+                        ariaSortVal = varAriaSort;    
+                    }
+                       
+                }
+                
+                if(sortedClass != undefined && (sortedClass.indexOf('reassign') >= 0 || sortedClass.indexOf('reassiHH') >= 0 || sortedClass.indexOf('reassiHP') >= 0)) 
+                    sortedClass = sortedClass.substring(0, sortedClass.length - 9);
+                
+                  
+                if(sortedClass == undefined){
+                    sortedClass = 'ReassignName';
+                    ariaSortVal = 'ascending';
+                    dataColValue = '1';
+                }
+                
+                if(sortedClass == 'ReassignName' && ariaSortVal == 'undefined')
+                    ariaSortVal = 'ascending';
+                if(sortedClass != 'ReassignName' && ariaSortVal == 'undefined')
+                    ariaSortVal = 'descending';  
+                var isTypeFilter='';
+                var whereQueryAccount = '';
+                var whereQueryContact= '';
+                var sortedFieldid = ''; 
+                var strSpecilaityFilterValue = '';
+                if(fromReassgin != 'reassign'){
+                    if(varAriaSort == '')
+                        var ariaSortVal = j$('#'+sorterFieldId).attr('aria-sort');
+                    else    
+                        var ariaSortVal = varAriaSort;
+                }
+                //forms the where condition based on the filters applied in the search.
+                j$('.reassignReferralTable .tableFilter').each(function() {
+                    
+                    var currentElement = j$(this);
+                     
+                    var value = currentElement.val(); 
+                    var dataColNumber = dataColNumber;
+                    var dataColNumber1 = j$(this).data('column');
+                    var trData = j$('.reassignReferralTable').children().children();
+                    sortedFieldid = j$("#tableFilterRowReassign [data-column='" + dataColNumber1 + "']").attr('id');
+                    if(sortedFieldid != undefined)
+                        sortedFieldid = sortedFieldid.substring(8);
+                    
+                    if(value != '' && value.trim().length >= 1) {
+                        
+                        value = value.trim(); 
+                        if(sortedFieldid == "Name" || sortedFieldid == "NPI__c" || sortedFieldid == "ShippingCity" || sortedFieldid == "ShippingState" ||
+                                sortedFieldid == "ShippingStreet" || sortedFieldid == "ShippingPostalCode") {
+                            
+                            if(value.length >= 2){  
+                                
+                                if(sortedFieldid == "ShippingState") {
+                                    
+                                    whereQueryAccount += ' AND (Account.'+sortedFieldid+' = u2019' + value + 'u2019 ) ';
+                                    whereQueryContact += ' AND (Contact__r.'+sortedFieldid+' = u2019' + value + 'u2019 ) ';
+                                }
+                                else{
+                                    whereQueryAccount += ' AND Account.'+sortedFieldid+' like u2019%' + value + '%u2019 ';
+                                    whereQueryContact += ' AND Contact__r.'+sortedFieldid+' like u2019%' + value + '%u2019 ';
+                                }
+                            }
+                        }
+                        
+                        else if(sortedFieldid == "strSpecialties"){
+                            
+                            if(value.length >= 2)
+                                strSpecilaityFilterValue = value;
+                        }
+
+                        else if(sortedFieldid == "strType") {
+                            
+                            if(value.length >= 3) {
+                                
+                                var typeStringContact = 'contact';
+                                var typeStringAccount = 'account';
+                                var res = value.toLowerCase();
+                                if(typeStringContact.indexOf(res) > -1 ) { 
+                                    
+                                    isTypeFilter = 'ContactFilter';
+                                }
+                                else if(typeStringAccount.indexOf(res) > -1 ) {
+                                    
+                                    isTypeFilter = 'AccountFilter';
+                                }
+                            }
+                        }
+                        else if(value.indexOf("<") != -1 || value.indexOf("<=") != -1 || value.indexOf(">") != -1 || value.indexOf(">=") != -1 || value.indexOf("=") != -1){
+                             
+                            var valIndex = value; 
+                            if(valIndex == '>' || valIndex == '<' || valIndex == '=' || valIndex == '>=' || valIndex == '<='){
+                                
+                                value = '>0';
+ 
+                                if(sortedFieldid != 'strLengthOfStay')
+                                    whereQueryAccount += ' AND Account.'+sortedFieldid + '' + value;
+                                    
+                                whereQueryContact += ' AND Contact__r.'+sortedFieldid + '' + value;  
+                            }
+                            else{
+                            
+                                //value = '='+value;
+                                if(sortedFieldid != 'strLengthOfStay')
+                                    whereQueryAccount += ' AND Account.'+sortedFieldid + '' + value;
+                                
+                                whereQueryContact += ' AND Contact__r.'+sortedFieldid + '' + value;
+                                
+                            }
+                        }
+                        else{
+                            
+                            value = '='+value;
+                            if(sortedFieldid != 'strLengthOfStay')
+                                whereQueryAccount += ' AND Account.'+sortedFieldid + '' + value;
+                                
+                            whereQueryContact += ' AND Contact__r.'+sortedFieldid + '' + value;
+                        }
+                    }
+                      
+                });
+                var onTableLoad = false;
+                getReassignReferralSourcesTableSorter(sortedClass, dataColValue, ariaSortVal, strSpecilaityFilterValue, whereQueryAccount, whereQueryContact, isTypeFilter, onTableLoad, selUserId, pageNumber);
+            }
+            catch(err) {
+                                        
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            }
+        }
+        function clearStateVal(){
+            
+            j$('#ShippingState').find("input").val('');
+        }
+        
+       function checkStateVal(){
+            
+            var eleVal = document.getElementById('{!$Component.idForm.statePicklist}').value;
+            j$('#ShippingState').find("input").val(eleVal);
+        
+       }
+        var j$ = jQuery.noConflict();
+        var strToBeSaved = '';
+       
+       
+        //variable to store the selected to user name.
+        var selectedUserVal = '';
+        //variable to store the selected from user name.
+        var selectedReferralVal = '';
+        //variable to store the selected home facility name.
+        var selectedAccountVal = '';
+        
+        function clearFilters(){
+            
+            j$('.referralsTableForSort').children().children().next().children().children().val(''); 
+            j$('.tableFilter').val(''); 
+            setSecondFilter();
+            loading();
+            ReferralSources(j$('#inputUser_Hidden').val()); 
+            
+        }
+        
+        //Function is called on sorting/searching/Active-not active picklist/clearsearch and on assign.unassign button select on reassign tab.
+        function onPaginationTableSorter(sorterFieldId, dataColValue, varAriaSort, isSort, selectedUserid, selFiestFilter, sourceSystemPicklist, selSecondFilter, fromAssign, pageNumber) {
+            
+            try {
+                var sortedClass = j$(".clsSortedField").attr('id');
+                dataColValue = j$('#'+sortedClass).data('column');
+                
+                if(fromAssign == 'assign' || fromAssign == 'Search'){
+                    var sortcol = j$('.referralsTableForSort').dataTable({}).fnSettings().aaSorting;
+                    var sortColVal = sortcol[0];
+                    if(sortColVal[0] != ''){
+                        
+                        sortedClass = sortColVal[0] +'-'+ 'referral';
+                        dataColValue = sortColVal[0];
+                        if(sortColVal[1]  == 'desc')
+                            varAriaSort = 'descending';
+                        else if(sortColVal[1] == 'asc')
+                            varAriaSort = 'ascending';
+                    }
+                       
+                }
+                /*if(fromAssign == 'assign'){
+                    varAriaSort = j$('#'+sortedClass).attr('aria-sort');
+                }*/
+                if(fromAssign == 'fromReset'){
+                    sortedClass = 'Name-Assign'; 
+                    varAriaSort = 'ascending';
+                }
+                
+                if(sortedClass != undefined && (sortedClass.indexOf('Assign') >= 0 || sortedClass.indexOf('AssiHH') >= 0 || sortedClass.indexOf('AssiHP') >= 0)) 
+                    sortedClass = sortedClass.substring(0, sortedClass.length - 7);
+                
+                if(varAriaSort == '')
+                    var ariaSortVal = j$('#'+sorterFieldId).attr('aria-sort');
+                else    
+                    var ariaSortVal = varAriaSort;
+                if(ariaSortVal == undefined && fromAssign == 'assign'){
+                    ariaSortVal = 'descending';
+                }
+                if(sortedClass != undefined)
+                    sorterFieldId = sortedClass; 
+                var recCount = 0;
+                
+                if(sortedClass == undefined && sorterFieldId== 'Name'){
+                    ariaSortVal = 'ascending';
+                }
+                
+               // var dataColValue = j$('#'+sorterFieldId).data('column');
+                var tableDataReferrals = '';
+                
+                /*if(varAriaSort == '')
+                    var ariaSortVal = j$('#'+sorterFieldId).attr('aria-sort');
+                else    
+                    var ariaSortVal = varAriaSort;*/
+                var dataColNumber = dataColValue;
+                var isTypeFilter ='';
+                var wrongTypeFilter ='';
+                var whereQueryAccount = '';
+                var whereQueryContact= '';
+                var sortedFieldid = '';
+                var strSpecilaityFilterValue = '';
+                var statesFilters = '';
+                var isTextFilterSpecified = false;
+                // If there are special State filters applied
+                if(document.getElementById('{!$Component.idForm.selectedReferralFilter}').value == 'AllAccountsAndContacs' && 
+                    document.getElementById('{!$Component.idForm.statePicklist}').value != '') {
+                
+                    whereQueryAccount += ' AND Account.ShippingState = u2019' + document.getElementById('{!$Component.idForm.statePicklist}').value + 'u2019 ';
+                    whereQueryContact += ' AND Contact__r.MailingState = u2019' + document.getElementById('{!$Component.idForm.statePicklist}').value + 'u2019 ';
+                }
+                
+                //forms the where condition based on the filters applied in the search.
+                j$('.referralsTableForSort .tableFilter').each(function() {
+                    
+                    var currentElement = j$(this);
+                    var value = currentElement.val(); 
+                    var dataColNumber = dataColValue;
+                    var dataColNumber1 = j$(this).data('column');
+                    sortedFieldid = j$("#tableFilterRow [data-column='" + dataColNumber1+ "']").attr('id');
+        
+                    if(value != '' && value.trim().length >= 1) {
+                        
+                        if(sortedFieldid != "ShippingState")
+                            isTextFilterSpecified = true;
+                        value = value.trim(); 
+                        //forms where condition for Account and Contact based on the filter values entered in search.
+                        if(sortedFieldid == "Name" || sortedFieldid == "NPI__c" || sortedFieldid == "ShippingCity" || sortedFieldid == "ShippingState" ||
+                                sortedFieldid == "ShippingStreet" || sortedFieldid == "ShippingPostalCode" 
+                                || sortedFieldid == "SFID" || sortedFieldid == "NPI_ID" || sortedFieldid == "HMS_ID") {
+                            if( value.length >= 2 )  {     
+                                // Shipping State is ideally 2 characters and can utilize identical mapping 
+                              /*  if(sortedFieldid == "ShippingState") {
+                                    
+                                    whereQueryAccount += ' AND (Account.'+sortedFieldid+' = u2019' + value + 'u2019 ) ';
+                                    whereQueryContact += ' AND (Contact__r.'+sortedFieldid+' = u2019' + value + 'u2019 ) ';
+                                }
+                                */
+                                if(sortedFieldid == "SFID") {
+                                    
+                                    whereQueryAccount += ' AND (AccountId = u2019' + value + 'u2019 ) ';
+                                    whereQueryContact += ' AND (Contact__r.id = u2019' + value + 'u2019 ) ';
+                                }
+                                
+                                if(sortedFieldid == "HMS_ID") {
+                                    
+                                    whereQueryAccount += ' AND (Account.HMS_POID__c like u2019%' + value + '%u2019 ) ';
+                                    whereQueryContact += ' AND (Contact__r.HMS_PIID__c like u2019%' + value + '%u2019 ) ';
+                                }
+                               
+                                if(sortedFieldid != "ShippingState" && sortedFieldid != "SFID" && sortedFieldid!= "HMS_ID")  { 
+                                    whereQueryAccount += ' AND Account.'+sortedFieldid+' like u2019%' + value + '%u2019 ';
+                                    whereQueryContact += ' AND Contact__r.'+sortedFieldid+' like u2019%' + value + '%u2019 ';
+                                }
+ 
+                            }
+                        }
+                        
+                        else if(sortedFieldid == "strSpecialties" && value.length >=2){
+                            strSpecilaityFilterValue = value;
+                        }
+                        
+                        else if(sortedFieldid == "strType"){
+                            if(value.length >= 3)  { 
+                            
+                                var typeStringContact = 'contact';
+                                var typeStringAccount = 'account';
+                                var res = value.toLowerCase();
+                                if(typeStringContact.indexOf(res) > -1 ) { 
+                                    
+                                    isTypeFilter = 'ContactFilter';
+                                }
+                                else if(typeStringAccount.indexOf(res) > -1 ) {
+                                    
+                                    isTypeFilter = 'AccountFilter';
+                                }
+                                else{
+                                    wrongTypeFilter = 'true';
+                                }
+                            }
+                        }
+                        
+                        else if(value.indexOf("<") != -1 || value.indexOf("<=") != -1 || value.indexOf(">") != -1 || value.indexOf(">=") != -1 || value.indexOf("=") != -1){
+                             
+                            var valIndex = value; 
+                            if(valIndex == '>' || valIndex == '<' || valIndex == '=' || valIndex == '>=' || valIndex == '<='){
+                                
+                                value = '>0';
+                                
+                                if(sortedFieldid != 'strLengthOfStay')
+                                    whereQueryAccount += ' AND Account.'+sortedFieldid + '' + value;
+                                else
+                                    isTypeFilter = 'ContactFilter';
+                                    
+                                whereQueryContact += ' AND Contact__r.'+((sortedFieldid == 'strLengthOfStay') ? 'KAH_HMS_HP_LOS__c' : sortedFieldid) + '' + value;  
+                            }
+                            else{
+                            
+                                //value = '='+value;
+                                if(sortedFieldid != 'strLengthOfStay')
+                                    whereQueryAccount += ' AND Account.'+sortedFieldid + '' + value;
+                                else
+                                    isTypeFilter = 'ContactFilter';
+                                    
+                                whereQueryContact += ' AND Contact__r.'+((sortedFieldid == 'strLengthOfStay') ? 'KAH_HMS_HP_LOS__c' : sortedFieldid) + '' + value;
+                                
+                            }
+                        }
+                        
+                        else{
+                            if(sortedFieldid.indexOf("KAH_") >= 0 || sortedFieldid == 'strLengthOfStay'){
+                                
+                                value = '='+value;
+                                
+                                if(sortedFieldid != 'strLengthOfStay')
+                                    whereQueryAccount += ' AND Account.'+sortedFieldid + '' + value;
+                                else
+                                    isTypeFilter = 'ContactFilter';
+                                    
+                                whereQueryContact += ' AND Contact__r.'+((sortedFieldid == 'strLengthOfStay') ? 'KAH_HMS_HP_LOS__c' : sortedFieldid) + '' + value;
+                            }
+                        }
+                    }
+                });
+                
+                if(sourceSystemPicklist != ''){
+                    var srcFilter = sourceSystemPicklist;
+                    
+                    if(srcFilter == 'HPAS'){
+                        whereQueryAccount += ' AND Account.HPAS_ID != null';
+                        whereQueryContact += ' AND Contact__r.HPAS_ID != null';
+                    }
+                    else if(srcFilter == 'Horizon'){
+                        whereQueryAccount += ' AND Account.Horizon_ID != null';
+                        whereQueryContact += ' AND Contact__r.Horizon_ID != null';
+                    }
+                    else if(srcFilter == 'Meditech'){
+                        whereQueryAccount += ' AND Account.Meditech_ID != null';
+                        whereQueryContact += ' AND Contact__r.Meditech_ID != null';
+                    }
+                    else if(srcFilter == 'Unity'){
+                        whereQueryAccount += ' AND Account.Unity_ID != null';
+                        whereQueryContact += ' AND Contact__r.Unity_ID != null';
+                    }
+                    
+                }
+                if( selFiestFilter == 'AllAccountsAndContacs' && document.getElementById('{!$Component.idForm.statePicklist}').value == '' ) {
+                    
+                    
+                    j$('#noStateSelected').show();
+                    j$('#referralPaginaitionButtons').hide();
+                    j$('#allSelectDivMsgId').hide();
+                    j$('#noRreferralsMsg').hide();
+                    j$('#noHomeFacilityMsg').hide();
+                    j$('#referralTableDiv').show();
+                    j$('.referralsTableForSort').show();
+                    j$('#tableBody').html('');
+                    stoploading();
+                }
+                else {
+                    
+                    j$('#noStateSelected').hide();
+                    if(isTypeFilter == '' && strSpecilaityFilterValue == '' && !isTextFilterSpecified && selFiestFilter == 'AllAccountsAndContacs') {
+                        
+                        j$('#allSelectDivMsgId').show();
+                        j$('#referralPaginaitionButtons').hide();
+                        j$('#noRreferralsMsg').hide();
+                        j$('#noHomeFacilityMsg').hide();
+                        j$('#referralTableDiv').show();
+                        j$('.referralsTableForSort').show();
+                        j$('#tableBody').html('');
+
+                        stoploading();
+                    }
+                    else if(wrongTypeFilter == 'true'){
+                        
+                        j$('#referralPaginaitionButtons').hide();
+                        j$('#noRreferralsMsg').show();
+                        j$('#noHomeFacilityMsg').hide();
+                        j$('#referralTableDiv').show();
+                        j$('.referralsTableForSort').show();
+                        j$('#tableBody').html('');
+ 
+                        stoploading();
+                    }
+                    else if(isTypeFilter == '' && strSpecilaityFilterValue == '' && !isTextFilterSpecified && selFiestFilter != 'AllAccountsAndContacs') {
+                        var onTableLoad = 'false'; 
+                            getReferralSourcesTableSorter(sorterFieldId, dataColValue, ariaSortVal, isSort, strSpecilaityFilterValue, 
+                                                            whereQueryAccount, whereQueryContact, onTableLoad, isTypeFilter, 
+                                                            selectedUserid, selFiestFilter, sourceSystemPicklist, selSecondFilter, true, pageNumber);
+                    }
+                    else {
+                        var onTableLoad = 'false';  
+                            getReferralSourcesTableSorter(sorterFieldId, dataColValue, ariaSortVal, isSort, strSpecilaityFilterValue, 
+                                                            whereQueryAccount, whereQueryContact, onTableLoad, isTypeFilter, 
+                                                            selectedUserid, selFiestFilter, sourceSystemPicklist, selSecondFilter, false, pageNumber);
+                    }
+                }
+            }
+            catch(err) {
+                                        
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            }
+        }
+        
+        function checkFilter(sorterFieldId, ariaSortVal, strSpecialityFilterVal, whereQueryAccount, whereQueryContact, onTableLoad, isTypeFilter, selectedUser, selReferralFilter, selSourceSystem, selsecondReferralFilter){  
+            
+            try {
+                
+                if(selReferralFilter == 'AllAccountsAndContacs') {
+                    
+                    var hasFilter = 'false';
+                    
+                    var ele = document.getElementById('{!$Component.idForm.statePicklist}');
+                    ele.disabled = false;
+                    j$('#ShippingState').find("input").attr('disabled', 'disabled');
+                     
+                    j$('.referralsTableForSort .tableFilter').each(function() {
+                        if(hasFilter != 'true') {
+                            
+                            var currentElement = j$(this);
+                            var value = currentElement.val(); 
+                            var dataColNumber = 1;
+                            sortedFieldid = j$(".referralsTableForSort [data-column='" + dataColNumber+ "']").attr('id');
+                        
+                            if(value != '' && value.length >= 2) {
+                                
+                                hasFilter = 'true';
+                            }
+                        }               
+                    });
+                    
+                    if( selReferralFilter == 'AllAccountsAndContacs' && document.getElementById('{!$Component.idForm.statePicklist}').value == '' ) {
+                        
+                        //for IE issue regarding DT_CellIndex
+                        var table = j$('.referralsTableForSort').DataTable(); table.clear().draw();
+                        j$('#noStateSelected').show();
+                        j$('#referralPaginaitionButtons').hide();
+                        j$('#allSelectDivMsgId').hide();
+                        j$('#noRreferralsMsg').hide();
+                        j$('#noHomeFacilityMsg').hide();
+                        j$('#referralTableDiv').show();
+                        j$('.referralsTableForSort').show();
+                        j$('#tableBody').html('');
+                        j$('#referralAllAssign').prop("checked", false);
+                        stoploading();
+                    }
+                    else {
+                        
+                        j$('#noStateSelected').hide();
+                        
+                        if(hasFilter == 'false') {
+                            //for IE issue regarding DT_CellIndex
+                            var table = j$('.referralsTableForSort').DataTable(); table.clear().draw();
+                            j$('#referralAllAssign').prop('checked', false);
+                            j$('#allSelectDivMsgId').show();
+                            j$('#referralPaginaitionButtons').hide();
+                            j$('#noRreferralsMsg').hide();
+                            j$('#noHomeFacilityMsg').hide();
+                            j$('#referralTableDiv').show();
+                            j$('.referralsTableForSort').show();
+                            j$("#tableBody").html('');
+                            
+                            stoploading();
+                        }
+                        else {
+                            //for IE issue regarding DT_CellIndex
+                            var table = j$('.referralsTableForSort').DataTable(); table.clear().draw();
+                            j$('#referralPaginaitionButtons').show();
+                            onPaginationTableSorter('Name', 1, '', false, j$('#inputUser_Hidden').val(), selReferralFilter, selSourceSystem,selsecondReferralFilter,'', 0);  
+                        }
+                    }
+                }
+                
+                else{
+                    //for IE issue regarding DT_CellIndex
+                    var table = j$('.referralsTableForSort').DataTable(); table.clear().draw();
+                    document.getElementById('{!$Component.idForm.statePicklist}').value = '';
+                    var ele = document.getElementById('{!$Component.idForm.statePicklist}');
+                    ele.disabled = true;
+                    j$('#ShippingState').find("input").removeAttr('disabled');
+                    j$('#referralPaginaitionButtons').show();
+                    j$('#referralTableDiv').show();
+                    j$('.referralsTableForSort').show();
+                    onPaginationTableSorter(sorterFieldId, 1, ariaSortVal, false, j$('#inputUser_Hidden').val(), selReferralFilter, selSourceSystem, selsecondReferralFilter,'', 0);  
+                }
+                
+            }
+            catch(err) {
+                                        
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            }
+        }
+        
+        function getReferralSourcesTableSorter2(sorterFieldId, dataColValue, ariaSortVal, isSort, strSpecilaityFilterValue, whereQueryAccount, whereQueryContact, onTableLoad, isTypeFilter, selectedUser, selReferralFilter, strSourcefilter, selsecondReferralFilter, resetFilters, pageNumber) {
+             
+            try {
+                
+                if(selectedUser == undefined)
+                    selectedUser = j$('[id$=inputUser_HiddenSalesRep]').val();
+                
+                var dataColNumber = dataColValue;  
+                
+                j$("#userSearchTextPanelDiv").hide();
+                document.getElementById('lstOption1').style.display = "none";
+                document.getElementById('lstOption2').style.display = "none";
+                document.getElementById("fromUserHeadingDiv").innerHTML = '';
+                
+                var selectedOption = document.getElementById('idSelectlist');
+                if(ariaSortVal == undefined && sorterFieldId == 'Name')
+                    ariaSortVal = 'ascending';
+                else if(ariaSortVal == undefined && sorterFieldId != 'Name')
+                    ariaSortVal = 'descending';
+                  
+                TBN_AssociateDataManagementController.fetchReferralSourcesTableSorter(sorterFieldId, ariaSortVal, strSpecilaityFilterValue, 
+                                                                                        whereQueryAccount, whereQueryContact, onTableLoad, 
+                                                                                        isTypeFilter, selectedUser, selReferralFilter, strSourcefilter,
+                                                                                        selsecondReferralFilter, 
+                
+                function(result, event) { 
+                    
+                    if(event.type != 'exception') {
+                        processTableResult(result, onTableLoad, ariaSortVal, dataColNumber, pageNumber);
+                    }
+                    else {
+                        
+                        var varTimeout = 'timeout';
+                        if((event.message).indexOf(varTimeout) > -1){
+                            j$('#popupDivId').show();
+                            j$('#divFormId').addClass("parentDisable");
+                            window.scrollTo(0,0);
+                            stoploading();
+                            
+                        }
+                        else{
+                            alert('An error has occured in the page. '+event.message);
+                            stoploading();
+                        }
+                    }
+                }, { buffer: false, escape: false, timeout: 120000}); 
+                
+            }
+            catch(err) {
+                                        
+                alert('An error has occured in the page.');
+            }   
+            finally {
+                
+            }
+
+        }
+        
+        function toggleHeaderCheckbox() {
+             
+           try {  
+               
+                if(j$(".CheckboxAssignmentReassign:visible").length == j$(".CheckboxAssignmentReassign:checked:visible").length) {
+                    
+                    j$("#referralAllReassign").prop('checked', true);
+                } 
+                else {
+                    
+                    j$("#referralAllReassign").removeAttr("checked");
+                }
+           }
+           catch(err) {
+                                        
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            }
+        }
+        
+        var strToBeSaved = '';  
+           
+        function getReferralSourcesTableSorteronLoad(sorterFieldId, ariaSortVal, whereQueryAccount, whereQueryContact, onTableLoad, isTypeFilter, selectedUser, selReferralFilter, selSourceFilter, selsecondReferralFilter) {
+                
+            try { 
+                
+                document.getElementById('{!$Component.idForm.statePicklist}').value = '';
+                var ele = document.getElementById('{!$Component.idForm.statePicklist}');
+                ele.disabled = true;
+                j$('#ShippingState').find("input").removeAttr('disabled');
+               
+                if(selectedUser == undefined)
+                    selectedUser = j$('[id$=inputUser_HiddenSalesRep]').val();
+                
+                j$("#userSearchTextPanelDiv").hide();
+                document.getElementById('lstOption1').style.display = "none";
+                document.getElementById('lstOption2').style.display = "none";
+                document.getElementById("fromUserHeadingDiv").innerHTML = '';
+                
+                var selectedOption = document.getElementById('idSelectlist');
+                if(ariaSortVal == undefined)
+                    ariaSortVal = 'ascending';
+        
+                var specialityFilterVal = '';
+                TBN_AssociateDataManagementController.fetchReferralSourcesTableSorter(sorterFieldId, ariaSortVal, specialityFilterVal, whereQueryAccount, whereQueryContact, onTableLoad, isTypeFilter, selectedUser, selReferralFilter, selSourceFilter, selsecondReferralFilter, 
+                
+                    function(result, event){ 
+                        if(event.type != 'exception') {
+                            var tableData = formReferralSourcesData(result, onTableLoad);
+                            
+                            j$('#allSelectDivMsgId').hide();
+                            j$("#tableBody").html(tableData);
+                            
+                            j$.extend( true, j$.fn.dataTable.defaults, {
+                                
+                                "searching": false,
+                                "ordering": true,
+                                "order": [[1, 'asc']],
+                                "bLengthChange": false, 
+                                "bFilter": true,
+                                "bInfo": false,
+                                "pagingType" : "full",
+                                "autoWidth": false,
+                                "bSort": false,
+                                "destroy": true,
+                                "responsive": true,
+                                
+                                "aoColumnDefs": [
+                                { 'bSortable': false, 'aTargets': [ 0 ] }
+                                //,{ 'bSortable': true, "sType": "num", 'aTargets': [ 31 ] }
+                                ],
+                                
+                                "fnDrawCallback": function( settings ) {
+                                    
+                                    if(j$("#Address").is(":checked")) 
+                                        DisplayAddressFields(true, true, "assign"); 
+                                    else if(j$("#hmsView1").is(":checked")) 
+                                        DisplayHmsView1(true, "assign"); 
+                                    else if(j$("#hmsView2").is(":checked")) 
+                                        DisplayHmsView2(true, "assign");
+                                    else if(j$("#hmsView").is(":checked")) 
+                                        DisplayHmsView(true, "assign");
+                                    else if(j$("#SysId").is(":checked")) 
+                                        DisplayHMSSystemIds(true, "assign");    
+                                }
+                            } );
+                            
+                            var referralsTableReference = j$('.referralsTableForSort').DataTable(); 
+                            j$('#referralsTableForSort_paginate').hide(); 
+                            
+                            var info = referralsTableReference.page.info();
+                            var page = info.page+1;
+                            
+                            if(page == 1) {
+                                j$('#firstBtn').attr('disabled', 'disabled');
+                                j$('#preBtn').attr('disabled', 'disabled');
+                                
+                                if(page != info.pages && info.pages > 1) {
+                                    
+                                    j$('#nxtBtn').removeAttr('disabled');
+                                    j$('#endBtn').removeAttr('disabled');
+                                }
+                                if(j$("#Address").is(":checked")) 
+                                    DisplayAddressFields(true, true, "assign"); 
+                                    
+                                else if(j$("#hmsView1").is(":checked")) 
+                                    DisplayHmsView1(true, "assign"); 
+                                    
+                                else if(j$("#hmsView2").is(":checked")) 
+                                    DisplayHmsView2(true, "assign");
+                                    
+                                else if(j$("#hmsView").is(":checked")) 
+                                    DisplayHmsView(true, "assign");
+                                
+                                else if(j$("#SysId").is(":checked")) 
+                                    DisplayHMSSystemIds(true, "assign");    
+                            }
+                            else if(page > 1 && page != info.pages && info.pages > 1) {
+                                
+                                j$('#firstBtn').removeAttr('disabled');
+                                j$('#preBtn').removeAttr('disabled');
+                            }
+                            
+                            if(page == info.pages || info.pages <= 1) {
+                                
+                                j$('#nxtBtn').attr('disabled', 'disabled');
+                                j$('#endBtn').attr('disabled', 'disabled');
+                                
+                                if(page > 1) {
+                                    
+                                    j$('#firstBtn').removeAttr('disabled');
+                                    j$('#preBtn').removeAttr('disabled');
+                                }
+                            }
+                            else if(info.pages > 1) {
+                                
+                                j$('#nxtBtn').removeAttr('disabled');
+                                j$('#endBtn').removeAttr('disabled');
+                                if((result.lstAccounts.length + result.lstContacts.length) > 2000)
+                                    j$('#endBtn').attr("disabled",true); 
+                            }
+                            
+                            j$('.referralsTableForSort').on('page.dt', function() {
+                                var info = referralsTableReference.page.info();
+                                var page = info.page+1;
+                                
+                                if(j$("#Address").is(":checked")) 
+                                    DisplayAddressFields(true, true, "assign"); 
+                                else if(j$("#hmsView1").is(":checked")) 
+                                    DisplayHmsView1(true, "assign"); 
+                                else if(j$("#hmsView2").is(":checked")) 
+                                    DisplayHmsView2(true, "assign");
+                                else if(j$("#hmsView").is(":checked")) 
+                                    DisplayHmsView(true, "assign");
+                                else if(j$("#SysId").is(":checked")) 
+                                    DisplayHMSSystemIds(true, "assign");    
+                                
+                                if(page == 1) {
+                                
+                                    j$('#firstBtn').attr('disabled', 'disabled');
+                                    j$('#preBtn').attr('disabled', 'disabled');
+                                    
+                                    if(page != info.pages && info.pages > 1) {
+                                        j$('#nxtBtn').removeAttr('disabled');
+                                        j$('#endBtn').removeAttr('disabled');
+                                    }
+                                }
+                                else if(page > 1 && page != info.pages && info.pages > 1) {
+                                    
+                                    j$('#firstBtn').removeAttr('disabled');
+                                    j$('#preBtn').removeAttr('disabled');
+                                }
+                                
+                                if(page == info.pages || info.pages <= 1) {
+                                    
+                                    j$('#nxtBtn').attr('disabled', 'disabled');
+                                    j$('#endBtn').attr('disabled', 'disabled');
+                                    
+                                    if(page > 1) {
+                                        
+                                        j$('#firstBtn').removeAttr('disabled');
+                                        j$('#preBtn').removeAttr('disabled');
+                                    }
+                                }
+                                else if(info.pages > 1) {
+                                    
+                                    j$('#nxtBtn').removeAttr('disabled');
+                                    j$('#endBtn').removeAttr('disabled');
+                                    
+                                    if((result.lstAccounts.length + result.lstContacts.length) > 2000)
+                                        j$('#endBtn').attr("disabled",true); 
+                                }
+                            });
+                                            
+                            j$('td[data-column="10"]').attr('class', 'tdBgColor');
+                            j$('td[data-column="11"]').attr('class', 'tdBgColor');
+                            j$('td[data-column="14"]').attr('class', 'tdBgColor');
+                            j$('td[data-column="15"]').attr('class', 'tdBgColor');
+                            j$('#referralAllAssignTH').removeClass('tablesorter-header');
+        
+                            toggleHeaderCheckboxReferrals();
+                            stoploading();
+                            j$('#confirmAssignment').delay(6000).fadeOut();
+                        }   
+                    }, {buffer: false, escape: false, timeout: 120000}); 
+            }
+            catch(err) { 
+                                        
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            }
+        }
+        
+        function removeErrorMessage(errorMsgOP) {
+            
+            try {
+                
+                j$(escApexId(errorMsgOP)).hide();
+            }
+            catch(err) {
+                                        
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            }
+        }
+        
+        function toggleInputCheckbox() {
+            
+            try {
+                
+                // if all checkbox are selected, check the selectall checkbox
+                // and viceversa
+                j$(".CheckboxAssignment").click(function() {
+                    
+                    if(j$(".CheckboxAssignment").length == j$(".CheckboxAssignment:checked").length) {
+                        
+                        j$("#referralAllAssign").prop('checked', true);
+                        j$("#referralAllReassign").prop('checked', true);
+                    } else {
+                        
+                        j$("#referralAllAssign").removeAttr("checked");
+                        j$("#referralAllReassign").removeAttr("checked");
+                    }
+                });
+            }
+            catch(err) {
+                                    
+                alert('An error has occured in the page: ' + err.message + ' Please try again in sometime.');
+            } 
+        }
+        
+    </script>
+</apex:page>
