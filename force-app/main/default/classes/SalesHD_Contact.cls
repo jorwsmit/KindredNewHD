@@ -168,7 +168,7 @@ global with sharing class SalesHD_Contact {
 
 	@RemoteAction global static String getFavoritedAccounts() {
 		return JSON.serializePretty([select AccountId, Account.Name, Account.ShippingStreet, Account.ShippingCity,
-		Account.ShippingState, Account.ShippingPostalCode, Account.ShippingAddress__c from AccountTeamMember where UserId =: currentUser]);
+		Account.ShippingState, Account.ShippingPostalCode, Account.ShippingAddress__c from AccountTeamMember where UserId =: currentUser and Account.RecordType.Name='HD Accounts']);
 	}
 
 }

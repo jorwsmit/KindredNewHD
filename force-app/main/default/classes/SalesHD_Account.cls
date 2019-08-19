@@ -15,6 +15,10 @@ global without sharing class SalesHD_Account {
 		public String name;
 		public Id unitId;
 		public String contactCount = 'No Contacts';
+		public String census = '';
+		public String beds = '';
+		public String censusDate = '';
+		public String nickname = '';
 		public Boolean isActive;
 	}
 
@@ -34,6 +38,17 @@ global without sharing class SalesHD_Account {
 		(Id in :administrativeContactIds)]);
 	}
 
+	@RemoteAction global static String getDirectors(Id acctId){
+		List<Id> administrativeContactIds = new List<Id>();
+		for(Account_unit_contact__c auc : [select Contact__c from Account_unit_contact__c
+		where Account_unit__r.Account__c=:acctId and Account_Unit__r.Unit__r.Name='Administrative']){
+			administrativeContactIds.add(auc.Contact__c);
+		}
+
+		return JSON.serializePretty([select Name, Title__c from Contact where Title__c like '%Director%' and
+		(Id in :administrativeContactIds)]);
+	}
+
 	@RemoteAction global static String getContacts(Id acctId){
 		List<Id> administrativeContactIds = new List<Id>();
 		for(Account_unit_contact__c auc : [select Contact__c from Account_unit_contact__c
@@ -42,7 +57,7 @@ global without sharing class SalesHD_Account {
 		}
 
 		return JSON.serializePretty([select Name, Title__c from Contact where Title__c not in :csuiteTitles and
-		(Id in :administrativeContactIds)]);
+		(not Title__c like '%Director%') and (Id in :administrativeContactIds)]);
 	}
 
 	@RemoteAction global static String getFavoritedContacts(){
@@ -65,12 +80,17 @@ global without sharing class SalesHD_Account {
 		where Account_unit__r.Account__c=:acctId group by Account_unit__c]){
 			contactCount.put(String.valueOf(ar.get('Account_unit__c')), Integer.valueOf(ar.get('expr0')));
 		}
-		for(Account_Unit__c au : [select Unit__r.Name, Id, Active__c from Account_Unit__c
+		for(Account_Unit__c au : [select Unit__r.Name, Id, Active__c, SalesHD_Unit_Census_Date__c,
+		SalesHD_Unit_Census__c, SalesHD_Unit_Beds__c, SalesHD_Unit_Nickname__c from Account_Unit__c
 		where Account__c = :acctId and Unit__r.Name!='Administrative' and Unit__r.Active__c=true]){
 			unitList temp = new unitList();
 			temp.name = au.Unit__r.Name;
+			if(au.SalesHD_Unit_Nickname__c!=null) temp.nickname = au.SalesHD_Unit_Nickname__c;
 			temp.unitId = au.Id;
 			temp.isActive = au.Active__c;
+			if(au.SalesHD_Unit_Census_Date__c!=null) temp.censusDate = '<b>Census Date</b></br>'+au.SalesHD_Unit_Census_Date__c.format();
+			if(au.SalesHD_Unit_Census__c!=null) temp.census = '<b>Census</b></br>'+au.SalesHD_Unit_Census__c;
+			if(au.SalesHD_Unit_Census__c!=null) temp.beds = '<b>Total Beds</b></br>'+au.SalesHD_Unit_Beds__c;
 			if(contactCount.containsKey(au.Id) && contactCount.get(au.Id)>1){
 				temp.contactCount = String.valueOf(contactCount.get(au.Id)) + ' contacts';
 			} else if(contactCount.containsKey(au.Id) && contactCount.get(au.Id)==1){

@@ -648,6 +648,10 @@
 					<button class="btn btn-primary btn-block rounded" onclick="window.open('/apex/SalesHD_LMS', '_blank')"><i class="fas fa-graduation-cap"></i> LMS</button>
 				</div>
 
+				<div style="padding:0px 0px 10px 0px!important;">
+						<button class="btn btn-primary btn-block rounded" onclick="window.location='/apex/SalesHD_Census';"><i class="fa fa-users"></i> Unit Census</button>
+					</div>
+
 			</div>
 			<div class="col-md-6 no-pad">
 

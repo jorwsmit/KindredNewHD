@@ -734,7 +734,9 @@
 									<i class="fa fa-user-plus"></i> Add Additional Contacts</span>
 							</div>
 
-							<label class="required" style="width: 100%;">*Account / Unit</label>
+							<label class="required" style="width: 100%;">*Account
+								<span style="padding-left:41%;">*Unit</span>
+							</label>
 							<apex:inputHidden value="{!accountId}" id="accountId" required="true" />
 							<input class="form-control" placeholder="Account" style="width:49%; margin-right:1%; display:inline-block;" id="account"
 							 value="{!accountName}" />

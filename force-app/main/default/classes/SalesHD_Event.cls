@@ -126,7 +126,7 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 }
 
 @RemoteAction global static String getAccounts() {
-	return JSON.serializePretty([select AccountId, Account.Name from AccountTeamMember where UserId =: currentUser]);
+	return JSON.serializePretty([select AccountId, Account.Name from AccountTeamMember where UserId =: currentUser and Account.RecordType.Name='HD Accounts']);
 }
 
 @RemoteAction global static String getUnits(Id accountId) {
@@ -411,7 +411,9 @@ public Boolean complete;
 	Date lowDate = Date.newInstance(firstDay.year(), firstDay.month(), firstDay.day());
 	Date highDate = Date.newInstance(firstDay.year(), firstDay.addDays(numberOfDays).month(), firstDay.addDays(numberOfDays).day());
 
-	List<Event> eventList = [select id, subject, startDateTime, SalesHD_Complete__c, Description, who.name, who.title from event where ownerId=:userId and startDateTime>=:lowDate and endDateTime<=:highDate];
+	List<Event> eventList = [select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
+	                         who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c from event where
+	                         ownerId=:userId and startDateTime>=:lowDate and endDateTime<=:highDate];
 	List<Id> whoIds = new List<Id>();
 	for(Event e : eventList) {
 		if(e.WhoId!=null) whoIds.add(e.WhoId);
@@ -470,10 +472,21 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	       ', "users": '+JSON.serializePretty(users)+'  }';
 }
 
-@RemoteAction public static String getToday(){
+@RemoteAction public static String getDay(String dateString){
+	Time startTime = Time.newInstance(0,0,0,0);
+	Time endTime = Time.newInstance(23,59,59,999);
+	Datetime startDate = Datetime.newInstance(System.now().date(), startTime);
+	Datetime endDate = Datetime.newInstance(System.now().date(), endTime);
+	if(dateString!=null){
+		Date d = Date.valueOf(dateString);
+		startDate = Datetime.newInstance(d, startTime);
+		endDate= Datetime.newInstance(d, endTime);
+	}
+	// return startDate.format() + ' '+endDate.format();
+
 	return JSON.serialize([select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
 	                       who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c from event
-	                       where ownerId=: currentUser and startDateTime>=TODAY and endDateTime<=TODAY]);
+	                       where ownerId=: currentUser and startDateTime>=:startDate and endDateTime<=:endDate]);
 }
 
 }
