@@ -850,6 +850,23 @@ public Boolean isActive;
 	Test.stopTest();
 }
 
+@isTest static void Unit_saveNickname() {
+
+
+	PageReference pageRef = Page.SalesHD_Unit;
+	Test.setCurrentPage(pageRef);
+	Account acct = [select Id from account where name='Test Account' limit 1];
+	Account_Unit__c au = [select Id, Active__c, SalesHD_Unit_Nickname__c from Account_Unit__c where
+	                      Account__c=:acct.Id and Unit__r.Name!='Administrative' limit 1];
+	ApexPages.StandardController sc = new ApexPages.standardController(au);
+	SalesHD_Unit controller = new SalesHD_Unit(sc);
+
+	Test.startTest();
+	au.SalesHD_Unit_Nickname__c = 'test';
+	controller.saveNickname();
+	Test.stopTest();
+}
+
 // --------------- SalesHD_Census Tests --------------------
 
 @isTest static void Census_constructor() {
