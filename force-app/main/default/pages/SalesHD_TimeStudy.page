@@ -1,0 +1,229 @@
+<apex:page showHeader="false" lightningStyleSheets="true" standardController="Time_Study__c" extensions="SalesHD_TimeStudy"
+    standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" lang="en">
+
+    <head>
+        <title>Time Study</title>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.0/themes/smoothness/jquery-ui.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+        <style>
+            .large {
+                font-size: 17px !important;
+                font-weight: bold !important;
+                color: #157DFA;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="slds-scope">
+            <div class="container" style="margin-top:20px;">
+                <div class="row">
+                    <div class="col-md-4 offset-md-4">
+                        <!-- <apex:outputPanel style="width: 100%;" id="censusBlock">
+                            <apex:form style="width: 100%;" id="censusForm">
+                                <form>
+                                    <label style="width: 100%;">Total Hours</label>
+                                    <apex:input type="number" styleClass="form-control" id="total-hours" value="{!totalHours}" html-placeholder="Total Hours"
+                                        required="true" />
+                                    <label style="width: 100%;">Time Study Date</label>
+                                    <apex:input type="date" styleClass="form-control" id="study-date" value="{!studyDate}" html-placeholder="Time Study Date"
+                                        required="true"/>
+                                </form>
+
+
+
+
+                            </apex:form>
+                        </apex:outputPanel> -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="container" style="margin-top:20px; text-align:center;">
+
+                <div class="row">
+                    <div class="col-md-12" style="border:1px solid black; border-radius: 25px;">
+                        <apex:outputPanel id="activitiesList">
+                            <div class="row">
+                                <div class="col-md-2 large">
+                                    Activity Type
+                                </div>
+                                <div class="col-md-4 large">
+                                    Referring Facility
+                                </div>
+                                <div class="col-md-2 large">
+                                    Patient Initials
+                                </div>
+                                <div class="col-md-2 large">
+                                    Allowable Time
+                                </div>
+                            </div>
+                            <apex:repeat value="{!activitiesList}" var="activity">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        {!activity.Activity_Type__c}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {!activity.Referring_Facility__r.Name}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {!activity.Patient_Initials__c}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {!activity.Allowable_Time__c}
+                                    </div>
+                                </div>
+
+                            </apex:repeat>
+                            <div class="row" style="text-align:center; margin-top:20px;">
+                                <div class="col-md-6">
+                                    <div class="large">Allowable</div>
+                                    <div style="font-size:20px;">{!allowable}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="large">Non-Allowable</div>
+                                    <div style="font-size:20px;">{!nonAllowable}</div>
+                                </div>
+                            </div>
+                        </apex:outputPanel>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12" id="activities" style="text-align:left;">
+                        <apex:form id="activityForm">
+
+                            <div class="row" style="margin-top:20px;margin-bottom:20px;">
+                                <div class="col-md-4 offset-md-4">
+                                    <label style="width: 100%;">Time Study Date</label>
+                                    <apex:input type="number" styleClass="form-control" id="total-hours" value="{!totalHours}" html-placeholder="Total Hours"
+                                        required="true" />
+                                    <label style="width: 100%;">Time Study Date</label>
+                                    <apex:input type="date" styleClass="form-control" id="study-date" value="{!studyDate}" html-placeholder="Time Study Date"
+                                        required="true">
+                                        <apex:actionSupport event="onblur" action="{!getActivities}" rerender="activitiesList" />
+                                    </apex:input>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-3">
+
+                                    <apex:selectList multiselect="false" size="1" value="{!activityType}" required="true" style="width:100%;">
+                                        <apex:selectOptions value="{!activityOptions}" />
+                                    </apex:selectList>
+
+                                </div>
+                                <div class="col-md-4">
+                                    <apex:inputHidden value="{!accountId}" id="accountId" required="true" />
+                                    <input class="form-control" placeholder="Account" id="account" value="{!accountName}" />
+                                    <ul class="form-control" id="accountList" style="display:none;"></ul>
+                                </div>
+                                <div class="col-md-2">
+                                    <apex:input type="text" styleClass="form-control" id="initials" value="{!patientInitials}" html-placeholder="Patient Initials"
+                                        required="true" />
+                                </div>
+                                <div class="col-md-1">
+                                    <apex:input type="text" styleClass="form-control" id="activity-time" value="{!activityTime}" html-placeholder="Time" required="true"
+                                    />
+                                </div>
+                                <div class="col-md-2">
+                                    <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveActivity}" value="Add Activity" rerender="activityForm, activitiesList"
+                                        id="saveActivity" oncomplete="loadPage();" />
+                                </div>
+
+                                <apex:actionStatus id="statusSpinner">
+                                    <apex:facet name="start">
+
+                                        <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:170px;">
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+
+                                    </apex:facet>
+                                </apex:actionStatus>
+
+                                <apex:pageMessages />
+
+
+                            </div>
+                        </apex:form>
+                    </div>
+                    <!-- <button id="add-activity"> add row</button> -->
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            loadPage();
+        });
+
+        function loadPage() {
+            SalesHD_TimeStudy.getAccounts(function (callback, event) {
+                var data = JSON.parse(callback);
+                $("#accountList").html('');
+                for (var account of data) {
+                    $("#accountList").append('<li data-accountid="' + account.AccountId + '">' + account.Account.Name + '</li>');
+                }
+
+                $(document).on("click", '#accountList li', function () {
+                    $('#account').val($(this).text()).data('accountid', $(this).data('accountid'));
+                    document.getElementById('{!$Component.activityForm.accountId}').value = $(this).data('accountid');
+                });
+
+                $('#account').keyup(function () {
+                    $("#accountList li").each(function () {
+                        if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#account").val().toUpperCase().replace(/\s/g, '')) > -1) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                });
+
+
+
+
+            }, { escape: false });
+
+
+            $(document).click(function (e) {
+                if (!$('#account').is(e.target) && $('#account').has(e.target).length === 0) {
+                    $('#accountList').hide();
+                }
+            });
+
+            $(document).on("click", '#account', function () {
+                $('#accountList').show();
+            });
+
+            $("#account").attr("name", Math.random().toString(36).substring(7));
+        }
+
+
+
+    </script>
+
+
+
+    </html>
+
+</apex:page>

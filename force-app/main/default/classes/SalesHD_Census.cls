@@ -1,4 +1,4 @@
-global with sharing class SalesHD_Census {
+global without sharing class SalesHD_Census {
 // public Unit_Census__c census {get; set;}
 public String accountUnits {get; set;}
 

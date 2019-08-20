@@ -1,4 +1,4 @@
-global with sharing class SalesHD_Unit {
+global without sharing class SalesHD_Unit {
 
 public Account_Unit__c thisUnit {get; set;}
 
@@ -48,10 +48,13 @@ public SalesHD_Unit(ApexPages.StandardController stdController) {
 	for(Unit_Census__c uc : [select Census__c,Beds__c,Census_Date__c from Unit_Census__c where
 	                         Census_Date__c<=Today and Account_Unit__c=:thisUnit.Id order by Census_Date__c desc limit 1]) {
 		currentCensus = Integer.valueOf(uc.Census__c);
+		census = Integer.valueOf(uc.Census__c);
 		currentBeds = Integer.valueOf(uc.Beds__c);
+		beds = Integer.valueOf(uc.Beds__c);
 		currentCensusDateString = uc.Census_Date__c.format();
-		censusDate = System.now().date();
+		
 	}
+	censusDate = System.now().date();
 }
 
 public PageReference accountRedirect(){
