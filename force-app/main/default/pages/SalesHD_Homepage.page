@@ -674,16 +674,9 @@
 				<div class="shadow white-bg rounded" style="margin-bottom:10px;">
 					<h3 class="thin italic"><i class="fas fa-chart-pie icon icon-lightblue" style="padding:10px 9px 10px 9px;" aria-hidden="true"></i> Reports</h3>
 					<div style="margin-left:10px;" id="reports">
-						<!-- <div>
-							<a onclick="window.location='/00O13000008mTqN?isdtp=vw';">My Sales Performance</a>
-						</div>
 						<div>
-							<a onclick="window.location='/00Oc0000000l7HT?isdtp=vw';">Encounters</a>
+							<a onclick="window.location='/00O/o?isdtp=vw';"><b>Salesforce Reports</b></a>
 						</div>
-						<div>
-							<a onclick="window.location='/00Oc0000000l7Hn?isdtp=vw';">Encounters by Unit</a>
-						</div> -->
-
 					</div>
 				</div>
 
@@ -712,7 +705,8 @@ $(document).ready(function(){
 		for(report of reports){
 			$("#reports").append('<div><a onclick="window.location=\'/'+report.Id+'?isdtp=vw\';">'+report.Name+'</a></div>');
 		}
-		$("#reports").append('<div><a onclick="window.location=\'/00O/o?isdtp=vw\';"><b>All Reports</b></a></div>');
+		// if({!IF (OR(CONTAINS($Profile.Name, 'Associate'), CONTAINS($Profile.Name, 'Associate')), false, true  )}) $("#reports").append('<div><a onclick="window.location=\'/00O/o?isdtp=vw\';"><b>All Reports</b></a></div>');
+		
 	}, {escape:false});
 
 	SalesHD_Homepage.getDischargeDisposition(function(dischargeId, event){

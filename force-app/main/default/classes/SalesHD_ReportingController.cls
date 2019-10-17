@@ -24,6 +24,8 @@ public String encountersLastWeekAdmin {get; set;}
 public String encounterSummary {get; set;}
 public String encounterSummaryAdmin {get; set;}
 
+public String debugstr {get; set;}
+
 
 public class encounterSummary {
 public String clName = '';
@@ -146,7 +148,8 @@ public static List<encounterLastWeek> getEncountersLastWeek(Id rId){
 
 	List<encounterLastWeek> result = new List<encounterLastWeek>();
 	for(AggregateResult ar : [select owner.userRoleId roleId, count(Id) total from event where
-	                          startDateTime=last_week and owner.userRoleId in :allSubRoleIds group by owner.userRoleId]) {
+	                        startDateTime=last_week and SalesHD_Account_Unit__c!=null and SalesHD_Complete__c=true
+							and ownerId in (select id from user where isActive=true and area__c!=null) and owner.userRoleId in :allSubRoleIds group by owner.userRoleId]) {
 		encounterLastWeek temp = new encounterLastWeek();
 		String area = '';
 		Id roleId = String.valueOf(ar.get('roleId'));

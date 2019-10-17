@@ -396,7 +396,7 @@ public Datetime eventDatetime;
 public Boolean complete;
 }
 
-@RemoteAction public static String getCalendar(Integer monthOffset, Integer weekOffset, Boolean isWeekly, Id userId){
+@RemoteAction global static String getCalendar(Integer monthOffset, Integer weekOffset, Boolean isWeekly, Id userId){
 	Datetime firstDay;
 	Integer numberOfDays;
 	if(isWeekly) {
@@ -472,7 +472,7 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	       ', "users": '+JSON.serializePretty(users)+'  }';
 }
 
-@RemoteAction public static String getDay(String dateString){
+@RemoteAction global static String getDay(String dateString){
 	Time startTime = Time.newInstance(0,0,0,0);
 	Time endTime = Time.newInstance(23,59,59,999);
 	Datetime startDate = Datetime.newInstance(System.now().date(), startTime);

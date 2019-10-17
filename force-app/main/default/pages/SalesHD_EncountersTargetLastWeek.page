@@ -1,0 +1,77 @@
+<apex:page showHeader="false" controller="SalesHD_ReportingController" lightningStyleSheets="true" standardStylesheets="false"
+    sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" action="{!eLastWeek}">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>Encounters and Targets Last Week Admin</title>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+    </head>
+
+    <style>
+        body{
+            border: 1px solid #d5d5d5;
+        }
+    </style>
+
+    <body>
+
+        <div id="chart_div"></div>
+
+        <!-- Lightning Wrapper -->
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+        <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script>
+            // Visualforce.remoting.timeout = 120000;
+
+            google.charts.load('current', {packages: ['corechart', 'bar']});
+
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Market');
+                data.addColumn('number', 'Encounters');
+                data.addColumn({type:'number', role:'annotation'});
+                data.addColumn('number', 'Targets');
+                data.addColumn({type:'number', role:'annotation'});
+
+                console.log({!encountersLastWeek});
+                
+                for (var e of {!encountersLastWeek
+            }) {
+                var a = [e.market, e.encounterTotal, e.encounterTotal , e.encounterTarget, e.encounterTarget];
+                data.addRow(a);
+            }
+
+
+            // Set chart options
+            var options = {
+                bars: 'horizontal',
+                chartArea: {  width: "60%" },
+                legend: { position: 'bottom', alignment: 'start' }
+            };
+
+            // Instantiate and draw our chart, passing in some options.
+            var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+            document.getElementsByTagName('iframe').height = window.innerHeight;
+            }
+
+
+        </script>
+    </body>
+
+    </html>
+</apex:page>
