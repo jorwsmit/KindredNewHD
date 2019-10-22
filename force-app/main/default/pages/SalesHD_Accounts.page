@@ -632,6 +632,12 @@ $(document).ready(function(){
 
 		sessionStorage.removeItem("hdBreadcrumb");
 
+
+		if (sessionStorage.selectedState!=''){
+			selectedState = sessionStorage.selectedState;
+			$('#stateDropdown').text(selectedState);
+		}
+
 		var states= ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA',
 		'HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA',
 		'MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND',
@@ -645,8 +651,14 @@ $(document).ready(function(){
 	}
 
 	$('#stateChoices a').click(function(){
-		if($(this).text()!='All States') selectedState = $(this).text();
-		else selectedState = '';
+		if($(this).text()!='All States'){
+			selectedState = $(this).text();
+			sessionStorage.selectedState = $(this).text();
+		}
+		else{
+			selectedState = '';
+			sessionStorage.selectedState = '';
+		}
 		$('#stateDropdown').text($(this).text());
 	});
 
