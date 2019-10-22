@@ -585,6 +585,9 @@
 		<apex:outputText rendered="{!IF(contact.recordtype.name = 'HD Physicians',true,false)}" >
 		<p><b>NPI: </b>{!contact.NPI__c}</p>
 		<p><b>Specialty: </b>{!contact.HD_Specialties__c}</p>
+		<apex:outputText rendered="{!IF(contact.HD_Specialties__c = 'Other',true,false)}" >
+			<p><b>Other Specialty: </b>{!contact.HD_Other_Specialty__c}</p>
+		</apex:outputText>
 		<p><b>Contact Type: </b> Physician Contact <i class="fas fa-user-md"></i></p>
 	</apex:outputText>
 </div>

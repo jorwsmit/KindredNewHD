@@ -578,6 +578,8 @@
 			<apex:inputField styleClass="form-control" value="{!contact.Phone}" html-placeholder="Phone" required="true"/>
 			<label>Department Phone</label>
 			<apex:inputField styleClass="form-control" value="{!contact.OtherPhone}" html-placeholder="Department Phone"/>
+			<label>Ext</label>
+			<apex:inputField styleClass="form-control" value="{!contact.Extension__c}" html-placeholder="Extension"/>
 			<label>Fax</label>
 			<apex:inputField styleClass="form-control" value="{!contact.Fax}" html-placeholder="Fax"/>
 			<label>Email</label>
@@ -586,7 +588,13 @@
 			<apex:inputField styleClass="form-control" value="{!contact.HasOptedOutOfEmail}" html-placeholder="Email Opt Out"/>
 			<apex:outputText rendered="{!IF(contact.recordtype.name = 'HD Physicians',true,false)}" >
 			<label>Specialty</label>
-			<apex:inputField styleClass="form-control" value="{!contact.HD_Specialties__c}" html-placeholder="Specialty"/>
+			<apex:inputField styleClass="form-control" value="{!contact.HD_Specialties__c}" html-placeholder="Specialty">
+				<apex:actionSupport event="onchange" rerender="containerBlock"/>
+			</apex:inputField>
+			<apex:outputText rendered="{!IF(contact.HD_Specialties__c = 'Other',true,false)}">
+					<label>Other Specialty</label>
+					<apex:inputField styleClass="form-control" value="{!contact.HD_Other_Specialty__c}" html-placeholder="Other Specialty"/>
+			</apex:outputText>
 			</apex:outputText>
 			<apex:commandButton styleClass="btn btn-primary" action="{!save}" status="statusSpinner" value="Save" id="saveButton" rerender="containerBlock"/>
 			<apex:commandButton styleClass="btn btn-secondary" value="Cancel" style="margin-left:10px!important;" onclick="window.history.back();" rerender="containerBlock"/>
