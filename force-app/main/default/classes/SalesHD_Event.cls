@@ -11,6 +11,9 @@ public String endDateFormated {get; set;}
 public Time endTime {get; set;}
 public Id contactId {get; set;}
 
+public blob agendaFile {get; set;}
+public blob dataFile {get; set;}
+
 public String additionalContactIdString {get; set;}
 public String removeAdditionalContactIdString {get; set;}
 private Map<Id, String> additionalContacts {get; set;}
@@ -477,7 +480,7 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	Time endTime = Time.newInstance(23,59,59,999);
 	Datetime startDate = Datetime.newInstance(System.now().date(), startTime);
 	Datetime endDate = Datetime.newInstance(System.now().date(), endTime);
-	if(dateString!=null){
+	if(dateString!=null) {
 		Date d = Date.valueOf(dateString);
 		startDate = Datetime.newInstance(d, startTime);
 		endDate= Datetime.newInstance(d, endTime);
@@ -486,7 +489,62 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 
 	return JSON.serialize([select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
 	                       who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c from event
-	                       where ownerId=: currentUser and startDateTime>=:startDate and endDateTime<=:endDate]);
+	                       where ownerId=: currentUser and startDateTime>=: startDate and endDateTime<=: endDate]);
+}
+
+public PageReference addToOutlook(){
+	Event e = [select Id, startDateTime, endDatetime, whatId, Subject, SalesHD_Call_Objective__c from event where Id=:thisEvent.Id];
+	String location = '';
+	for(Account a : [select shippingAddress__c from Account where id=:e.whatId]){
+		location = a.shippingAddress__c;
+	}
+
+
+	Messaging.reserveSingleEmailCapacity(2);
+
+	Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+
+	String[] toAddresses = new String[] {UserInfo.getUserEmail()};
+
+	mail.setToAddresses(toAddresses);
+	mail.setReplyTo(UserInfo.getUserEmail());
+	mail.setSenderDisplayName(UserInfo.getName());
+	mail.setSubject('Salesforce Meeting Invitation - '+e.startDateTime.format());
+	mail.setPlainTextBody(emailBody(e, location)+'<br/><br/>'+URL.getSalesforceBaseUrl().toExternalForm()+'/apex/saleshd_encounter?id='+e.Id);
+	mail.setHtmlBody(emailBody(e, location)+'<br/><br/><a href="'+URL.getSalesforceBaseUrl().toExternalForm()+'/apex/saleshd_encounter?id='+e.Id+'">Open Encounter in Salesforce</a>');
+	Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
+	attach.filename = 'meeting.ics';
+	attach.ContentType = 'text/calendar;';
+
+	attach.setBody(invite(e, location));
+	attach.setContentType('text/calendar; charset=utf-8; method=REQUEST');
+
+	mail.setFileAttachments(new Messaging.EmailFileAttachment[] {attach});
+	Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+
+	return null;
+}
+
+private String emailBody(Event e, String location){
+	return 'The following meeting was generated from a Kindred Salesforce encounter.'+
+	' If you have access to Kindred\'s Salesforce Org, then you may use the link to open the encounter in Salesforce.'+
+	'<br/><br/>When: '+e.StartDateTime.format()+ ' to ' + e.EndDateTime.format()
+	'<br/>Location: '+location+
+	'<br/>Contacts: ' ;
+}
+
+private Blob invite(Event e, String location) {
+	String start = String.valueOf(e.startDateTime).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
+	String ending = String.valueOf(e.endDateTime).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
+	String current = String.valueOf(system.now()).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
+	String attachment = 'BEGIN:VCALENDAR' + '\n' + 'PRODID:-//Force.com Labs//iCalendar Export//EN' + '\n' +
+	              'VERSION:2.0' + '\n' + 'CALSCALE:GREGORIAN' + '\n' + 'METHOD:REQUEST'+ '\n'+ 'BEGIN:VEVENT'+ '\n' +
+	              'DTSTART:'+ start + '\n' + 'DTEND:'+ ending + '\n' + 'DTSTAMP:'+ current + '\n' + 'LOCATION:'+ location + '\n'+
+	              'ORGANIZER;CN=noreply@salesforce.com:MAILTO:noreply@salesforce.com\n' + 'UID:' + String.valueOf(Crypto.getRandomLong()) + '\n' +
+	              'CREATED:'+ current + '\n' + 'LAST-MODIFIED:'+ current + '\n' +
+	              'SEQUENCE:0' + '\n' + 'STATUS:CONFIRMED' + '\n' + 'SUMMARY:'+ e.Subject +'\n' + 'TRANSP:OPAQUE' + '\n' +
+	              'END:VEVENT'+ '\n' + 'END:VCALENDAR';
+	return Blob.valueof(attachment);
 }
 
 }

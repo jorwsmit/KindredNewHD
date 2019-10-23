@@ -651,6 +651,7 @@
 				<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}&duplicate=true';"/>
 				<div class="btn btn-danger" style="margin-left:5px!important; margin-top:-7px!important; padding-top:3px!important;  padding-bottom:3px!important;" data-toggle="modal" data-target="#deleteModal">Delete</div>
 				<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';"/>
+				<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook" rerender="containerBlock" action="{!addToOutlook}"/>
 			</div>
 
 		</apex:form>
