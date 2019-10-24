@@ -627,6 +627,45 @@ public Boolean isActive;
 }
 
 
+@isTest static void Event_UploadDeleteFile() {
+	PageReference pageRef = Page.SalesHD_NewEncounter;
+	Test.setCurrentPage(pageRef);
+	Contact con = [select Id from contact where name='Test Contact' limit 1];
+	Account acct = [select Id from account where Name='Test Account' limit 1];
+	Account_Unit__c au = [select Id, Active__c from Account_Unit__c where
+	                      Account__c=:acct.Id and Unit__r.Name!='Administrative' limit 1];
+
+	Event e = new Event(ownerId=UserInfo.getUserId(), ActivityDateTime=System.now(),
+	                    EndDateTime=system.now()+5, Type='Follow-up', whoId=con.Id, whatId=acct.Id,
+	                    SalesHD_Account_Unit__c=au.Id, SalesHD_Call_Objective__c='Other',
+	                    SalesHD_Open_Ended_Questions__c='test');
+
+	insert e;
+
+	pageRef.getParameters().put('id',e.id);
+
+	ApexPages.StandardController sc = new ApexPages.standardController(e);
+	SalesHD_Event controller = new SalesHD_Event(sc);
+	controller.file = Blob.valueOf('test file');
+	controller.fileName = 'testfile.pdf';
+	
+	Test.startTest();
+	controller.uploadFiles();
+
+	List<Id> fileIds = new List<Id>();
+	for(ContentDocumentLink cdl : [select ContentDocumentId from ContentDocumentLink where LinkedEntityId=:e.Id]) {
+		fileIds.add(cdl.ContentDocumentId);
+	}
+	List<ContentVersion> files = new List<ContentVersion>();
+	for(ContentVersion cv : [select Id, ContentDocumentId, Title, TextPreview from ContentVersion where ContentDocumentId =: fileIds and isLatest=true]) {
+		files.add(cv);
+	}
+	controller.fileId = files[0].Id;
+	controller.deleteFiles();
+	Test.stopTest();
+}
+
+
 
 
 // --------------- SalesHD_Homepage Tests --------------------
