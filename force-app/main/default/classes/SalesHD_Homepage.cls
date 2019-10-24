@@ -1,4 +1,4 @@
-global with sharing class SalesHD_Homepage {
+global without sharing class SalesHD_Homepage {
 
 	public String actualAdmits {get; set;}
 	public String admitTarget {get; set;}
