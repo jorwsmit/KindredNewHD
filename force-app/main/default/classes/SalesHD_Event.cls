@@ -11,8 +11,13 @@ public String endDateFormated {get; set;}
 public Time endTime {get; set;}
 public Id contactId {get; set;}
 
-public blob agendaFile {get; set;}
-public blob dataFile {get; set;}
+public blob file {get; set;}
+public String fileName {get; set;}
+public String fileId {get; set;}
+
+public List<ContentVersion> files {get; set;}
+
+
 
 public String additionalContactIdString {get; set;}
 public String removeAdditionalContactIdString {get; set;}
@@ -41,6 +46,20 @@ public String encounters {get; set;}
 private static Id currentUser = UserInfo.getUserId();
 
 public SalesHD_Event(ApexPages.StandardController stdController) {
+
+
+	if(ApexPages.CurrentPage().getparameters().get('id')!=null) {
+		List<Id> fileIds = new List<Id>();
+		for(ContentDocumentLink cdl : [select ContentDocumentId from ContentDocumentLink where LinkedEntityId=:ApexPages.CurrentPage().getparameters().get('id')]) {
+			fileIds.add(cdl.ContentDocumentId);
+		}
+		files = new List<ContentVersion>();
+		for(ContentVersion cv : [select Id, ContentDocumentId, Title, TextPreview from ContentVersion where ContentDocumentId =: fileIds and isLatest=true]) {
+			files.add(cv);
+		}
+	}
+
+
 	startDate = Date.valueOf(System.now());
 	startTime = Time.newInstance(System.now().hour(), System.now().minute()-(math.mod(System.now().minute(), 15)),0,0);
 	duration = 15;
@@ -157,7 +176,70 @@ private static Integer getRecurrenceWeekdayMask(Integer weekday){
 	return null;
 }
 
+public PageReference uploadFiles(){
+	try{
+		List<ContentVersion> cvs = new List<ContentVersion>();
+		if(file!=null) cvs.add(prepareFile(file, fileName));
+		insert cvs;
+		List<ContentDocumentLink> cdls = new List<ContentDocumentLink>();
+		List<Id> cdIds = new List<Id>();
+		for(ContentVersion cv : [select ContentDocumentId from ContentVersion where Id in :cvs]) {
+			ContentDocumentLink cdl = new ContentDocumentLink();
+			cdl.ContentDocumentId = cv.ContentDocumentId;
+			cdIds.add(cv.ContentDocumentId);
+			cdl.LinkedEntityId = thisEvent.Id;
+			cdl.ShareType = 'V';
+			cdls.add(cdl);
+		}
+		insert cdls;
+
+		List<Id> fileIds = new List<Id>();
+		for(ContentDocumentLink cdl : [select ContentDocumentId from ContentDocumentLink where LinkedEntityId=:thisEvent.Id]) {
+			fileIds.add(cdl.ContentDocumentId);
+		}
+		files = new List<ContentVersion>();
+		for(ContentVersion cv : [select Id, ContentDocumentId, Title, TextPreview from ContentVersion where ContentDocumentId =: fileIds and isLatest=true]) {
+			files.add(cv);
+		}
+
+
+	}catch(DmlException ex) {
+		ApexPages.addMessages(ex);
+	}
+	PageReference page = new PageReference('/apex/SalesHD_Encounter?id='+thisEvent.Id);
+    page.setRedirect(true);
+	return page;
+}
+
+public PageReference deleteFiles(){
+	try{
+		ContentDocument cd = [select id from ContentDocument where Id in (select ContentDocumentId from ContentVersion where Id=:fileId) limit 1];
+		delete cd;
+
+		List<Id> fileIds = new List<Id>();
+		for(ContentDocumentLink cdl : [select ContentDocumentId from ContentDocumentLink where LinkedEntityId=:thisEvent.Id]) {
+			fileIds.add(cdl.ContentDocumentId);
+		}
+		files = new List<ContentVersion>();
+		for(ContentVersion cv : [select Id, ContentDocumentId, Title, TextPreview from ContentVersion where ContentDocumentId =: fileIds and isLatest=true]) {
+			files.add(cv);
+		}
+	}catch(DmlException ex) {
+		ApexPages.addMessages(ex);
+	}
+	return null;
+}
+
+private static ContentVersion prepareFile(blob file, String fileName){
+	ContentVersion cv = new ContentVersion();
+	cv.versionData = file;
+	cv.title = fileName;
+	cv.pathOnClient = fileName;
+	return cv;
+}
+
 public PageReference saveEvent(){
+
 	thisEvent.WhoId = contactId;
 	thisEvent.WhatId = accountId;
 	thisEvent.SalesHD_Account_Unit__c = unitId;
@@ -495,7 +577,7 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 public PageReference addToOutlook(){
 	Event e = [select Id, startDateTime, endDatetime, whatId, Subject, SalesHD_Call_Objective__c from event where Id=:thisEvent.Id];
 	String location = '';
-	for(Account a : [select shippingAddress__c from Account where id=:e.whatId]){
+	for(Account a : [select shippingAddress__c from Account where id=:e.whatId]) {
 		location = a.shippingAddress__c;
 	}
 
@@ -527,10 +609,10 @@ public PageReference addToOutlook(){
 
 private String emailBody(Event e, String location){
 	return 'The following meeting was generated from a Kindred Salesforce encounter.'+
-	' If you have access to Kindred\'s Salesforce Org, then you may use the link to open the encounter in Salesforce.'+
-	'<br/><br/>When: '+e.StartDateTime.format()+ ' to ' + e.EndDateTime.format()
-	'<br/>Location: '+location+
-	'<br/>Contacts: ' ;
+	       ' If you have access to Kindred\'s Salesforce Org, then you may use the link to open the encounter in Salesforce.'+
+	       '<br/><br/>When: '+e.StartDateTime.format()+ ' to ' + e.EndDateTime.format() +
+	       '<br/>Location: '+location+
+	       '<br/>Contacts: ';
 }
 
 private Blob invite(Event e, String location) {
@@ -538,12 +620,12 @@ private Blob invite(Event e, String location) {
 	String ending = String.valueOf(e.endDateTime).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
 	String current = String.valueOf(system.now()).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
 	String attachment = 'BEGIN:VCALENDAR' + '\n' + 'PRODID:-//Force.com Labs//iCalendar Export//EN' + '\n' +
-	              'VERSION:2.0' + '\n' + 'CALSCALE:GREGORIAN' + '\n' + 'METHOD:REQUEST'+ '\n'+ 'BEGIN:VEVENT'+ '\n' +
-	              'DTSTART:'+ start + '\n' + 'DTEND:'+ ending + '\n' + 'DTSTAMP:'+ current + '\n' + 'LOCATION:'+ location + '\n'+
-	              'ORGANIZER;CN=noreply@salesforce.com:MAILTO:noreply@salesforce.com\n' + 'UID:' + String.valueOf(Crypto.getRandomLong()) + '\n' +
-	              'CREATED:'+ current + '\n' + 'LAST-MODIFIED:'+ current + '\n' +
-	              'SEQUENCE:0' + '\n' + 'STATUS:CONFIRMED' + '\n' + 'SUMMARY:'+ e.Subject +'\n' + 'TRANSP:OPAQUE' + '\n' +
-	              'END:VEVENT'+ '\n' + 'END:VCALENDAR';
+	                    'VERSION:2.0' + '\n' + 'CALSCALE:GREGORIAN' + '\n' + 'METHOD:REQUEST'+ '\n'+ 'BEGIN:VEVENT'+ '\n' +
+	                    'DTSTART:'+ start + '\n' + 'DTEND:'+ ending + '\n' + 'DTSTAMP:'+ current + '\n' + 'LOCATION:'+ location + '\n'+
+	                    'ORGANIZER;CN=noreply@salesforce.com:MAILTO:noreply@salesforce.com\n' + 'UID:' + String.valueOf(Crypto.getRandomLong()) + '\n' +
+	                    'CREATED:'+ current + '\n' + 'LAST-MODIFIED:'+ current + '\n' +
+	                    'SEQUENCE:0' + '\n' + 'STATUS:CONFIRMED' + '\n' + 'SUMMARY:'+ e.Subject +'\n' + 'TRANSP:OPAQUE' + '\n' +
+	                    'END:VEVENT'+ '\n' + 'END:VCALENDAR';
 	return Blob.valueof(attachment);
 }
 

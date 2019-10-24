@@ -767,14 +767,14 @@
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
 							/>
-							<label style="width: 100%;">Agenda</label>
+							<!-- <label style="width: 100%;">Agenda</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Agenda_Preparation__c}" html-placeholder="Agenda Preparation"
 							/>
 							<label style="width: 100%;">Data
 
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
-							/>
+							/> -->
 
 
 							<apex:outputPanel id="postCallPanel">
