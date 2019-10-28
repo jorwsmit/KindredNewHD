@@ -568,8 +568,8 @@
 			<apex:inputField styleClass="form-control" value="{!account.Phone}" html-placeholder="Phone"/>
 			<label>Fax</label>
 			<apex:inputField styleClass="form-control" value="{!account.Fax}" html-placeholder="Fax"/>
-			<label>Total Beds</label>
-			<apex:inputField styleClass="form-control" value="{!account.Total_Beds__c}" html-placeholder="Total Beds"/>
+			<!-- <label>Total Beds</label>
+			<apex:inputField styleClass="form-control" value="{!account.Total_Beds__c}" html-placeholder="Total Beds"/> -->
 			<!-- <label>Level of Care</label>
 			<apex:inputField styleClass="form-control" value="{!account.Level_of_Care__c}" html-placeholder="Level of Care"/> -->
 			<label>Referral Mechanism</label>
