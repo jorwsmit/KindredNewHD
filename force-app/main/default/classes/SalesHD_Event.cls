@@ -207,7 +207,7 @@ public PageReference uploadFiles(){
 		ApexPages.addMessages(ex);
 	}
 	PageReference page = new PageReference('/apex/SalesHD_Encounter?id='+thisEvent.Id);
-    page.setRedirect(true);
+	page.setRedirect(true);
 	return page;
 }
 
@@ -575,7 +575,8 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 }
 
 public PageReference addToOutlook(){
-	Event e = [select Id, startDateTime, endDatetime, whatId, Subject, SalesHD_Call_Objective__c from event where Id=:thisEvent.Id];
+	Event e = [select Id, startDateTime, endDatetime, whatId, Subject, SalesHD_Call_Objective__c,
+	Owner.Name, Who.Name from event where Id=:thisEvent.Id];
 	String location = '';
 	for(Account a : [select shippingAddress__c from Account where id=:e.whatId]) {
 		location = a.shippingAddress__c;
@@ -608,17 +609,25 @@ public PageReference addToOutlook(){
 }
 
 private String emailBody(Event e, String location){
-	return 'The following meeting was generated from a Kindred Salesforce encounter.'+
-	       ' If you have access to Kindred\'s Salesforce Org, then you may use the link to open the encounter in Salesforce.'+
-	       '<br/><br/>When: '+e.StartDateTime.format()+ ' to ' + e.EndDateTime.format() +
-	       '<br/>Location: '+location+
-	       '<br/>Contacts: ';
+	String emailBody = 'The following meeting was generated from a Kindred Salesforce encounter.'+
+	                   ' If you have access to Kindred\'s Salesforce Org, then you may use the link to open the encounter in Salesforce.'+
+	                   '<br/><br/>When: '+e.StartDateTime.format()+ ' to ' + e.EndDateTime.format() +
+	                   '<br/>Location: '+location+
+	                   '<br/>Contacts: ' + e.Who.Name;
+	for(EventRelation er : [select Relation.Name, RelationId from EventRelation where EventId=:e.Id and IsInvitee=true]) {
+		emailBody += ', '+ er.Relation.Name;
+	}
+	emailBody += '<br/>Encounter Owner: '+e.Owner.Name;
+	return emailBody;
 }
 
 private Blob invite(Event e, String location) {
-	String start = String.valueOf(e.startDateTime).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
-	String ending = String.valueOf(e.endDateTime).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
-	String current = String.valueOf(system.now()).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
+	Integer offset = UserInfo.getTimezone().getOffset(e.startDateTime);
+	String start = String.valueOf(e.startDateTime.addSeconds(math.abs(offset)/1000)).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
+	offset = UserInfo.getTimezone().getOffset(e.endDateTime);
+	String ending = String.valueOf(e.endDateTime.addSeconds(math.abs(offset)/1000)).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
+	offset = UserInfo.getTimezone().getOffset(system.now());
+	String current = String.valueOf(system.now().addSeconds(math.abs(offset)/1000)).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
 	String attachment = 'BEGIN:VCALENDAR' + '\n' + 'PRODID:-//Force.com Labs//iCalendar Export//EN' + '\n' +
 	                    'VERSION:2.0' + '\n' + 'CALSCALE:GREGORIAN' + '\n' + 'METHOD:REQUEST'+ '\n'+ 'BEGIN:VEVENT'+ '\n' +
 	                    'DTSTART:'+ start + '\n' + 'DTEND:'+ ending + '\n' + 'DTSTAMP:'+ current + '\n' + 'LOCATION:'+ location + '\n'+

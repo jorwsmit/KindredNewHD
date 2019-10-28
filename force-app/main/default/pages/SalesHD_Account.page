@@ -730,8 +730,7 @@
 					<b>Website: </b>
 					<a href="{!account.Website}">{!account.Website}</a>
 				</p>
-				<p>
-					<b>Total Beds: </b>{!account.Total_Beds__c}</p>
+				<!-- <p><b>Total Beds: </b>{!account.Total_Beds__c}</p> -->
 				<!-- <p><b>Level of Care: </b>{!account.Level_of_Care__c}</p> -->
 				<p>
 					<b>Referral Mechanism: </b>{!account.Referral_Mechanism__c }</p>

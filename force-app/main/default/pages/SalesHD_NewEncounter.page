@@ -767,14 +767,14 @@
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
 							/>
-							<!-- <label style="width: 100%;">Agenda</label>
+							<label style="width: 100%;">Agenda</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Agenda_Preparation__c}" html-placeholder="Agenda Preparation"
 							/>
 							<label style="width: 100%;">Data
 
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
-							/> -->
+							/>
 
 
 							<apex:outputPanel id="postCallPanel">
@@ -807,12 +807,12 @@
 							<div style="margin-top:20px;">
 								<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNew}" onclick="storeHtml();" oncomplete="loadPage();"
 								 value="Save" rerender="containerBlock" id="saveNew" style="vertical-align:bottom; margin-top:0px!important;" />
-								 <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveAndNew}" onclick="storeHtml();" oncomplete="loadPage();"
-								 value="Save and New" rerender="containerBlock" id="saveAndNew" style="vertical-align:bottom; margin-top:0px!important; margin-left:10px!important;" />
+								<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveAndNew}" onclick="storeHtml();" oncomplete="loadPage();"
+								 value="Save and New" rerender="containerBlock" id="saveAndNew" style="vertical-align:bottom; margin-top:0px!important; margin-left:10px!important;"
+								/>
 								<apex:commandButton styleClass="btn btn-secondary" value="Cancel" oncomplete="loadPage();" style="margin-top:0px!important; margin-left:10px!important;"
 								 onclick="window.history.back();" rerender="containerBlock" />
-								 <apex:commandButton styleClass="btn btn-success" id="saveAndNext" status="statusSpinner" oncomplete="loadPage();"
-								 style="margin-left:10px!important;
+								<apex:commandButton styleClass="btn btn-success" id="saveAndNext" status="statusSpinner" oncomplete="loadPage();" style="margin-left:10px!important;
 								 {!IF(ISBLANK(event.SalesHD_Next_Encounter__c), 'display:none;',
 								 IF($CurrentPage.parameters.duplicate='true', 'display:none;', 'display:inline-block;'))} vertical-align:bottom; margin-top:0px!important;"
 								 action="{!saveAndNext}" value="Save and Next" rerender="containerBlock" />
@@ -949,19 +949,20 @@
 
 			function loadPage() {
 
-				if('{!contactName}'=='') $("#contact").val(contactHtml);
-				if('{!accountName}'=='') $("#account").val(accountHtml);
-				if('{!unitName}'=='') $("#unit").val(unitHtml);
-				if({!unitList}.length==0) $("#unitList").html(unitListHtml);
-				$("#addedContacts").html(additionalContactHtml);
+				if ('{!contactName}' == '') $("#contact").val(contactHtml);
+				if ('{!accountName}' == '') $("#account").val(accountHtml);
+				if ('{!unitName}' == '') $("#unit").val(unitHtml);
+				if ({!unitList			
+}.length == 0) $("#unitList").html(unitListHtml);
+			$("#addedContacts").html(additionalContactHtml);
 
-				if ('{!contactName}' != '' || contactHtml!='') $("#addMoreContacts").show();
+			if ('{!contactName}' != '' || contactHtml != '') $("#addMoreContacts").show();
 
-				$("#unit").attr("name", Math.random().toString(36).substring(7));
-				$("#contact").attr("name", Math.random().toString(36).substring(7));
-				$("#account").attr("name", Math.random().toString(36).substring(7));
+			$("#unit").attr("name", Math.random().toString(36).substring(7));
+			$("#contact").attr("name", Math.random().toString(36).substring(7));
+			$("#account").attr("name", Math.random().toString(36).substring(7));
 
-				var additionalContacts = {!additionalContactsString
+			var additionalContacts = {!additionalContactsString
 			};
 			if (!isEmpty(additionalContacts)) {
 				for (var contactId in additionalContacts) {
@@ -1110,7 +1111,7 @@
 				return true;
 			}
 
-			
+
 			function storeHtml() {
 				contactHtml = $("#contact").val();
 				accountHtml = $("#account").val();
