@@ -4,7 +4,7 @@ global without sharing class SalesHD_Account {
 
 	private static Id currentUser = UserInfo.getUserId();
 
-	private static List<String> csuiteTitles = new List<String>{'CCO', 'CEO', 'CFO', 'COO'};
+	private static List<String> csuiteTitles = new List<String>{'CCO', 'CEO', 'CFO', 'COO', 'CMO'};
 
 	public class updateUnit{
 		public Id unitId;

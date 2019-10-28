@@ -661,6 +661,13 @@
 			.btn-success:active {
 				background-color: #3ab74f !important;
 			}
+
+			#emailSent {
+				width: 100%;
+				background-color: #157DFA !important;
+				color: white !important;
+				display: none;
+			}
 		</style>
 	</head>
 
@@ -809,6 +816,12 @@
 							</div>
 
 							<div style="margin-top:20px;">
+								<div class="alert alert-primary" role="alert" id="emailSent">
+									An invite has been sent to your Outlook Calendar.
+								</div>
+							</div>
+
+							<div style="margin-top:20px;">
 								<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}';"
 								 style="margin-top:-7px!important" />
 								<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
@@ -819,9 +832,8 @@
 								<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete"
 								 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';" />
 								<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
-								 rerender="containerBlock" action="{!addToOutlook}" />
+								 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
 							</div>
-
 						</apex:form>
 
 						<apex:pageMessages />
@@ -890,7 +902,6 @@
 				</div>
 			</div>
 
-
 		</div>
 		<!-- Lightning Wrapper -->
 
@@ -919,6 +930,10 @@
 						return false;
 				}
 				return true;
+			}
+
+			function emailSent() {
+				$("#emailSent").slideDown().delay(3500).slideUp();
 			}
 
 		</script>
