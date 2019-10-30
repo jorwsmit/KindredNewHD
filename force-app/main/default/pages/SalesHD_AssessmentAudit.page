@@ -16,13 +16,18 @@
         <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
         <apex:slds />
         <style>
-
-            .field-label{
+            .field-label {
                 font-size: 18px;
             }
 
             [id*=assessmentForm] table tbody tr td {
-                text-align: right;
+                text-align: left;
+                width: 200px !important;
+            }
+
+            .slds-scope table{
+                table-layout: fixed;
+                width: 240px;
             }
 
             label {
@@ -66,7 +71,7 @@
             }
 
             .full-width {
-                width: 100%;
+                /* width: 100%; */
                 margin-bottom: 10px;
             }
 
@@ -166,34 +171,6 @@
 
                                 <div class="container">
 
-                                    <div class="row form-header mbottom">
-                                        <div class="col">
-                                            Primary Diagnosis
-                                        </div>
-
-                                    </div>
-
-                                    <div class="row form-row mbottom">
-                                        <div class="col-6 field-label">
-                                            {!$ObjectType.Assessment_Audit__c.fields.Primary_Diagnosis_is_Proven__c.InlineHelpText}
-                                        </div>
-                                        <div class="col-6">
-                                            <apex:selectRadio value="{!assessmentAudit.Primary_Diagnosis_is_Proven__c}" required="true">
-                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
-                                            </apex:selectRadio>
-                                        </div>
-                                    </div>
-
-                                    <div class="row form-row mbottom">
-                                        <div class="col-6 field-label">
-                                            {!$ObjectType.Assessment_Audit__c.fields.Treatment_Plan_is_Outlined__c.InlineHelpText}
-                                        </div>
-                                        <div class="col-6">
-                                            <apex:selectRadio value="{!assessmentAudit.Treatment_Plan_is_Outlined__c}" required="true">
-                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
-                                            </apex:selectRadio>
-                                        </div>
-                                    </div>
 
                                     <div class="row form-header mbottom">
                                         <div class="col">
@@ -229,6 +206,35 @@
                                         </div>
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.Narratives_Use_Approved_Abbreviations__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-header mbottom">
+                                        <div class="col">
+                                            Primary Diagnosis
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Primary_Diagnosis_is_Proven__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Primary_Diagnosis_is_Proven__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Treatment_Plan_is_Outlined__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Treatment_Plan_is_Outlined__c}" required="true">
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
