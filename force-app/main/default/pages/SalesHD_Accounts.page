@@ -633,7 +633,7 @@ $(document).ready(function(){
 		sessionStorage.removeItem("hdBreadcrumb");
 
 
-		if (sessionStorage.selectedState!=''){
+		if (sessionStorage.selectedState!=null && sessionStorage.selectedState!=''){
 			selectedState = sessionStorage.selectedState;
 			$('#stateDropdown').text(selectedState);
 		}
