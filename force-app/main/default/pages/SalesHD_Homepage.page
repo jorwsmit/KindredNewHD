@@ -193,6 +193,10 @@
 				-webkit-overflow-scrolling: touch;
 			}
 
+			.modal-header {
+				color: #FFFFFF !important;
+			}
+
 			.modal-title {
 				font-weight: normal !important;
 				color: #157DFA !important;
@@ -692,8 +696,16 @@
 			<div class="container white-bg shadow">
 				<div class="row inner-container">
 					<div class="col-md-12 no-pad">
-						<h3 class="thin italic">
-							<i class="fas fa-bullhorn icon icon-red" style="margin-left:0px;padding:10px 8px 10px 8px;" aria-hidden="true"></i> Messages</h3>
+						<div class="row">
+							<div class="col-md-6">
+								<h3 class="thin italic">
+									<i class="fas fa-bullhorn icon icon-red" style="margin-left:0px;padding:10px 8px 10px 8px;" aria-hidden="true"></i> Messages</h3>
+							</div>
+							<div class="col-md-6">
+								<a style="float:right;" data-toggle="modal" data-target="#newMessage">Add new message</a>
+							</div>
+						</div>
+
 						<ul id="corporateMessages">
 							<div class="grey" style="padding:10px;">
 								<i class="fa fa-times-circle" aria-hidden="true"></i> You have no messages at this time.
@@ -740,6 +752,13 @@
 						<div class="shadow white-bg rounded">
 							<h3 class="thin italic">
 								<i class="fas fa-crown icon icon-yellow" style="padding:10px 7px 10px 7px;" aria-hidden="true"></i> CL Leaderboard</h3>
+							<apex:form style="padding:10px;">
+								<apex:selectList id="selected_list" value="{!marketDropdown}" required="false" size="1" style="width:50%;">
+									<apex:selectOption itemvalue="market" itemLabel="Market" />
+									<apex:selectOption itemvalue="nation" itemLabel="Nation" />
+									<apex:actionSupport event="onchange" action="{!getLeaderboard}" oncomplete="displayLeaderboard();" />
+								</apex:selectList>
+							</apex:form>
 							<ul id="leaderboard" style="max-height:500px;overflow:auto;">
 								<div style="position:relative; height:50px;">
 									<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
@@ -752,6 +771,11 @@
 							<p style="padding-top:5px; padding-left:10px; font-size:12px;">
 								*Previous month percent of revenue target.
 							</p>
+						</div>
+
+						<div style="padding:10px 0px 0px 0px!important;">
+							<button class="btn btn-primary btn-block rounded" onclick="window.location.href='/apex/SalesHD_NewEncounter'">
+								<i class="fas fa-phone"></i> New Encounter</button>
 						</div>
 
 						<div style="padding:10px 0px 10px 0px!important;">
@@ -818,6 +842,44 @@
 				</div>
 			</div>
 
+			<div class="modal fade" id="newMessage">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<apex:form>
+							<div class="modal-header bg-primary">
+								<h3 class="bold">
+									<i aria-hidden="true" class="fa fa-bed" style="padding-right:10px;"></i> Add New Message</h3>
+							</div>
+							<div class="modal-body">
+								<p>This message will display to users under you in the Salesforce hierarchy.</p>
+								<apex:inputTextarea styleClass="form-control" value="{!messageText}" html-placeholder="Message" />
+								<p style="padding-top:10px">Feel free to upload an attachment to your meesage by uploading a file.</p>
+								<div style="padding:10px; border:1px solid #ced4da; border-radius:.25rem;">
+									<apex:inputFile value="{!file}" fileName="{!fileName}" />
+								</div>
+								<apex:actionStatus id="statusSpinner">
+									<apex:facet name="start">
+
+										<div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:170px;">
+											<div class="slds-spinner__dot-a"></div>
+											<div class="slds-spinner__dot-b"></div>
+										</div>
+
+									</apex:facet>
+								</apex:actionStatus>
+
+								<apex:pageMessages />
+							</div>
+							<div class="modal-footer">
+								<apex:commandButton styleClass="btn btn-primary" style="margin-left:5px!important;" value="Save Message" status="statusSpinner"
+								 action="{!newMessage}" />
+								<button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding:2px 5px;">Cancel</button>
+							</div>
+						</apex:form>
+					</div>
+				</div>
+			</div>
+
 		</div>
 		<!-- Lightning Wrapper -->
 
@@ -831,6 +893,8 @@
 			$(document).ready(function () {
 
 				myPerformance();
+
+				displayLeaderboard();
 
 				sessionStorage.removeItem("hdBreadcrumb");
 
@@ -875,16 +939,16 @@
 
 				}, { escape: false });
 
-				SalesHD_Homepage.getLeaderboard(function (callback, event) {
-					$("#leaderboard").html('');
-					var leaderboard = JSON.parse(callback);
-					for (user of leaderboard) {
-						$("#leaderboard").append('<li><div class="row"><div class="col-md-1" style="font-size:35px;padding-top:12px;">' + user.ranking + '</div>' +
-							'<div class="col-md-1" style="padding:0px!important;"><img style="border-radius:25px;border:2px solid #157DFA;" src="' + user.photoUrl + '"/></div>' +
-							'<div class="col-md-7"><div><b>' + user.name + '</b></div><div style="font-weight:lighter;">' + user.market + '</div></div>' +
-							'<div class="col-md-3" style="text-align:right;padding-top:12px;">' + user.revenue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</div></div></li>');
-					}
-				}, { escape: false });
+				// SalesHD_Homepage.getLeaderboard(function (callback, event) {
+				// 	$("#leaderboard").html('');
+				// 	var leaderboard = JSON.parse(callback);
+				// for (user of leaderboard) {
+				// 	$("#leaderboard").append('<li><div class="row"><div class="col-md-1" style="font-size:35px;padding-top:12px;">' + user.ranking + '</div>' +
+				// 		'<div class="col-md-1" style="padding:0px!important;"><img style="border-radius:25px;border:2px solid #157DFA;" src="' + user.photoUrl + '"/></div>' +
+				// 		'<div class="col-md-7"><div><b>' + user.name + '</b></div><div style="font-weight:lighter;">' + user.market + '</div></div>' +
+				// 		'<div class="col-md-3" style="text-align:right;padding-top:12px;">' + user.revenue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</div></div></li>');
+				// }
+				// }, { escape: false });
 
 				$('#directorySearch').keyup(function () {
 					$("#directory li").each(function () {
@@ -896,26 +960,48 @@
 					});
 				});
 
-				SalesHD_Homepage.getMessages(function (callback, event) {
-					var messages = JSON.parse(callback);
-					if (messages.length > 0) $('#corporateMessages').html('');
-					for (message of messages) {
-						$('#corporateMessages').append('<li><h5 style="font-size:15px;"><b>' + message.author + '</b> ' + message.authorTitle + '</h5>' + message.message + '</li>')
-					}
-				}, { escape: false });
+				// SalesHD_Homepage.getMessages(function (callback, event) {
+				// 	var messages = JSON.parse(callback);
+				// 	if (messages.length > 0) $('#corporateMessages').html('');
+				// 	for (message of messages) {
+				// 		$('#corporateMessages').append('<li><h5 style="font-size:15px;"><b>' + message.author + '</b> ' + message.authorTitle + '</h5>' + message.message + '</li>')
+				// 	}
+				// }, { escape: false });
 
-				SalesHD_Homepage.getNotifications(function (callback, event) {
-					var notifications = JSON.parse(callback);
-					if (notifications.length > 0) $('#notifications').html('');
-					for (notification of notifications) {
-						$('#notifications').append('<li data-type=' + notification.n_type + ' id="' + notification.n_id + '"><h5 style="font-size:15px;">' + notification.icon + notification.body + '</li>');
-					}
+				var messages = {!messagesJSON
+			};
+			if (messages.length > 0) $('#corporateMessages').html('');
+			for (message of messages) {
+				$('#corporateMessages').append('<li><h5 style="font-size:15px;"><b>' + message.author + '</b> ' + message.authorTitle + '</h5>' + message.message + '</br>' + message.attachment + '</li>')
+			}
 
-					$("#notifications li").click(function () {
-						if ($(this).data('type') == 'event') window.location.href = '/apex/SalesHD_Encounter?id=' + $(this).attr('id');
-						else if ($(this).data('type') == 'physician' && $(this).attr('id')) window.location.href = '/apex/SalesHD_Contact?id=' + $(this).attr('id');
-					});
-				}, { escape: false });
+			function displayLeaderboard() {
+				var leaders = {!leaderboardJSON
+			};
+			$('#leaderboard').html('');
+			for (leader of leaders) {
+				$("#leaderboard").append('<li><div class="row"><div class="col-md-1" style="font-size:35px;padding-top:12px;">' + leader.ranking + '</div>' +
+					'<div class="col-md-1" style="padding:0px!important;"><img style="border-radius:25px;border:2px solid #157DFA;" src="' + leader.photoUrl + '"/></div>' +
+					'<div class="col-md-7"><div><b>' + leader.name + '</b></div><div style="font-weight:lighter;">' + leader.market + '</div></div>' +
+					'<div class="col-md-3" style="text-align:right;padding-top:12px;">' + leader.revenue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</div></div></li>');
+			}
+			}
+
+
+
+
+			SalesHD_Homepage.getNotifications(function (callback, event) {
+				var notifications = JSON.parse(callback);
+				if (notifications.length > 0) $('#notifications').html('');
+				for (notification of notifications) {
+					$('#notifications').append('<li data-type=' + notification.n_type + ' id="' + notification.n_id + '"><h5 style="font-size:15px;">' + notification.icon + notification.body + '</li>');
+				}
+
+				$("#notifications li").click(function () {
+					if ($(this).data('type') == 'event') window.location.href = '/apex/SalesHD_Encounter?id=' + $(this).attr('id');
+					else if ($(this).data('type') == 'physician' && $(this).attr('id')) window.location.href = '/apex/SalesHD_Contact?id=' + $(this).attr('id');
+				});
+			}, { escape: false });
 
 
 

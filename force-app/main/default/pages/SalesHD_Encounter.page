@@ -668,6 +668,7 @@
 				color: white !important;
 				display: none;
 			}
+
 		</style>
 	</head>
 
@@ -702,9 +703,27 @@
 
 			<div class="container shadow white-bg">
 				<div class="row">
-					<apex:outputPanel id="containerBlock">
-						<apex:form id="encounterForm">
+					<apex:outputPanel id="containerBlock" styleClass="width:100%;">
+						<apex:form id="encounterForm" styleClass="width:100%;">
 							<label>INFORMATION</label>
+
+							<div>
+								<label style="display:inline-block;">Created By:</label>
+								<p style="display:inline-block;">{!event.CreatedBy.Name}</p>
+							</div>
+
+							<apex:outputPanel rendered="{!IF(event.CreatedById<>event.OwnerId, true, false)}">
+								<div>
+									<label style="display:inline-block;">Assigned To:</label>
+									<p style="display:inline-block;">{!event.Owner.Name}</p>
+								</div>
+							</apex:outputPanel>
+
+							<div id="additionalTeam" style="display:none;">
+								<label style="display:inline-block;">Additional Kindred Team Members:</label>
+								<p style="display:inline-block;"></p>
+							</div>
+
 							<div>
 								<label style="display:inline-block;">Start/End Datetime:</label>
 								<p style="display:inline-block;">{!startDateFormated} to {!endDateFormated}</p>
@@ -821,6 +840,7 @@
 								</div>
 							</div>
 
+						<apex:outputPanel rendered="{!IF(event.OwnerId=$User.Id, true, false)}">
 							<div style="margin-top:20px;">
 								<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}';"
 								 style="margin-top:-7px!important" />
@@ -834,6 +854,7 @@
 								<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
 								 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
 							</div>
+						</apex:outputPanel>
 						</apex:form>
 
 						<apex:pageMessages />
@@ -920,6 +941,15 @@
 				$("#additionalContacts").show();
 				for (var contactId in additionalContacts) {
 					$("#additionalContacts p").append('<a style="margin-right:10px;" href="/apex/SalesHD_contact?id=' + contactId + '">' + additionalContacts[contactId] + '</a>');
+				}
+			}
+
+			var additionalTeam = {!additionalTeamString
+			};
+			if (!isEmpty(additionalTeam)) {
+				$("#additionalTeam").show();
+				for (var userId in additionalTeam) {
+					$("#additionalTeam p").append('<span style="margin-right:10px; text-decoration:underline;">' + additionalTeam[userId] + '</span>');
 				}
 			}
 });

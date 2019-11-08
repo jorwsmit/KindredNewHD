@@ -637,6 +637,10 @@
 				width: 100% !important;
 			}
 
+			.multiSelectPicklistRow {
+				font-size: 16px;
+			}
+
 			.multiSelectPicklistTable tbody tr:not(multiSelectPicklistRow) td {
 				border: none;
 			}
@@ -658,9 +662,14 @@
 				display: none !important;
 			} */
 
-			#addMoreContacts {
-				display: none;
+			#addMoreContacts,
+			#addMoreTeamMembers {
 				text-decoration: underline;
+			}
+
+			#teamList {
+				max-height: 245px;
+				overflow: auto;
 			}
 		</style>
 	</head>
@@ -706,6 +715,18 @@
 					<apex:outputPanel id="containerBlock">
 						<apex:form id="encounterForm">
 							<label>INFORMATION</label>
+							<div style="margin-top:5px;">
+								<apex:inputHidden value="{!additionalTeamIdString}" id="additionalTeamIds" />
+								<apex:inputHidden value="{!removeAdditionalTeamIdString}" id="removeAdditionalTeamIds" />
+								<label style="width: 100%; display:none;" id="teamLabel">Additional Kindred Team Members</label>
+								<ul style="margin-top:-10px;" id="addedTeam"></ul>
+								<span id="addMoreTeamMembers" class="blue pointer">
+									<i class="fa fa-user-plus"></i> Add Additional Kindred Team Members</span>
+								<div id="team-members" style="display:none;">
+									<input placeholder="Search for Kindred Team Members" class="form-control" id="teamSearch" style="border:1px solid #ddd; border-radius:4px 4px 0px 0px;"/>
+									<ul id="teamList" style="border:1px solid #ddd; border-radius:0px 0px 4px 4px;"></ul>
+								</div>
+							</div>
 							<label class="required" style="width: 100%;">*Date
 								<span style="padding-left:28%;">*Time</span>
 								<span style="padding-left:27%;">*Duration In Minutes</span>
@@ -900,6 +921,9 @@
 			var addedContacts = [];
 			var removeContacts = [];
 
+			var addedTeam = [];
+			var removeTeam = [];
+
 			var contactHtml = '';
 			var additionalContactHtml = '';
 			var accountHtml = '';
@@ -919,6 +943,10 @@
 
 				$(document).on("click", "#addMoreContacts", function () {
 					$('#addContactList').show();
+				});
+
+				$(document).on("click", "#addMoreTeamMembers", function () {
+					$('#team-members').show();
 				});
 
 			});
@@ -947,13 +975,27 @@
 
 			}
 
+			function removeAddedTeam(id) {
+				$("#addedTeam-" + id).remove();
+
+				var index = addedTeam.indexOf(id);
+
+				if (index !== -1) {
+					addedTeam.splice(index, 1);
+					removeTeam.push(id);
+					document.getElementById('{!$Component.encounterForm.removeAdditionalTeamIds}').value = removeTeam.join();
+					if (addedTeam.length == 0) $("#teamLabel").hide();
+				}
+
+			}
+
 			function loadPage() {
 
 				if ('{!contactName}' == '') $("#contact").val(contactHtml);
 				if ('{!accountName}' == '') $("#account").val(accountHtml);
 				if ('{!unitName}' == '') $("#unit").val(unitHtml);
-				if ({!unitList			
-}.length == 0) $("#unitList").html(unitListHtml);
+				if ({!unitList
+			}.length == 0) $("#unitList").html(unitListHtml);
 			$("#addedContacts").html(additionalContactHtml);
 
 			if ('{!contactName}' != '' || contactHtml != '') $("#addMoreContacts").show();
@@ -971,6 +1013,18 @@
 						additionalContacts[contactId] + ' <span style="float:right;" onclick="removeAddedContact(\'' + contactId + '\');"><i class="fas fa-times"></i></span></li>');
 				}
 				document.getElementById('{!$Component.encounterForm.additionalContactIds}').value = addedContacts.join();
+			}
+
+			var additionalTeamMembers = {!additionalTeamString
+			};
+			if (!isEmpty(additionalTeamMembers)) {
+				$("#teamLabel").show();
+				for (var userId in additionalTeamMembers) {
+					addedTeam.push(userId);
+					$("#addedTeam").append('<li id="addedTeam-' + userId + '">' +
+						additionalTeamMembers[userId] + ' <span style="float:right;" onclick="removeAddedTeam(\'' + userId + '\');"><i class="fas fa-times"></i></span></li>');
+				}
+				document.getElementById('{!$Component.encounterForm.additionalTeamIds}').value = addedTeam.join();
 			}
 
 			if ({!unitList}.length > 0) $("#unitList").html('');
@@ -1008,6 +1062,13 @@
 			});
 
 			$(document).click(function (e) {
+				if (!$('#addMoreTeamMembers').is(e.target) && $('#addMoreTeamMembers').has(e.target).length === 0 &&
+					!$('#teamSearch').is(e.target) && $('#teamSearch').has(e.target).length === 0) {
+					$('#team-members').hide();
+				}
+			});
+
+			$(document).click(function (e) {
 				if (!$('#account').is(e.target) && $('#account').has(e.target).length === 0) {
 					$('#accountList').hide();
 				}
@@ -1029,6 +1090,17 @@
 				});
 			});
 
+			$('#teamSearch').keyup(function () {
+				$("#teamList li").each(function () {
+					if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#teamSearch").val().toUpperCase().replace(/\s/g, '')) > -1) {
+						$(this).show();
+					} else {
+						$(this).hide();
+					}
+				});
+			});
+
+
 			$('#account').keyup(function () {
 				$("#accountList li").each(function () {
 					if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#account").val().toUpperCase().replace(/\s/g, '')) > -1) {
@@ -1038,6 +1110,34 @@
 					}
 				});
 			});
+
+
+			SalesHD_Event.getTeam(function (callback, event) {
+				var data = JSON.parse(callback);
+				for (var teamMember of data) {
+					$("#teamList").append('<li data-userid="' + teamMember.Id + '">' + teamMember.Name + '</li>');
+				}
+
+				$(document).on("click", '#teamList li', function () {
+					if (!addedTeam.includes($(this).data('userid'))) {
+						$('#addedTeam').append('<li id="addedTeam-' + $(this).data('userid') + '">' + $(this).text() + ' <span style="float:right;" onclick="removeAddedTeam(\'' + $(this).data('userid') + '\');"><i class="fas fa-times"></i></span></li>');
+						addedTeam.push($(this).data('userid'));
+						$("#teamLabel").show();
+						var index = removeTeam.indexOf($(this).data('userid'));
+
+						if (index !== -1) {
+							removeTeam.splice(index, 1);
+							document.getElementById('{!$Component.encounterForm.removeAdditionalTeamIds}').value = removeTeam.join();
+						}
+
+						document.getElementById('{!$Component.encounterForm.additionalTeamIds}').value = addedTeam.join();
+					}
+
+				});
+
+			}, { escape: false });
+
+
 
 			SalesHD_Event.getContacts(function (callback, event) {
 				var data = JSON.parse(callback);

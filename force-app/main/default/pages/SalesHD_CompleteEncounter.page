@@ -632,6 +632,10 @@
 				width: 100% !important;
 			}
 
+			.multiSelectPicklistRow {
+				font-size: 16px;
+			}
+
 			.multiSelectPicklistTable tbody tr:not(multiSelectPicklistRow) td {
 				border: none;
 			}

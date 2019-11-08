@@ -24,6 +24,11 @@ public String removeAdditionalContactIdString {get; set;}
 private Map<Id, String> additionalContacts {get; set;}
 public String additionalContactsString {get; set;}
 
+public String additionalTeamIdString {get; set;}
+public String removeAdditionalTeamIdString {get; set;}
+private Map<Id, String> additionalTeam {get; set;}
+public String additionalTeamString {get; set;}
+
 public Id accountId {get; set;}
 public Id unitId {get; set;}
 
@@ -39,6 +44,8 @@ public String unitName {get; set;}
 public String unitList {get; set;}
 
 public String encounters {get; set;}
+
+public String ownerPhotoUrl {get; set;}
 
 
 
@@ -69,7 +76,8 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 	endDate = endDatetime.date();
 
 	thisEvent = (Event)stdController.getRecord();
-	for(Event e : [select Id, StartDatetime, EndDatetime, WhoId, Who.Name, WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
+
+	for(Event e : [select Id, OwnerId, StartDatetime, EndDatetime, WhoId, Who.Name, WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
 		if(e.StartDatetime!=null) {
 			startDateFormated = e.StartDatetime.format();
 			startDate = e.StartDatetime.date();
@@ -103,12 +111,25 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 
 	additionalContacts = new Map<Id, String>();
 	additionalContactIdString = '';
+	additionalTeam = new Map<Id, String>();
+	additionalTeamIdString = '';
 	for(EventRelation er : [select Relation.Name, RelationId from EventRelation where EventId=:ApexPages.CurrentPage().getparameters().get('id') and IsInvitee=true]) {
-		additionalContacts.put(er.RelationId, er.Relation.Name);
-		additionalContactIdString += er.RelationId+',';
+		if(String.valueOf(er.RelationId).left(3)=='003') {
+			additionalContacts.put(er.RelationId, er.Relation.Name);
+			additionalContactIdString += er.RelationId+',';
+		} else if(String.valueOf(er.RelationId).left(3)=='005') {
+			additionalTeam.put(er.RelationId, er.Relation.Name);
+			additionalTeamIdString += er.RelationId+',';
+		}
+
 	}
+
+
 	additionalContactIdString.removeEnd(',');
 	additionalContactsString = JSON.serializePretty(additionalContacts);
+
+	additionalTeamIdString.removeEnd(',');
+	additionalTeamString = JSON.serializePretty(additionalTeam);
 
 	unitList = '[]';
 	for(Account a : [select Id, Name from Account where Id=:ApexPages.CurrentPage().getparameters().get('accountId') or Id=:accountId limit 1]) {
@@ -132,7 +153,7 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 
 
 	List<Event> encountersList = new List<Event>();
-	for(Event e : [select Id, SalesHD_Complete__c, Subject, Type from Event where OwnerId=:currentUser and ActivityDate=THIS_MONTH]) {
+	for(Event e : [select Id, SalesHD_Complete__c, Subject, Type, OwnerId from Event where OwnerId=:currentUser and ActivityDate=THIS_MONTH]) {
 		encountersList.add(e);
 	}
 	encounters = JSON.serializePretty(encountersList);
@@ -143,12 +164,23 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 
 }
 
+@RemoteAction global static String getTeam(){
+	String roleId = '';
+	for(UserRole ur : [select Id from UserRole where name = 'HD - VP']) {
+		roleId = ur.Id;
+	}
+	set<Id> allSubRoleIds = getSubRoleIds(new set<ID> {roleId});
+	allSubRoleIds.add(roleId);
+	return JSON.serializePretty([select Name, Id from User where isActive=true and UserRoleId in: allSubRoleIds order by Name asc]);
+	return null;
+}
+
 @RemoteAction global static String getContacts() {
-	return JSON.serializePretty([select Contact__r.Id, Contact__r.Name from Contact_Team__c where User__c =: currentUser]);
+	return JSON.serializePretty([select Contact__r.Id, Contact__r.Name from Contact_Team__c where User__c =: currentUser order by Contact__r.LastActivityDate desc nulls last, Contact__r.name asc]);
 }
 
 @RemoteAction global static String getAccounts() {
-	return JSON.serializePretty([select AccountId, Account.Name from AccountTeamMember where UserId =: currentUser and Account.RecordType.Name='HD Accounts']);
+	return JSON.serializePretty([select AccountId, Account.Name from AccountTeamMember where UserId =: currentUser and Account.RecordType.Name='HD Accounts' order by Account.LastActivityDate desc nulls last, Account.Name asc]);
 }
 
 @RemoteAction global static String getUnits(Id accountId) {
@@ -290,11 +322,18 @@ public PageReference saveEvent(){
 				additionalContacts.clear();
 				additionalRelatedContacts(tempEvent);
 				removeRelatedContacts(tempEvent);
+
+				additionalTeam.clear();
+				additionalRelatedTeamMembers(tempEvent);
+				removeRelatedTeamMembers(tempEvent);
 				eventPage = new PageReference('/apex/SalesHD_Encounter?id='+tempEvent.Id);
 			} else {
 				upsert thisEvent;
 				removeRelatedContacts(thisEvent);
 				additionalRelatedContacts(thisEvent);
+
+				additionalRelatedTeamMembers(thisEvent);
+				removeRelatedTeamMembers(thisEvent);
 				eventPage = new PageReference('/apex/SalesHD_Encounter?id='+thisEvent.Id);
 			}
 		}
@@ -326,6 +365,18 @@ private void removeRelatedContacts(Event e){
 	}
 }
 
+private void removeRelatedTeamMembers(Event e){
+	List<EventRelation> removeEventTeamMembers = new List<EventRelation>();
+	Set<String> removeTeamIds = new Set<String>();
+	if(removeAdditionalTeamIdString!=null && removeAdditionalTeamIdString!='') {
+		removeTeamIds.addAll(removeAdditionalTeamIdString.split(','));
+		for(EventRelation er : [select RelationId from EventRelation where EventId=:e.Id and IsParent=false]) {
+			if(removeTeamIds.contains(er.RelationId)) removeEventTeamMembers.add(er);
+		}
+		delete removeEventTeamMembers;
+	}
+}
+
 private void additionalRelatedContacts(Event e ){
 	List<EventRelation> additionalEventContacts = new List<EventRelation>();
 	if(additionalContactIdString!=null && additionalContactIdString!='') {
@@ -335,6 +386,61 @@ private void additionalRelatedContacts(Event e ){
 		insert additionalEventContacts;
 	}
 }
+
+private void additionalRelatedTeamMembers(Event e ){
+	List<EventRelation> additionalEventTeamMembers = new List<EventRelation>();
+	if(additionalTeamIdString!=null && additionalTeamIdString!='') {
+		List<Id> teamToEmail = new List<Id>();
+		for(Id additionalTeamId : additionalTeamIdString.split(',')) {
+			if(!additionalTeam.containsKey(additionalTeamId) && e.OwnerId!=additionalTeamId
+			   && e.CreatedById!=additionalTeamId) {
+				additionalEventTeamMembers.add(new EventRelation(RelationId=additionalTeamId, IsInvitee=true, EventId=e.Id));
+				teamToEmail.add(additionalTeamId);
+
+			}
+		}
+		insert additionalEventTeamMembers;
+		if(!teamToEmail.isEmpty()) emailKindredTeam(teamToEmail, e);
+	}
+}
+
+
+private static void emailKindredTeam(List<Id> userIds, Event e){
+
+	String location = '';
+	for(Account a : [select shippingAddress__c from Account where id=:e.whatId]) {
+		location = a.shippingAddress__c;
+	}
+
+
+	Messaging.reserveSingleEmailCapacity(2);
+
+	Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+
+	List<String> toAddresses = new List<String>();
+	for(User u : [select email from user where Id in :userIds]) {
+		toAddresses.add(u.email);
+	}
+
+	mail.setToAddresses(toAddresses);
+	mail.setReplyTo(UserInfo.getUserEmail());
+	mail.setSenderDisplayName(UserInfo.getName());
+	mail.setSubject('Salesforce Meeting Invitation - '+e.startDateTime.format());
+	mail.setPlainTextBody(emailBody(e, location)+'<br/><br/>'+URL.getSalesforceBaseUrl().toExternalForm()+'/apex/saleshd_encounter?id='+e.Id);
+	mail.setHtmlBody(emailBody(e, location)+'<br/><br/><a href="'+URL.getSalesforceBaseUrl().toExternalForm()+'/apex/saleshd_encounter?id='+e.Id+'">Open Encounter in Salesforce</a>');
+	Messaging.EmailFileAttachment attach = new Messaging.EmailFileAttachment();
+	attach.filename = 'meeting.ics';
+	attach.ContentType = 'text/calendar;';
+
+	attach.setBody(invite(e, location));
+	attach.setContentType('text/calendar; charset=utf-8; method=REQUEST');
+
+	mail.setFileAttachments(new Messaging.EmailFileAttachment[] {attach});
+	Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+
+}
+
+
 public PageReference saveCompleteEvent() {
 	PageReference eventPage = null;
 	try{
@@ -372,12 +478,15 @@ public PageReference completeAndNext() {
 		           SalesHD_Account_Unit__c, Type, SalesHD_Call_Objective__c,
 		           SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c,
 		           SalesHD_Agenda_Preparation__c, SalesHD_Data_Preparation__c,
-		           Subject from Event where Id=:thisEvent.Id];
+		           Subject, OwnerId, CreatedById from Event where Id=:thisEvent.Id];
 		tempEvent = e.clone(false, true);
 		tempEvent.SalesHD_Last_Encounter__c = thisEvent.SalesHD_Next_Encounter__c;
 		insert tempEvent;
 		additionalContacts.clear();
 		additionalRelatedContacts(tempEvent);
+
+		additionalTeam.clear();
+		additionalRelatedTeamMembers(tempEvent);
 		eventPage = new PageReference('/apex/SalesHD_NewEncounter?id='+tempEvent.Id);
 	}
 	catch(DmlException ex) {
@@ -410,6 +519,9 @@ public PageReference saveAndNext() {
 				insert tempEvent;
 				additionalRelatedContacts(tempEvent);
 				removeRelatedContacts(tempEvent);
+
+				additionalRelatedTeamMembers(tempEvent);
+				removeRelatedTeamMembers(tempEvent);
 				Event tempEvent2 = new Event();
 				tempEvent2 = tempEvent.clone(false, true);
 				tempEvent2.SalesHD_Next_Encounter__c = null;
@@ -420,11 +532,18 @@ public PageReference saveAndNext() {
 				insert tempEvent2;
 				additionalRelatedContacts(tempEvent2);
 				removeRelatedContacts(tempEvent2);
+
+				additionalRelatedTeamMembers(tempEvent2);
+				removeRelatedTeamMembers(tempEvent2);
+
 				eventPage = new PageReference('/apex/SalesHD_NewEncounter?id='+tempEvent2.Id);
 			} else {
 				upsert thisEvent;
 				removeRelatedContacts(thisEvent);
 				additionalRelatedContacts(thisEvent);
+
+				removeRelatedTeamMembers(thisEvent);
+				additionalRelatedTeamMembers(thisEvent);
 				Event tempEvent = new Event();
 				tempEvent = thisEvent.clone(false, true);
 				tempEvent.SalesHD_Next_Encounter__c = null;
@@ -435,6 +554,9 @@ public PageReference saveAndNext() {
 				insert tempEvent;
 				additionalRelatedContacts(tempEvent);
 				removeRelatedContacts(tempEvent);
+
+				additionalRelatedTeamMembers(tempEvent);
+				removeRelatedTeamMembers(tempEvent);
 				eventPage = new PageReference('/apex/SalesHD_NewEncounter?id='+tempEvent.Id);
 			}
 		}
@@ -479,6 +601,7 @@ public Id eventId;
 public String eventSubject;
 public Datetime eventDatetime;
 public Boolean complete;
+public Boolean isInvitee;
 }
 
 @RemoteAction global static String getCalendar(Integer monthOffset, Integer weekOffset, Boolean isWeekly, Id userId){
@@ -497,8 +620,14 @@ public Boolean complete;
 	Date highDate = Date.newInstance(firstDay.year(), firstDay.addDays(numberOfDays).month(), firstDay.addDays(numberOfDays).day());
 
 	List<Event> eventList = [select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
-	                         who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c from event where
+	                         who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId from event where
 	                         ownerId=:userId and startDateTime>=:lowDate and endDateTime<=:highDate];
+
+	List<EventRelation> eventRelationList = [select eventId, event.subject, event.StartDateTime, event.EndDateTime,
+	                                         event.SalesHD_Complete__c, event.description, event.who.name, event.SalesHD_Call_Objective__c,
+	                                         event.SalesHD_Open_Ended_Questions__c, event.OwnerId from EventRelation where
+	                                         RelationId=:userId and event.startDateTime>=:lowDate and event.endDateTime<=:highDate];
+
 	List<Id> whoIds = new List<Id>();
 	for(Event e : eventList) {
 		if(e.WhoId!=null) whoIds.add(e.WhoId);
@@ -570,13 +699,13 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	// return startDate.format() + ' '+endDate.format();
 
 	return JSON.serialize([select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
-	                       who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c from event
+	                       who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId from event
 	                       where ownerId=: currentUser and startDateTime>=: startDate and endDateTime<=: endDate]);
 }
 
 public PageReference addToOutlook(){
 	Event e = [select Id, startDateTime, endDatetime, whatId, Subject, SalesHD_Call_Objective__c,
-	Owner.Name, Who.Name from event where Id=:thisEvent.Id];
+	           Owner.Name, Who.Name, OwnerId from event where Id=:thisEvent.Id];
 	String location = '';
 	for(Account a : [select shippingAddress__c from Account where id=:e.whatId]) {
 		location = a.shippingAddress__c;
@@ -608,20 +737,37 @@ public PageReference addToOutlook(){
 	return null;
 }
 
-private String emailBody(Event e, String location){
+private static String emailBody(Event e, String location){
+
+	List<String> contactNames = new List<String>();
+	List<String> kindredTeamNames = new List<String>();
+	for(EventRelation er : [select Relation.Name, RelationId from EventRelation where EventId=:e.Id and IsInvitee=true]) {
+		if(String.valueOf(er.RelationId).left(3)=='003') {
+			contactNames.add(er.Relation.Name);
+		} else if(String.valueOf(er.RelationId).left(3)=='005') {
+			kindredTeamNames.add(er.Relation.Name);
+		}
+	}
+
+
+
 	String emailBody = 'The following meeting was generated from a Kindred Salesforce encounter.'+
 	                   ' If you have access to Kindred\'s Salesforce Org, then you may use the link to open the encounter in Salesforce.'+
 	                   '<br/><br/>When: '+e.StartDateTime.format()+ ' to ' + e.EndDateTime.format() +
 	                   '<br/>Location: '+location+
-	                   '<br/>Contacts: ' + e.Who.Name;
-	for(EventRelation er : [select Relation.Name, RelationId from EventRelation where EventId=:e.Id and IsInvitee=true]) {
-		emailBody += ', '+ er.Relation.Name;
-	}
-	emailBody += '<br/>Encounter Owner: '+e.Owner.Name;
+	                   '<br/>Kindred Team Members: ';
+	for(String name : kindredTeamNames) emailBody += name +', ';
+	emailBody.removeEnd(', ');
+	emailBody +='<br/>Contacts: ' + e.Who.Name;
+	for(String name : contactNames) emailBody += ', ' + name;
+	// for(EventRelation er : [select Relation.Name, RelationId from EventRelation where EventId=:e.Id and IsInvitee=true]) {
+	// 	emailBody += ', '+ er.Relation.Name;
+	// }
+	emailBody += '<br/>Encounter Invitation From: '+UserInfo.getName();
 	return emailBody;
 }
 
-private Blob invite(Event e, String location) {
+private static Blob invite(Event e, String location) {
 	Integer offset = UserInfo.getTimezone().getOffset(e.startDateTime);
 	String start = String.valueOf(e.startDateTime.addSeconds(math.abs(offset)/1000)).replaceAll('-', '').replaceAll(' ','T').replaceAll(':','')+'Z';
 	offset = UserInfo.getTimezone().getOffset(e.endDateTime);
