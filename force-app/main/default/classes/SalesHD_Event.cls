@@ -77,7 +77,8 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 
 	thisEvent = (Event)stdController.getRecord();
 
-	for(Event e : [select Id, OwnerId, StartDatetime, EndDatetime, WhoId, Who.Name, WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
+	for(Event e : [select Id, OwnerId, CreatedById, StartDatetime, EndDatetime, WhoId, Who.Name,
+	WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
 		if(e.StartDatetime!=null) {
 			startDateFormated = e.StartDatetime.format();
 			startDate = e.StartDatetime.date();
@@ -153,7 +154,7 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 
 
 	List<Event> encountersList = new List<Event>();
-	for(Event e : [select Id, SalesHD_Complete__c, Subject, Type, OwnerId from Event where OwnerId=:currentUser and ActivityDate=THIS_MONTH]) {
+	for(Event e : [select Id, SalesHD_Complete__c, Subject, Type, OwnerId, CreatedById from Event where OwnerId=:currentUser and ActivityDate=THIS_MONTH]) {
 		encountersList.add(e);
 	}
 	encounters = JSON.serializePretty(encountersList);
@@ -620,12 +621,12 @@ public Boolean isInvitee;
 	Date highDate = Date.newInstance(firstDay.year(), firstDay.addDays(numberOfDays).month(), firstDay.addDays(numberOfDays).day());
 
 	List<Event> eventList = [select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
-	                         who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId from event where
+	                         who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId, CreatedById from event where
 	                         ownerId=:userId and startDateTime>=:lowDate and endDateTime<=:highDate];
 
 	List<EventRelation> eventRelationList = [select eventId, event.subject, event.StartDateTime, event.EndDateTime,
 	                                         event.SalesHD_Complete__c, event.description, event.who.name, event.SalesHD_Call_Objective__c,
-	                                         event.SalesHD_Open_Ended_Questions__c, event.OwnerId from EventRelation where
+	                                         event.SalesHD_Open_Ended_Questions__c, event.OwnerId, event.CreatedById from EventRelation where
 	                                         RelationId=:userId and event.startDateTime>=:lowDate and event.endDateTime<=:highDate];
 
 	List<Id> whoIds = new List<Id>();
@@ -699,13 +700,13 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	// return startDate.format() + ' '+endDate.format();
 
 	return JSON.serialize([select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
-	                       who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId from event
+	                       who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId, CreatedById from event
 	                       where ownerId=: currentUser and startDateTime>=: startDate and endDateTime<=: endDate]);
 }
 
 public PageReference addToOutlook(){
 	Event e = [select Id, startDateTime, endDatetime, whatId, Subject, SalesHD_Call_Objective__c,
-	           Owner.Name, Who.Name, OwnerId from event where Id=:thisEvent.Id];
+	           Owner.Name, Who.Name, OwnerId, CreatedById from event where Id=:thisEvent.Id];
 	String location = '';
 	for(Account a : [select shippingAddress__c from Account where id=:e.whatId]) {
 		location = a.shippingAddress__c;

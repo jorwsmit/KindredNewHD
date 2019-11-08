@@ -1,7 +1,8 @@
 @isTest(seeAllData=false)
 private class SalesHD_TestRedesign {
 @testSetup static void setup(){
-	Account acct = new Account(Name='Test Account', Status__c='Active');
+	RecordType accountRecordType = [select Id from RecordType where name = 'HD Accounts'];
+	Account acct = new Account(Name='Test Account', Status__c='Active', RecordtypeId=accountRecordType.Id);
 	insert acct;
 
 	AccountTeamMember atm = new AccountTeamMember(AccountId=acct.Id, UserId=UserInfo.getUserId());
@@ -66,7 +67,7 @@ private class SalesHD_TestRedesign {
 		                    TimeZoneSidKey='America/Los_Angeles', UserName='testhduser2@kndcrm.com', UserRoleId='00E130000020vp7');
 		insert usr;
 
-		Alert_and_Comment__c ac = new Alert_and_Comment__c(Datetime__c=System.now(), Comment_By__c=usr.Id,
+		Alert_and_Comment__c ac = new Alert_and_Comment__c(Datetime__c=System.now(), Comment_By__c=thisUser.Id,
 		                                                   Type__c='HD Corporate Message', Comment__c='Test');
 		insert ac;
 	}
@@ -734,23 +735,47 @@ public Boolean isActive;
 	Test.stopTest();
 }
 
-@isTest static void Homepage_getLeaderboard() {
+// @isTest static void Homepage_getLeaderboard() {
+// 	Test.startTest();
+// 	SalesHD_Homepage.getLeaderboard();
+// 	Test.stopTest();
+// }
+
+// @isTest static void Homepage_getMessages() {
+// 	User u = new User(Alias = 'newUser', Email='testhduser@kndcrm.com',
+// 	                  EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
+// 	                  LocaleSidKey='en_US', ProfileId = '00ea0000001serv',
+// 	                  TimeZoneSidKey='America/Los_Angeles', UserName='testhduser@kndcrm.com', UserRoleId='00E3000000128JB');
+// 	insert u;
+
+// 	Test.startTest();
+// 	System.runAs(u) {
+// 		SalesHD_Homepage.getMessages();
+// 	}
+// 	Test.stopTest();
+// }
+
+@isTest static void Homepage_AddNewMessage() {
+	PageReference pageRef = Page.SalesHD_Homepage;
+	Test.setCurrentPage(pageRef);
+
 	Test.startTest();
-	SalesHD_Homepage.getLeaderboard();
+	SalesHD_Homepage controller = new SalesHD_Homepage();
+	controller.file = Blob.valueOf('test file');
+	controller.fileName = 'testfile.pdf';
+	controller.messageText = 'test message';
+	controller.newMessage();
 	Test.stopTest();
 }
 
-@isTest static void Homepage_getMessages() {
-	User u = new User(Alias = 'newUser', Email='testhduser@kndcrm.com',
-	                  EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
-	                  LocaleSidKey='en_US', ProfileId = '00ea0000001serv',
-	                  TimeZoneSidKey='America/Los_Angeles', UserName='testhduser@kndcrm.com', UserRoleId='00E3000000128JB');
-	insert u;
+@isTest static void Homepage_ChangeLeaderboard() {
+	PageReference pageRef = Page.SalesHD_Homepage;
+	Test.setCurrentPage(pageRef);
 
 	Test.startTest();
-	System.runAs(u) {
-		SalesHD_Homepage.getMessages();
-	}
+	SalesHD_Homepage controller = new SalesHD_Homepage();
+	controller.marketDropdown = 'nation';
+	controller.getLeaderboard();
 	Test.stopTest();
 }
 
