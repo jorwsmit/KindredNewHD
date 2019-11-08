@@ -169,7 +169,6 @@ public PageReference getLeaderboard() {
 	List<leaderboardObject> leaderboard = new List<leaderboardObject>();
 	Integer i = 1;
 	Set<Id> roleIds = new Set<Id>();
-	if(marketDropdown=='market') roleIds.add(UserInfo.getUserRoleId());
 	if(marketDropdown=='nation') {
 		String roleId = '';
 		for(UserRole ur : [select Id from UserRole where name = 'HD - VP']) {
@@ -178,6 +177,7 @@ public PageReference getLeaderboard() {
 		roleIds = getSubRoleIds(new set<ID> {roleId});
 		roleIds.add(roleId);
 	}
+	roleIds.add(UserInfo.getUserRoleId());
 	Map<Id, User> users = new Map<ID, User>([select Name, SmallPhotoUrl, UserRole.Name from User where (UserRoleId in: roleIds or Id=:currentUser) and isActive=true]);
 	for(Sales_Performance__c sp : [select OwnerId, Actual_Revenue__c, Revenue_to_Goal__c from Sales_Performance__c where
 	                                       (OwnerId in :users.keyset() or OwnerId=:currentUser) and Month__c = last_month and Actual_Revenue__c!=null order by Revenue_to_Goal__c desc]) {
