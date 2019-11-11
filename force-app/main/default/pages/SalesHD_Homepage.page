@@ -855,7 +855,7 @@
 							<div class="modal-body">
 								<p>This message will display to users under you in the Salesforce hierarchy.</p>
 								<apex:inputTextarea styleClass="form-control" value="{!messageText}" html-placeholder="Message" />
-								<p style="padding-top:10px">Feel free to upload an attachment to your meesage by uploading a file.</p>
+								<p style="padding-top:10px">Feel free to upload an attachment to your message by uploading a file.</p>
 								<div style="padding:10px; border:1px solid #ced4da; border-radius:.25rem;">
 									<apex:inputFile value="{!file}" fileName="{!fileName}" />
 								</div>

@@ -234,7 +234,7 @@ private static String getMessages() {
 
 	List<Alert_and_Comment__c> acs = [select Id, Comment__c, Comment_By__r.Name, Comment_By__r.Title, Datetime__c
 	                                  from Alert_and_Comment__c where Type__c='HD Corporate Message' and Comment_By__r.UserRoleId in: parentUsers
-	                                                                           and (Datetime__c=last_n_days:15 or Datetime__c=this_month)];
+	                                    and (Datetime__c=last_n_days:15 or Datetime__c=this_month) order by createdDate desc];
 
 	Map<Id, ContentDocumentLink> fileLinks = new Map<Id, ContentDocumentLink>();
 	for(ContentDocumentLink cdl : [select LinkedEntityId, ContentDocument.Title, ContentDocument.LatestPublishedVersionId from ContentDocumentLink where LinkedEntityId in
