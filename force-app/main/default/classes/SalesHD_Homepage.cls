@@ -178,7 +178,7 @@ public PageReference getLeaderboard() {
 		roleIds.add(roleId);
 	}
 	roleIds.add(UserInfo.getUserRoleId());
-	Map<Id, User> users = new Map<ID, User>([select Name, SmallPhotoUrl, UserRole.Name from User where (UserRoleId in: roleIds or Id=:currentUser) and isActive=true]);
+	Map<Id, User> users = new Map<ID, User>([select Name, SmallPhotoUrl, UserRole.Name from User where (UserRoleId in: roleIds or Id=: currentUser) and isActive=true]);
 	for(Sales_Performance__c sp : [select OwnerId, Actual_Revenue__c, Revenue_to_Goal__c from Sales_Performance__c where
 	                                       (OwnerId in :users.keyset() or OwnerId=:currentUser) and Month__c = last_month and Actual_Revenue__c!=null order by Revenue_to_Goal__c desc]) {
 		leaderboardObject temp = new leaderboardObject();
@@ -234,7 +234,7 @@ private static String getMessages() {
 
 	List<Alert_and_Comment__c> acs = [select Id, Comment__c, Comment_By__r.Name, Comment_By__r.Title, Datetime__c
 	                                  from Alert_and_Comment__c where Type__c='HD Corporate Message' and Comment_By__r.UserRoleId in: parentUsers
-	                                    and (Datetime__c=last_n_days:15 or Datetime__c=this_month) order by createdDate desc];
+	                                                                           and (Datetime__c=last_n_days:15 or Datetime__c=this_month) order by createdDate desc];
 
 	Map<Id, ContentDocumentLink> fileLinks = new Map<Id, ContentDocumentLink>();
 	for(ContentDocumentLink cdl : [select LinkedEntityId, ContentDocument.Title, ContentDocument.LatestPublishedVersionId from ContentDocumentLink where LinkedEntityId in
@@ -359,16 +359,32 @@ public PageReference newMessage(){
 			cvs.add(prepareFile(file, fileName));
 			insert cvs;
 			List<ContentDocumentLink> cdls = new List<ContentDocumentLink>();
+			List<ContentWorkspaceDoc> cwds = new List<ContentWorkspaceDoc>();
 			List<Id> cdIds = new List<Id>();
+
+			String workspaceId = '';
+			for(ContentWorkspace cw : [select Id from ContentWorkspace where name='HD Shared Content']) {
+				workspaceId = cw.Id;
+			}
+
 			for(ContentVersion cv : [select ContentDocumentId from ContentVersion where Id in :cvs]) {
 				ContentDocumentLink cdl = new ContentDocumentLink();
 				cdl.ContentDocumentId = cv.ContentDocumentId;
 				cdIds.add(cv.ContentDocumentId);
 				cdl.LinkedEntityId = ac.Id;
 				cdl.ShareType = 'V';
+				cdl.Visibility = 'AllUsers';
 				cdls.add(cdl);
+
+				if(workspaceId != '') {
+					ContentWorkspaceDoc cwd = new ContentWorkspaceDoc(ContentDocumentId=cv.ContentDocumentId, ContentWorkspaceId=workspaceId);
+					cwds.add(cwd);
+				}
+
+
 			}
 			insert cdls;
+			insert cwds;
 		}
 	} catch(DmlException ex) {
 		ApexPages.addMessages(ex);
