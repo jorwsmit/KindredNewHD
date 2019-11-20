@@ -30,7 +30,7 @@
 			body {
 				font-family: "Salesforce Sans", Arial, sans-serif !important;
 				margin: 0px;
-				background-color: #E0E2E7;
+				background-color: #E0E2E7 !important;
 			}
 
 			input {
@@ -589,40 +589,6 @@
 				border-bottom: 1px solid #afafaf;
 			}
 
-			.nav-list li {
-				font-size: 20px;
-				display: inline-block;
-				border: none;
-				font-style: italic;
-				color: #FFFFFF;
-				padding: 10px 15px 10px 15px;
-				margin: 0px !important;
-				border-radius: 25px;
-			}
-
-			.nav-list li:hover {
-				border: none;
-			}
-
-			.nav-list li:hover:not(.selected) {
-				background-color: #afafaf;
-			}
-
-			.nav-list .selected {
-				background-color: #FFFFFF;
-				color: #157DFA;
-			}
-
-			.nav-container {
-				width: 100%;
-				padding: 3px !important;
-				margin-bottom: 15px !important;
-				z-index: 11;
-				position: fixed;
-				top: 0px;
-				padding-left: 70px !important;
-			}
-
 			.progress {
 				margin-top: 10px;
 				margin-left: 10px;
@@ -657,29 +623,9 @@
 
 		<div class="slds-scope">
 
-			<div class="nav-container blue-bg">
-				<div class="row">
-					<ul class="nav-list">
-						<li class="selected">
-							<i class="fas fa-home"></i> HOME
-						</li>
-						<!-- <li>
-					<i class="fas fa-phone"></i> EVENTS
-				</li> -->
-						<li onclick="window.location.href='/apex/saleshd_accounts'">
-							<i class="fas fa-hospital"></i> MY ACCOUNTS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_contacts'">
-							<i class="fas fa-user-md"></i> MY CONTACTS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_encounters'">
-							<i class="fas fa-phone"></i> ENCOUNTERS
-						</li>
-					</ul>
-				</div>
-			</div>
+			<c:SalesHD_RedesignNav/>
 
-			<div class="container white-bg shadow" style="margin-top:60px!important;">
+			<div class="container white-bg shadow">
 				<div class="row inner-container">
 					<div class="col-md-12 no-pad">
 						<h3 class="thin italic">

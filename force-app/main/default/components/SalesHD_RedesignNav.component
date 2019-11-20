@@ -1,0 +1,105 @@
+<apex:component>
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+
+        <style>
+            .navbar-toggler{
+                color: #FFFFFF !important;
+                outline: none !important;
+                border: none !important;
+                font-size: 20px !important;
+            }
+
+            .navbar {
+                background-color: #157DFA !important;
+                padding: .15rem 1rem !important;
+            }
+
+            .navbar a {
+                font-size: 20px;
+                color: #FFFFFF !important;
+                font-style: italic;
+                padding: .25rem 1rem !important;
+                border-radius: 25px;
+                text-decoration: none !important;
+                text-transform: uppercase;
+                margin: 0rem .15rem !important;
+            }
+
+            .navbar a:hover:not(.active) {
+				background-color: #afafaf !important;
+			}
+
+			.navbar .active {
+				background-color: #FFFFFF !important;
+				color: #157DFA !important;
+			}
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="slds-scope">
+
+            <!-- <div class="nav-container blue-bg">
+                <div class="row">
+                    <ul class="nav-list">
+                        <li class="selected">
+                            <i class="fas fa-home"></i> HOME
+                        </li>
+                        <li onclick="window.location.href='/apex/saleshd_accounts'">
+                            <i class="fas fa-hospital"></i> MY ACCOUNTS
+                        </li>
+                        <li onclick="window.location.href='/apex/saleshd_contacts'">
+                            <i class="fas fa-user-md"></i> MY CONTACTS
+                        </li>
+                        <li onclick="window.location.href='/apex/saleshd_encounters'">
+                            <i class="fas fa-phone"></i> ENCOUNTERS
+                        </li>
+                    </ul>
+                </div>
+            </div> -->
+
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-item nav-link" href="/apex/saleshd_homepage"><i class="fas fa-home"></i> Home</a>
+                        <a class="nav-item nav-link" href="/apex/saleshd_accounts"><i class="fas fa-hospital"></i> My Accounts</a>
+                        <a class="nav-item nav-link" href="/apex/saleshd_contacts"><i class="fas fa-user-md"></i> My Contacts</a>
+                        <a class="nav-item nav-link" href="/apex/saleshd_encounters"><i class="fas fa-phone"></i> Encounters</a>
+                        <a class="nav-item nav-link" href="/apex/saleshd_collaterals"><i class="fas fa-mail-bulk"></i> Collaterals</a>
+                    </div>
+                </div>
+            </nav>
+
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+        <script>
+            $(document).ready(function () {
+                $(function () {
+                    var url = location.pathname.substring(location.pathname.indexOf('/')).toLowerCase();
+                    $('nav a[href="' + url + '"]').addClass('active');
+                });
+            });
+        </script>
+    </body>
+
+    </html>
+
+</apex:component>
