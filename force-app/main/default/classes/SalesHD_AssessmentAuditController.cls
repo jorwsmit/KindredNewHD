@@ -9,7 +9,7 @@ private static Id currentUser = UserInfo.getUserId();
 public SalesHD_AssessmentAuditController(ApexPages.StandardController stdController) {
 	assessmentAudit = (Assessment_Audit__c)stdController.getRecord();
     for(Assessment_Audit__c aa : [select Advance_Directives_Indicated__c,Allergies_Y_or_NKA_Indicated__c,
-	All_Relevant_Items_are_Selected__c,All_Subspecialties_are_Selected__c,Assessment_Date__c,Cardio__c,
+	Lower_Level_of_Care_Section_Completed__c, All_Subspecialties_are_Selected__c,Assessment_Date__c,Cardio__c,
 	Care_Indicated_Appropriately__c,CL__c,Comorbidities_are_Identified__c,Comorbidity_is_Proven__c,
 	Cultures_Attached__c,Current_Code_Status_Indicated__c,Emergency_Contact_Completed__c,GI__c,
 	GU__c,Hospital_Admission_Section_Completed__c,ICU_CCU_Stepdown_Days_are_Indicated__c,IV_Antibiotics_Indicated__c,
