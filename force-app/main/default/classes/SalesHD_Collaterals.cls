@@ -87,8 +87,8 @@ private static String getCollaterals(){
 		if(cwd.ContentDocument.Description!=null) c.description = cwd.ContentDocument.Description;
 		c.icon = fileIcons.get(cwd.ContentDocument.FileType);
 		if(cwd.ContentDocument.LatestPublishedVersion.Audience_Tag__c!=null) {
-			if(cwd.ContentDocument.LatestPublishedVersion.Audience_Tag__c.contains('professional')) c.audience_professional = true;
-			if(cwd.ContentDocument.LatestPublishedVersion.Audience_Tag__c.contains('patient')) c.audience_patient = true;
+			if(cwd.ContentDocument.LatestPublishedVersion.Audience_Tag__c.contains('Professional')) c.audience_professional = true;
+			if(cwd.ContentDocument.LatestPublishedVersion.Audience_Tag__c.contains('Patient')) c.audience_patient = true;
 		}
 		if(favoriteCollaterals.contains(cwd.ContentDocumentId)) c.favorited = true;
         if(cwd.ContentDocument.LatestPublishedVersion.HD_Collateral_Type__c!=null) c.type = cwd.ContentDocument.LatestPublishedVersion.HD_Collateral_Type__c;
