@@ -521,7 +521,7 @@
 
 	<div class="slds-scope">
 
-		<div class="nav-container blue-bg">
+		<!-- <div class="nav-container blue-bg">
 			<div class="row">
 				<ul class="nav-list">
 					<li onclick="window.location.href='/apex/saleshd_homepage'">
@@ -538,7 +538,9 @@
 					</li>
 				</ul>
 			</div>
-		</div>
+		</div> -->
+
+		<c:SalesHD_RedesignNav/>
 
 		<!-- <div class="slds-spinner_container" id="spinner" style="position:fixed; width:100vw; height:100vh;">
 		<div class="slds-spinner slds-spinner--large slds-spinner--brand">
