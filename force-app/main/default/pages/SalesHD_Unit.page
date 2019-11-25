@@ -704,7 +704,7 @@
 				</div>
 			</div>
 
-			<div class="nav-container blue-bg">
+			<!-- <div class="nav-container blue-bg">
 				<div class="row">
 					<ul class="nav-list">
 						<li onclick="window.location.href='/apex/saleshd_homepage'">
@@ -721,7 +721,9 @@
 						</li>
 					</ul>
 				</div>
-			</div>
+			</div> -->
+
+			<c:SalesHD_RedesignNav/>
 
 			<div class="header">
 				<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>

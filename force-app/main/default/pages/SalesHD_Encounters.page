@@ -754,24 +754,7 @@
         </div>
       </div>
 
-      <div class="nav-container blue-bg">
-        <div class="row">
-          <ul class="nav-list">
-            <li onclick="window.location.href='/apex/saleshd_homepage'">
-              <i class="fas fa-home"></i> HOME
-            </li>
-            <li onclick="window.location.href='/apex/saleshd_accounts'">
-              <i class="fas fa-hospital"></i> MY ACCOUNTS
-            </li>
-            <li onclick="window.location.href='/apex/saleshd_contacts'">
-              <i class="fas fa-user-md"></i> MY CONTACTS
-            </li>
-            <li class="selected">
-              <i class="fas fa-phone"></i> ENCOUNTERS
-            </li>
-          </ul>
-        </div>
-      </div>
+      <c:SalesHD_RedesignNav/>
 
       <div class="container no-pad" style="margin-top:60px!important;">
 

@@ -558,7 +558,7 @@
 
 		</div>
 
-		<div class="nav-container blue-bg">
+		<!-- <div class="nav-container blue-bg">
 			<div class="row">
 				<ul class="nav-list">
 					<li onclick="window.location.href='/apex/saleshd_homepage'">
@@ -575,7 +575,9 @@
 					</li>
 				</ul>
 			</div>
-		</div>
+		</div> -->
+
+		<c:SalesHD_RedesignNav/>
 
 		<div class="container no-pad" style="margin-top:60px!important;">
 			<div class="row inner-container">

@@ -174,6 +174,7 @@
 				left: 10px;
 				font-size: 48px !important;
 				cursor: pointer;
+				color: #FFFFFF;
 			}
 
 			.modal {
@@ -676,7 +677,7 @@
 
 		<div class="slds-scope">
 
-			<div class="nav-container blue-bg">
+			<!-- <div class="nav-container blue-bg">
 				<div class="row">
 					<ul class="nav-list">
 						<li onclick="window.location.href='/apex/saleshd_homepage'">
@@ -693,13 +694,15 @@
 						</li>
 					</ul>
 				</div>
-			</div>
+			</div> -->
 
-			<div class="header">
+			<c:SalesHD_RedesignNav/>
+
+			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
+
+			<!-- <div class="header">
 				<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
-				<!-- <div id="profilePhoto"></div> -->
-				<!-- <h1 class="name">{!event.Subject}</h1> -->
-			</div>
+			</div> -->
 
 			<div class="container shadow white-bg">
 				<div class="row">

@@ -546,7 +546,7 @@
 
 	<div class="slds-scope">
 
-		<div class="nav-container container shadow blue-bg">
+		<!-- <div class="nav-container container shadow blue-bg">
 			<div class="row">
 				<ul class="nav-list">
 					<li onclick="window.location.href='/apex/saleshd_homepage'">
@@ -563,7 +563,9 @@
 					</li>
 				</ul>
 			</div>
-		</div>
+		</div> -->
+
+		<c:SalesHD_RedesignNav/>
 
 		<div class="container no-pad">
 			<div class="row inner-container">

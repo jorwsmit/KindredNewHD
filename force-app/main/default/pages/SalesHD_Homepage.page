@@ -738,10 +738,10 @@
 									<i class="fas fa-cart-arrow-down"></i> Missed Opportunites</button>
 							</div>
 
-							<div style="padding:0px 0px 10px 0px!important;">
+							<!-- <div style="padding:0px 0px 10px 0px!important;">
 								<button class="btn btn-primary btn-block rounded" onclick="window.location='/apex/SalesHD_AssessmentAudit';">
 									<i class="fas fa-list-alt"></i> Assessment Audit</button>
-							</div>
+							</div> -->
 						</apex:outputPanel>
 
 						<div style="padding:0px 0px 10px 0px!important;">

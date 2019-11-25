@@ -12,6 +12,9 @@
         <apex:slds />
 
         <style>
+            body{
+                background-color: #E0E2E7 !important;
+            }
             .navbar-toggler{
                 color: #FFFFFF !important;
                 outline: none !important;
@@ -20,15 +23,19 @@
             }
 
             .navbar {
+                position: fixed;
+                width: 100%;
+                top: 0px;
                 background-color: #157DFA !important;
-                padding: .15rem 1rem !important;
+                padding: .25rem 1rem !important;
+                z-index: 99;
             }
 
             .navbar a {
                 font-size: 20px;
                 color: #FFFFFF !important;
                 font-style: italic;
-                padding: .25rem 1rem !important;
+                padding: .15rem 1rem !important;
                 border-radius: 25px;
                 text-decoration: none !important;
                 text-transform: uppercase;
@@ -43,6 +50,13 @@
 				background-color: #FFFFFF !important;
 				color: #157DFA !important;
 			}
+            .header h1{
+                top: 43px;
+                padding-bottom: 16px;
+            }
+            .back-btn{
+                font-size: 42px !important;
+            }
         </style>
 
     </head>
@@ -77,6 +91,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
+                        <div style="margin-left:40px;"></div>
                         <a class="nav-item nav-link" href="/apex/saleshd_homepage"><i class="fas fa-home"></i> Home</a>
                         <a class="nav-item nav-link" href="/apex/saleshd_accounts"><i class="fas fa-hospital"></i> My Accounts</a>
                         <a class="nav-item nav-link" href="/apex/saleshd_contacts"><i class="fas fa-user-md"></i> My Contacts</a>
@@ -85,6 +100,7 @@
                     </div>
                 </div>
             </nav>
+            <div style="margin:50px;"></div>
 
         </div>
 
