@@ -650,7 +650,7 @@ public Boolean isActive;
 	SalesHD_Event controller = new SalesHD_Event(sc);
 	controller.file = Blob.valueOf('test file');
 	controller.fileName = 'testfile.pdf';
-	
+
 	controller.uploadFiles();
 
 	List<Id> fileIds = new List<Id>();
@@ -1037,6 +1037,15 @@ public Boolean isActive;
 
 	Test.startTest();
 	SalesHD_NewPhysicianRequest.sendEmail();
+	Test.stopTest();
+}
+
+//--------------------- SalesHD_Collaterals Tests-------------
+@isTest static void Collaterals_Constructor() {
+	PageReference pageRef = Page.SalesHD_Collaterals;
+	Test.setCurrentPage(pageRef);
+	Test.startTest();
+	SalesHD_Collaterals controller = new SalesHD_Collaterals();
 	Test.stopTest();
 }
 

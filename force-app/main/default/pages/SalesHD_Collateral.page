@@ -640,7 +640,7 @@
 
         <div class="slds-scope">
 
-            <c:SalesHD_RedesignNav/>
+            <c:SalesHD_RedesignNav />
 
             <div class="container shadow white-bg">
                 <div class="row blue">
@@ -714,8 +714,9 @@
                                                     <li data-contactemail="{!con.Contact__r.Email}"><b>{!con.Contact__r.Name}</b> - {!con.Contact__r.Email}</li>
                                                 </apex:repeat>
                                             </ul>
-                                            <apex:inputTextarea styleClass="form-control" style="margin-top:10px;" rows="8" value="{!emailBody}" id="emailBody" required="true"
+                                            <apex:inputTextarea styleClass="form-control" style="margin-top:10px;" rows="6" value="{!emailBody}" id="emailBody" required="true"
                                                 html-placeholder="Email"/>
+                                            <p class="red" style="font-size:14px;margin-bottom:10px;">*A link to the collateral will automatically be added to the end of the email.</p>
                                         </div>
                                     </form>
                                 </div>
@@ -724,7 +725,7 @@
                                     <!-- <button type="button" class="btn btn-primary" id="saveNote">Send</button> -->
                                     <apex:commandButton styleClass="btn btn-primary" action="{!sendEmail}" value="Send" status="statusSpinner" rerender="emailBlock"
                                         style="font-size:20px !important; vertical-align:bottom; margin-top:0px!important; width:100px; padding:11.5px 15px;"
-                                    oncomplete="$('#emailCollateral').modal('hide')"/>
+                                    oncomplete="$('#emailCollateral').modal('hide'); replaceBreaksLines();" onclick="replaceLinesBreaks();"/>
                                 </div>
 
                                 <apex:actionStatus id="statusSpinner">
@@ -777,6 +778,16 @@
                 } else {
                     window.open('/sfc/servlet.shepherd/version/download/' + id + '?asPdf=false');
                 }
+            }
+        
+        function replaceLinesBreaks(){
+            document.getElementById('{!$Component.emailForm.emailBody}').value =
+                document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+            }
+        
+        function replaceBreaksLines(){
+            document.getElementById('{!$Component.emailForm.emailBody}').value =
+                document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/<br\/>/g, '\n');
             }
 
             // for (let contacts of {favoritedContacts}) {
