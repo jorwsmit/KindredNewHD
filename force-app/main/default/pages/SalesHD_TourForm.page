@@ -1,0 +1,43 @@
+<apex:page showHeader="false" controller="SalesHD_Collaterals" lightningStyleSheets="true" standardStylesheets="false" sidebar="false"
+    applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>Collateral</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+        <style>
+        </style>
+    </head>
+
+    <body>
+
+        <div class="slds-scope">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>Welcome to Kindred. We are so happy you have come to tour our hospital. 
+                            If you are here, you are already family. 
+                            Do you mind if we sit down and I ask you a few questions so I 
+                            can best understand the needs of your loved one and also so I can understand what 
+                            is most important to you as you choose a place for your loved one to 
+                            continue their journey of healing?</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </body>
+
+    </html>
+
+</apex:page>
