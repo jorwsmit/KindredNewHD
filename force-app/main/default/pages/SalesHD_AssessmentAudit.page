@@ -32,8 +32,14 @@
 
             label {
                 font-size: 18px !important;
-                font-weight: bold;
+                font-weight: bold !important;
                 margin-left: 5px;
+            }
+
+            h3 {
+                text-transform: uppercase;
+                color: #157DFA;
+                font-weight: bold !important;
             }
 
             .required {
@@ -49,6 +55,11 @@
                 padding: 10px 5px;
                 padding-top: 5px;
                 border-bottom: 1px solid #e9ecef;
+            }
+
+            .form-subrow {
+                padding: 10px 5px;
+                padding-top: 5px;
             }
 
             .form-header {
@@ -167,12 +178,13 @@
 
                                         <div class="col-md-12">
                                             <p class="required">
-                                                <b>Instructions:</b> The Audit should be completed from the hyperlink (PreAdmt Problem List) to effectively review the Body Systems,
-                                                Medication, Culture and Lab, and Internal Use Tabs. Use the Printable version
-                                                of the Problem List to audit the quality and length of the clinical attachments.
-                                                When auditing the Clinical Appropriateness narrative, assure that it captures
-                                                all problems that are identified in the Body Systems. Number of co-morbidities
-                                                should exceed 2-3.
+                                                <b>Instructions:</b> The Audit should be completed from the hyperlink (PreAdmt
+                                                Problem List) to effectively review the Body Systems, Medication, Culture
+                                                and Lab, and Internal Use Tabs. Use the Printable version of the Problem
+                                                List to audit the quality and length of the clinical attachments. When auditing
+                                                the Clinical Appropriateness narrative, assure that it captures all problems
+                                                that are identified in the Body Systems. Number of co-morbidities should
+                                                exceed 2-3.
                                             </p>
                                         </div>
 
@@ -247,6 +259,13 @@
                                             <apex:selectRadio value="{!assessmentAudit.Plan_for_the_Comorbidity_is_Outlined__c}" required="true">
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-12">
+                                            <apex:inputField styleClass="full-width form-control" value="{!assessmentAudit.Comorbidities_Comments__c}" html-placeholder="{!$ObjectType.Assessment_Audit__c.fields.Comorbidities_Comments__c.InlineHelpText}"
+                                            />
                                         </div>
                                     </div>
 
@@ -356,7 +375,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row form-row mbottom">
+                                    <!-- <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
                                             {!$ObjectType.Assessment_Audit__c.fields.Lines_Indicated__c.InlineHelpText}
                                         </div>
@@ -364,6 +383,28 @@
                                             <apex:selectRadio value="{!assessmentAudit.Lines_Indicated__c}" required="true">
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Lines_Indicated__c.InlineHelpText}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Lines_Indicated__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Insertion_Dates_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Insertion_Dates_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
                                         </div>
                                     </div>
 
@@ -379,13 +420,32 @@
                                     </div>
 
                                     <div class="row form-row mbottom">
+
                                         <div class="col-6 field-label">
-                                            {!$ObjectType.Assessment_Audit__c.fields.IV_Antibiotics_Indicated__c.InlineHelpText}
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.IV_Antibiotics_Indicated__c.InlineHelpText}</h3>
                                         </div>
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.IV_Antibiotics_Indicated__c}" required="true">
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.IV_Antibiotics_Stop_Dates_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.IV_Antibiotics_Stop_Dates_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-row mbottom" style="width:100%;">
+                                            <div class="col-12">
+                                                <apex:inputField styleClass="full-width form-control" value="{!assessmentAudit.Antibiotic_Comments__c}" html-placeholder="{!$ObjectType.Assessment_Audit__c.fields.Antibiotic_Comments__c.InlineHelpText}"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -400,7 +460,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row form-row mbottom">
+                                    <!-- <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
                                             {!$ObjectType.Assessment_Audit__c.fields.MAR_Attached__c.InlineHelpText}
                                         </div>
@@ -408,6 +468,26 @@
                                             <apex:selectRadio value="{!assessmentAudit.MAR_Attached__c}" required="true">
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.MAR_Attached__c.InlineHelpText}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.MAR_Attached__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Number_of_MAR_Pages__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:inputField styleClass="full-width form-control" value="{!assessmentAudit.Number_of_MAR_Pages__c}" html-placeholder="Number of MAR Pages"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -429,28 +509,89 @@
                                     </div>
 
                                     <div class="row form-row mbottom">
+
                                         <div class="col-6 field-label">
-                                            {!$ObjectType.Assessment_Audit__c.fields.Neuro__c.InlineHelpText}
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Neuro__c.InlineHelpText}</h3>
                                         </div>
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.Neuro__c}" required="true">
-                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                                <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
                                             </apex:selectRadio>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Restraint_Type_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Restraint_Type_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
-                                            {!$ObjectType.Assessment_Audit__c.fields.Psychosocial_Considerations__c.InlineHelpText}
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Psychosocial_Considerations__c.InlineHelpText}</h3>
                                         </div>
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.Psychosocial_Considerations__c}" required="true">
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Living_Arrangements__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Living_Arrangements__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Lives_With__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Lives_With__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Injury_to_Self__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Injury_to_Self__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Incarcerated__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Incarcerated__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
                                     </div>
 
-                                    <div class="row form-row mbottom">
+                                    <!-- <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
                                             {!$ObjectType.Assessment_Audit__c.fields.Cardio__c.InlineHelpText}
                                         </div>
@@ -459,9 +600,56 @@
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Cardio__c.InlineHelpText}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Cardio__c}" required="true">
+                                                <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Edema_Location_and_Type__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Edema_Location_and_Type__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Rhythm__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Rhythm__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Ejection_Fraction__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Ejection_Fraction__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
                                             {!$ObjectType.Assessment_Audit__c.fields.Respiratory__c.InlineHelpText}
                                         </div>
@@ -470,9 +658,52 @@
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Respiratory__c.InlineHelpText}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Respiratory__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Respiratory_Data_Fields_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Respiratory_Data_Fields_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+                                        <div class="row form-subrow  mbottom" style="width:100%;">
+                                            <div class="col-11 offset-1">
+                                                <apex:inputField styleClass="full-width form-control" value="{!assessmentAudit.Missing_Respiratory_Fields__c}" html-placeholder="{!$ObjectType.Assessment_Audit__c.fields.Missing_Respiratory_Fields__c.InlineHelpText}"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Vent_and_Oxygen__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Vent_and_Oxygen__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <p class="required">Note: Dates are not required for the vaccines. If Flu and pnemococcal vaccine
+                                                are not selected, then the CL could not determine if the vaccines were administered.</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
                                             {!$ObjectType.Assessment_Audit__c.fields.GI__c.InlineHelpText}
                                         </div>
@@ -481,9 +712,33 @@
                                                 <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row form-row mbottom">
+
+                                        <div class="col-6 field-label">
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.GI__c.InlineHelpText}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.GI__c}" required="true">
+                                                <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.GI_Data_Fields_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.GI_Data_Fields_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
                                             {!$ObjectType.Assessment_Audit__c.fields.GU__c.InlineHelpText}
                                         </div>
@@ -492,40 +747,151 @@
                                                 <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
-                                            {!$ObjectType.Assessment_Audit__c.fields.Musculoskeletal__c.InlineHelpText}
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.GU__c.InlineHelpText}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.GU__c}" required="true">
+                                                <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.GU_Data_Fields_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.GU_Data_Fields_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Rectal_Tube_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Rectal_Tube_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Foley_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Foley_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Suprapubic_Catheter_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Suprapubic_Catheter_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+
+                                        <div class="col-6 field-label">
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Musculoskeletal__c.InlineHelpText}</h3>
                                         </div>
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.Musculoskeletal__c}" required="true">
                                                 <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
                                             </apex:selectRadio>
+
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Musculoskeletal_Data_Fields_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Musculoskeletal_Data_Fields_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Therapies__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Therapies__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="row form-row mbottom">
+
                                         <div class="col-6 field-label">
-                                            {!$ObjectType.Assessment_Audit__c.fields.Skin_Wound_Integumentary__c.InlineHelpText}
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Skin_Wound_Integumentary__c.InlineHelpText}</h3>
                                         </div>
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.Skin_Wound_Integumentary__c}" required="true">
                                                 <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
+
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Wounds_Condition_and_Type_Described__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Wounds_Condition_and_Type_Described__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                     <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
-                                            {!$ObjectType.Assessment_Audit__c.fields.Renal__c.InlineHelpText}
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Renal__c.InlineHelpText}</h3>
                                         </div>
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.Renal__c}" required="true">
                                                 <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Dialysis_Sections_Completed__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:selectRadio value="{!assessmentAudit.Dialysis_Sections_Completed__c}" required="true">
+                                                    <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                                </apex:selectRadio>
+
+                                            </div>
+                                        </div>
+
                                     </div>
+
 
                                     <div class="row form-header mbottom gray-bg">
                                         <div class="col">
@@ -533,7 +899,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row form-row mbottom">
+                                    <!-- <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
                                             {!$ObjectType.Assessment_Audit__c.fields.Labs_Attached__c.InlineHelpText}
                                         </div>
@@ -542,9 +908,29 @@
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Labs_Attached__c.InlineHelpText}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Labs_Attached__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Number_of_Lab_Pages__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:inputField styleClass="full-width form-control" value="{!assessmentAudit.Number_of_Lab_Pages__c}" html-placeholder="Number of Lab Pages"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- <div class="row form-row mbottom">
                                         <div class="col-6 field-label">
                                             {!$ObjectType.Assessment_Audit__c.fields.Cultures_Attached__c.InlineHelpText}
                                         </div>
@@ -552,6 +938,26 @@
                                             <apex:selectRadio value="{!assessmentAudit.Cultures_Attached__c}" required="true">
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
+                                        </div>
+                                    </div> -->
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            <h3>{!$ObjectType.Assessment_Audit__c.fields.Cultures_Attached__c.InlineHelpText}</h3>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Cultures_Attached__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                        <div class="row form-subrow  mbottom">
+                                            <div class="col-5 offset-1 field-label">
+                                                {!$ObjectType.Assessment_Audit__c.fields.Number_of_Cultures_Pages__c.InlineHelpText}
+                                            </div>
+                                            <div class="col-6">
+                                                <apex:inputField styleClass="full-width form-control" value="{!assessmentAudit.Number_of_Cultures_Pages__c}" html-placeholder="Number of Cultures Pages"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 
@@ -567,6 +973,17 @@
                                         </div>
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.Referring_Physician_Provided__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Referring_Physician_Phone_Provided__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Referring_Physician_Phone_Provided__c}" required="true">
                                                 <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
@@ -601,6 +1018,17 @@
                                         <div class="col-6">
                                             <apex:selectRadio value="{!assessmentAudit.Care_Indicated_Appropriately__c}" required="true">
                                                 <apex:selectoptions value="{!YesNoNa}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Equipment_Needs_Indicated__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Equipment_Needs_Indicated__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
                                             </apex:selectRadio>
                                         </div>
                                     </div>
@@ -649,44 +1077,113 @@
                                         </div>
                                     </div>
 
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Revenue_Codes_Indicated__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Revenue_Codes_Indicated__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-header mbottom gray-bg">
+                                        <div class="col">
+                                            Other
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            <div>{!$ObjectType.Assessment_Audit__c.fields.Demographics_Completed_on_Landing_Page__c.InlineHelpText}</div>
+                                            <p class="required">Note: Exclude primary diagnosis.</p>
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Demographics_Completed_on_Landing_Page__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Referral_Info_Completed_on_Landing_Page__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Referral_Info_Completed_on_Landing_Page__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Are_Attachments_Parse_Out__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Are_Attachments_Parse_Out__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Appropriate_Attachment_Naming_Convention__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Appropriate_Attachment_Naming_Convention__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-12">
+                                            <apex:inputField styleClass="full-width form-control" value="{!assessmentAudit.Other_Commments__c}" html-placeholder="Other_Commments__c"
+                                            />
+                                        </div>
+                                    </div>
+
                                     <div class="row form-header mbottom">
-                                            <div class="col">
-                                                Clinical Overview
-                                            </div>
+                                        <div class="col">
+                                            Clinical Overview
                                         </div>
-    
-                                        <div class="row form-row mbottom">
-                                            <div class="col-6 field-label">
-                                                {!$ObjectType.Assessment_Audit__c.fields.Why_Patient_Admitted_to_STAC_Outlined__c.InlineHelpText}
-                                            </div>
-                                            <div class="col-6">
-                                                <apex:selectRadio value="{!assessmentAudit.Why_Patient_Admitted_to_STAC_Outlined__c}" required="true">
-                                                    <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
-                                                </apex:selectRadio>
-                                            </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Why_Patient_Admitted_to_STAC_Outlined__c.InlineHelpText}
                                         </div>
-    
-                                        <div class="row form-row mbottom">
-                                            <div class="col-6 field-label">
-                                                {!$ObjectType.Assessment_Audit__c.fields.Significant_Chronic_Conditions_Listed__c.InlineHelpText}
-                                            </div>
-                                            <div class="col-6">
-                                                <apex:selectRadio value="{!assessmentAudit.Significant_Chronic_Conditions_Listed__c}" required="true">
-                                                    <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
-                                                </apex:selectRadio>
-                                            </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Why_Patient_Admitted_to_STAC_Outlined__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
                                         </div>
-    
-                                        <div class="row form-row mbottom">
-                                            <div class="col-6 field-label">
-                                                {!$ObjectType.Assessment_Audit__c.fields.Narratives_Use_Approved_Abbreviations__c.InlineHelpText}
-                                            </div>
-                                            <div class="col-6">
-                                                <apex:selectRadio value="{!assessmentAudit.Narratives_Use_Approved_Abbreviations__c}" required="true">
-                                                    <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
-                                                </apex:selectRadio>
-                                            </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Significant_Chronic_Conditions_Listed__c.InlineHelpText}
                                         </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Significant_Chronic_Conditions_Listed__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-row mbottom">
+                                        <div class="col-6 field-label">
+                                            {!$ObjectType.Assessment_Audit__c.fields.Narratives_Use_Approved_Abbreviations__c.InlineHelpText}
+                                        </div>
+                                        <div class="col-6">
+                                            <apex:selectRadio value="{!assessmentAudit.Narratives_Use_Approved_Abbreviations__c}" required="true">
+                                                <apex:selectoptions value="{!YesNo}"></apex:selectoptions>
+                                            </apex:selectRadio>
+                                        </div>
+                                    </div>
 
 
                                     <div class="row form-header mbottom gray-bg">
