@@ -618,7 +618,8 @@ public Boolean isInvitee;
 
 	String startDay = String.valueOf(firstDay.format('EEEE'));
 	Date lowDate = Date.newInstance(firstDay.year(), firstDay.month(), firstDay.day());
-	Date highDate = Date.newInstance(firstDay.year(), firstDay.addDays(numberOfDays).month(), firstDay.addDays(numberOfDays).day());
+	// Date highDate = Date.newInstance(firstDay.year(), firstDay.addDays(numberOfDays).month(), firstDay.addDays(numberOfDays).day());
+	Date highDate = lowDate.addDays(numberOfDays);
 
 	List<Event> eventList = [select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
 	                         who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId, CreatedById from event where
