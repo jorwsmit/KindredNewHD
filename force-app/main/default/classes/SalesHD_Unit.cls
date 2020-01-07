@@ -28,6 +28,7 @@ private static Map<String, String> unitContactsMap = new Map<String, String> {
 	'Social Worker Manager'=>'Nursing',
 	'Respiratory Therapist'=>'Nursing',
 	'Case Manager'=>'Nursing',
+	'UR Nurse'=>'Nursing',
 
 	'Respiratory Therapist Director'=>'Director',
 	'Unit Medical Director'=>'Director',
@@ -40,7 +41,11 @@ private static Map<String, String> unitContactsMap = new Map<String, String> {
 	'Palliative Care Physician'=>'Provider',
 	'Other MDs (IM, Pulm, ID, etc.)'=>'Provider',
 	'Fellow'=>'Provider',
-	'Physician'=>'Provider'
+	'Physician'=>'Provider',
+	'Physician - Intensivist/Critical Care'=>'Provider',
+	'Physician - Specialty'=>'Provider',
+	'Physician - Hospitalist/Internal Med'=>'Provider',
+	'Resident,'=>'Provider'
 };
 
 public SalesHD_Unit(ApexPages.StandardController stdController) {

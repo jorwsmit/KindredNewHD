@@ -1212,18 +1212,19 @@
 				}
 			}
 
+				var accountName = '{!JSENCODE(account.Name)}';
 			function navToContact(contactId) {
-				breadcrumbStateSaver('{!account.Id}', '{!account.Name}');
+				breadcrumbStateSaver('{!account.Id}', accountName);
 				window.location = '/apex/SalesHD_Contact?id=' + contactId;
 			}
 
 			function navToAccount(accountId) {
-				breadcrumbStateSaver('{!account.Id}', '{!account.Name}');
+				breadcrumbStateSaver('{!account.Id}', accountName);
 				window.location = '/apex/SalesHD_Account?id=' + accountId;
 			}
 
 			function navToUnit(unitId) {
-				breadcrumbStateSaver('{!account.Id}', '{!account.Name}');
+				breadcrumbStateSaver('{!account.Id}', accountName);
 				window.location = '/apex/SalesHD_Unit?id=' + unitId;
 			}
 
@@ -1351,7 +1352,7 @@
 						if (unit == 'Administrative') unit = 'Global / Director';
 						$("#pastevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
 							'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
-							+ event.Subject + ': ' + eventRelation.Relation.Name + ' at ' + account + ' - ' + unit + '</b><br/>' + event.SalesHD_Call_Objective__c + '</li>');
+									+event.SalesHD_Call_Objective__c+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b></li>');
 					}
 					for (var eventRelation of events.futureEvents) {
 						var event = eventRelation.Event;
@@ -1363,7 +1364,7 @@
 						if (unit == 'Administrative') unit = 'Global / Director';
 						$("#futureevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
 							'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
-							+ event.Subject + ': ' + eventRelation.Relation.Name + ' at ' + account + ' - ' + unit + '</b><br/>' + event.SalesHD_Call_Objective__c + '</li>');
+									+event.SalesHD_Call_Objective__c+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b></li>');
 					}
 				}, { escape: false });
 

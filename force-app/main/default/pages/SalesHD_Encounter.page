@@ -754,13 +754,24 @@
 									<a href="/apex/SalesHD_unit?id={!event.SalesHD_Account_Unit__c}">{!if(event.SalesHD_Account_Unit__r.Unit__r.Name="Administrative", "Global / Director", event.SalesHD_Account_Unit__r.Unit__r.Name)}</a>
 								</p>
 							</div>
-							<div>
+							<!-- <div>
 								<label style="display:inline-block;">Encounter Type:</label>
 								<p style="display:inline-block;">{!event.Type}</p>
-							</div>
+							</div> -->
+							
 							<div>
-								<label style="display:inline-block;">Encounter Objective:</label>
+								<label style="display:inline-block;">Medium:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Medium__c}</p>
+							</div>
+							
+							<div>
+								<label style="display:inline-block;">Objective:</label>
 								<p style="display:inline-block;">{!event.SalesHD_Call_Objective__c}</p>
+							</div>
+
+							<div>
+								<label style="display:inline-block;">Topic:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Topic__c}</p>
 							</div>
 
 							<label style="width:100%; border-top:1px solid #ddd;">PREPARATION</label>
@@ -818,18 +829,20 @@
 							</div>
 
 							<label style="width:100%; border-top:1px solid #ddd;">POST CALL</label>
-							<div>
-								<label style="display:inline-block;">Results:</label>
-								<p style="display:inline-block;">{!event.Result__c}</p>
-							</div>
-							<div>
-								<label style="display:inline-block;">Next Encounter:</label>
-								<p style="display:inline-block;">{!event.SalesHD_Next_Encounter__c}</p>
-							</div>
+							
 							<div>
 								<label style="display:inline-block;">Close / Customer Commitment: </label>
 								<p style="display:inline-block;">{!event.SalesHD_Close_Customer_Commitment__c}</p>
 							</div>
+							<div>
+								<label style="display:inline-block;">Summary and Results:</label>
+								<p style="display:inline-block;">{!event.Result__c}</p>
+							</div>
+							<div>
+								<label style="display:inline-block;">Next Encounter / Follow-up Actions:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Next_Encounter__c}</p>
+							</div>
+							
 							<div>
 								<label style="display:inline-block;">Complete:</label>
 								<p style="display:inline-block;">

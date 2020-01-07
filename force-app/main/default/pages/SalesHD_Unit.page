@@ -763,7 +763,7 @@
 					<apex:outputPanel id="nicknameField">
 						<b>Unit Nickname:</b> {!Account_Unit__c.SalesHD_Unit_Nickname__c}
 					</apex:outputPanel>
-						<i style="cursor:pointer;font-size:20px;" aria-hidden="true" class="fa fa-edit" data-toggle="modal" data-target="#nicknameModal"></i>
+					<i style="cursor:pointer;font-size:20px;" aria-hidden="true" class="fa fa-edit" data-toggle="modal" data-target="#nicknameModal"></i>
 				</h5>
 			</div>
 
@@ -900,6 +900,42 @@
 												<span class="lnr lnr-cross"></span>
 											</div>
 											<div class="col-6">Physician</div>
+										</div>
+									</li>
+
+									<li id="Physician-Intensivist/CriticalCare">
+										<div class="row">
+											<div class="col-6">
+												<span class="lnr lnr-cross"></span>
+											</div>
+											<div class="col-6">Physician - Intensivist/Critical Care</div>
+										</div>
+									</li>
+
+									<li id="Physician-Specialty">
+										<div class="row">
+											<div class="col-6">
+												<span class="lnr lnr-cross"></span>
+											</div>
+											<div class="col-6">Physician - Specialty</div>
+										</div>
+									</li>
+
+									<li id="Physician-Hospitalist/InternalMed">
+										<div class="row">
+											<div class="col-6">
+												<span class="lnr lnr-cross"></span>
+											</div>
+											<div class="col-6">Physician - Hospitalist/Internal Med</div>
+										</div>
+									</li>
+
+									<li id="Resident">
+										<div class="row">
+											<div class="col-6">
+												<span class="lnr lnr-cross"></span>
+											</div>
+											<div class="col-6">Resident</div>
 										</div>
 									</li>
 
@@ -1134,6 +1170,10 @@
 										<option>Physician Assistant</option>
 										<option>Fellow</option>
 										<option>Physician</option>
+										<option>Physician - Intensivist/Critical Care</option>
+										<option>Physician - Specialty</option>
+										<option>Physician - Hospitalist/Internal Med</option>
+										<option>Resident</option>
 
 										<option>Nurse</option>
 										<option>Nurse Supervisor</option>
@@ -1286,45 +1326,46 @@
 			</div>
 
 			<div class="modal fade" id="nicknameModal">
-					<div class="modal-dialog modal-dialog-centered">
-						<apex:outputPanel style="width: 100%;" id="nicknameBlock">
-							<apex:form style="width: 100%;" id="nicknameForm">
-								<div class="modal-content">
-									<div class="modal-header bg-primary">
-										<h3 class="bold">
-											<i aria-hidden="true" class="fa fa-users"></i> Edit Nickname</h3>
-									</div>
-									<div class="modal-body" style="overflow:hidden;">
-										<form>
-											<label style="width: 100%;">Unit Nickname</label>
-											<apex:inputField styleClass="form-control" value="{!Account_Unit__c.SalesHD_Unit_Nickname__c}" html-placeholder="Unit Nickname" />
-										</form>
-									</div>
-									<div class="modal-footer">
-	
-										<apex:actionStatus id="statusSpinner">
-											<apex:facet name="start">
-	
-												<div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:90px;">
-													<div class="slds-spinner__dot-a"></div>
-													<div class="slds-spinner__dot-b"></div>
-												</div>
-	
-											</apex:facet>
-										</apex:actionStatus>
-	
-										<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-										<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNickname}" value="Save" rerender="nicknameBlock, nicknameField"
-										 id="saveNew" style="padding:8px 12px;font-size:20px!important;vertical-align:bottom;border-radius:7px;margin-top:0px!important;"
-										  oncomplete="$('#nicknameModal').modal('hide');"/>
-									</div>
-									<apex:pageMessages />
+				<div class="modal-dialog modal-dialog-centered">
+					<apex:outputPanel style="width: 100%;" id="nicknameBlock">
+						<apex:form style="width: 100%;" id="nicknameForm">
+							<div class="modal-content">
+								<div class="modal-header bg-primary">
+									<h3 class="bold">
+										<i aria-hidden="true" class="fa fa-users"></i> Edit Nickname</h3>
 								</div>
-	
-							</apex:form>
-						</apex:outputPanel>
-					</div>
+								<div class="modal-body" style="overflow:hidden;">
+									<form>
+										<label style="width: 100%;">Unit Nickname</label>
+										<apex:inputField styleClass="form-control" value="{!Account_Unit__c.SalesHD_Unit_Nickname__c}" html-placeholder="Unit Nickname"
+										/>
+									</form>
+								</div>
+								<div class="modal-footer">
+
+									<apex:actionStatus id="statusSpinner">
+										<apex:facet name="start">
+
+											<div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:90px;">
+												<div class="slds-spinner__dot-a"></div>
+												<div class="slds-spinner__dot-b"></div>
+											</div>
+
+										</apex:facet>
+									</apex:actionStatus>
+
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+									<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNickname}" value="Save" rerender="nicknameBlock, nicknameField"
+									 id="saveNew" style="padding:8px 12px;font-size:20px!important;vertical-align:bottom;border-radius:7px;margin-top:0px!important;"
+									 oncomplete="$('#nicknameModal').modal('hide');" />
+								</div>
+								<apex:pageMessages />
+							</div>
+
+						</apex:form>
+					</apex:outputPanel>
 				</div>
+			</div>
 
 		</div>
 		<!-- / REQUIRED SLDS WRAPPER -->
@@ -1553,7 +1594,7 @@
 						if (event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name
 						$("#pastevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
 							'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
-							+ event.Subject + ': ' + eventRelation.Relation.Name + ' at ' + account + ' - ' + unit + '</b><br/>' + event.SalesHD_Call_Objective__c + '</li>');
+									+event.SalesHD_Call_Objective__c+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b></li>');
 					}
 					for (var eventRelation of events.futureEvents) {
 						var event = eventRelation.Event;
@@ -1563,7 +1604,7 @@
 						if (event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name
 						$("#futureevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
 							'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
-							+ event.Subject + ': ' + eventRelation.Relation.Name + ' at ' + account + ' - ' + unit + '</b><br/>' + event.SalesHD_Call_Objective__c + '</li>');
+									+event.SalesHD_Call_Objective__c+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b></li>');
 					}
 				}, { escape: false });
 

@@ -1092,8 +1092,8 @@
           for (var event of events) {
             var contact = '';
             if (event.hasOwnProperty('Who')) contact = event.Who.Name;
-            $("#todaysEncounters").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'"><b>' + event.Subject +
-              ': ' + contact + '</b><br/>' + event.SalesHD_Call_Objective__c + '<br/>' + moment(event.StartDateTime).format('LT') + ' to ' + moment(event.EndDateTime).format('LT') + '</li>')
+            $("#todaysEncounters").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'"><b>' + 
+              contact + ': ' + event.SalesHD_Call_Objective__c + '</b><br/>' + moment(event.StartDateTime).format('LT') + ' to ' + moment(event.EndDateTime).format('LT') + '</li>')
           }
         }, { escape: false });
       }

@@ -118,7 +118,7 @@ private PageReference getCollateral(String collateralId){
 		collateralId = cwd.ContentDocumentId;
 
 		String link = URL.getSalesforceBaseUrl().toExternalForm()+cwd.ContentDocument.LatestPublishedVersionId;
-		emailBody = 'Hi,\n\nClick on the link below to view the collateral.\n\n'+link+'\n\nThanks,\n'+UserInfo.getName();
+		emailBody = 'Hi,\n\nClick on the link below to view the collateral.\n\nThanks,\n'+UserInfo.getName();
 
 	}
 	return null;
@@ -175,10 +175,32 @@ public PageReference sendEmail(){
 	mail.setReplyTo(UserInfo.getUserEmail());
 	mail.setSenderDisplayName(UserInfo.getName());
 	mail.setSubject(thisCollateral.title);
-	mail.setPlainTextBody(emailBody);
-	mail.setHtmlBody(emailBody);
+    String publicUrl = getPublicUrl(thisCollateral);
+    mail.setPlainTextBody(emailBody +'<br/><br/>'+ publicUrl);
+    mail.setHtmlBody(emailBody +'<br/><br/>'+ '<a href="'+publicUrl+
+                     '">'+thisCollateral.title+'</a>');
 	Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
 	return null;
 }
+    
+    private static String getPublicUrl(collateral c){
+    	List<ContentDistribution> cds = [select DistributionPublicUrl
+										from ContentDistribution where ContentVersionId = :c.collateralId];
+		if(!cds.isEmpty() && cds[0].DistributionPublicUrl!=null) return cds[0].DistributionPublicUrl;
+        
+        ContentDistribution cd = new ContentDistribution();
+        if(c.title.length()>=80) cd.Name = c.title.substring(0,80) + System.now().format('mm/dd/yyyy');
+        else cd.Name = c.title.substring(0,c.title.length()) + System.now().format('mm/dd/yyyy');
+        cd.ContentVersionId = c.collateralId;
+        cd.PreferencesAllowViewInBrowser= true;
+        cd.PreferencesLinkLatestVersion=true;
+        cd.PreferencesNotifyOnVisit=false;
+        cd.PreferencesPasswordRequired=false;
+        cd.PreferencesAllowOriginalDownload= true;
+        insert cd;
+        cd = [select DistributionPublicUrl
+										from ContentDistribution where Id = :cd.Id];
+    	return cd.DistributionPublicUrl;
+    }
 
 }

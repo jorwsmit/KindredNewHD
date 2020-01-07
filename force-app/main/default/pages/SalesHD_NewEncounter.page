@@ -705,7 +705,7 @@
 				</div>
 			</div> -->
 
-			<c:SalesHD_RedesignNav/>
+			<c:SalesHD_RedesignNav />
 
 			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
 
@@ -769,10 +769,30 @@
 							<ul class="form-control" id="accountList" style="display:none; width:49%;"></ul>
 							<ul class="form-control" id="unitList" style="display:none; width:49%; margin-left:50% !important;"></ul>
 
-							<label class="required">*Encounter Type</label>
-							<apex:inputField styleClass="form-control" value="{!event.Type}" html-placeholder="Encounter Type" required="true" />
-							<label class="required">*Encounter Objective</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Call_Objective__c}" html-placeholder="Encounter Objective"
+							<!-- <label class="required">*Type</label>
+							<apex:inputField styleClass="form-control" value="{!event.Type}" html-placeholder="Type" required="true" /> -->
+							
+							<label class="required">*Medium</label>
+							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Medium__c}" html-placeholder="Medium"
+							 required="true" />
+							
+							<label class="required">*Objective
+								<span class="educationtip" id="objective">
+									<i class="fas fa-question-circle blue pointer"></i>
+								</span>
+
+							</label>
+							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Call_Objective__c}" html-placeholder="Objective"
+							 required="true" />
+
+
+							 <label class="required">*Topic
+								<span class="educationtip" id="topic">
+									<i class="fas fa-question-circle blue pointer"></i>
+								</span>
+
+							</label>
+							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Topic__c}" html-placeholder="Topic"
 							 required="true" />
 
 							<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">PREPARATION</label>
@@ -780,9 +800,9 @@
 							<apex:inputField styleClass="form-control" style="{!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}"
 							 value="{!event.SalesHD_Last_Encounter__c}" html-placeholder="Last Encounter" html-disabled="true" />
 							<label class="required" style="width: 100%;">*Open Ended Questions
-								<!-- <span class="educationtip" id="question">
+								<span class="educationtip" id="question">
 									<i class="fas fa-question-circle blue pointer"></i>
-								</span> -->
+								</span>
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
 							 required="true" />
@@ -791,11 +811,17 @@
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
 							/>
-							<label style="width: 100%;">Agenda</label>
+							<label style="width: 100%;">Agenda
+								<span class="educationtip" id="agenda">
+									<i class="fas fa-question-circle blue pointer"></i>
+								</span>
+							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Agenda_Preparation__c}" html-placeholder="Agenda Preparation"
 							/>
 							<label style="width: 100%;">Data
-
+								<span class="educationtip" id="data">
+									<i class="fas fa-question-circle blue pointer"></i>
+								</span>
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
 							/>
@@ -807,19 +833,29 @@
 									*This section is requried after you complete the call.
 								</p>
 
-								<!-- <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, false)}" style="display:inline-block;"> -->
-
-								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Results', 'Results')}
-
-								</label>
-								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Results" />
-								<label style="width: 100%;">Next Encounter</label>
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Next_Encounter__c}" html-placeholder="Next Encounter" onkeyup="showNextEncounter();"
-								/>
 								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Close / Customer Commitment', 'Close / Customer Commitment')}</label>
 								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Close_Customer_Commitment__c}" html-placeholder="Close / Customer Commitment"
 								 id="closeCustomer" />
 								<script>replaceMultiselectButtons();</script>
+
+								<!-- <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, false)}" style="display:inline-block;"> -->
+
+								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Summary and Results', 'Summary and Results')}
+
+									<span class="educationtip" id="results">
+										<i class="fas fa-question-circle blue pointer"></i>
+									</span>
+								</label>
+
+								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results" />
+								<label style="width: 100%;">Next Steps / Follow-up Actions
+									<span class="educationtip" id="nextsteps">
+										<i class="fas fa-question-circle blue pointer"></i>
+									</span>
+								</label>
+								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Next_Encounter__c}" html-placeholder="Next Steps / Follow-up Encounter" onkeyup="showNextEncounter();"
+								/>
+								
 								<label style="width: 100%;">Complete</label>
 								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Complete__c}" style="width:15px;">
 									<apex:actionSupport event="onchange" rerender="postCallPanel" />
@@ -839,7 +875,7 @@
 								<apex:commandButton styleClass="btn btn-success" id="saveAndNext" status="statusSpinner" oncomplete="loadPage();" style="margin-left:10px!important;
 								 {!IF(ISBLANK(event.SalesHD_Next_Encounter__c), 'display:none;',
 								 IF($CurrentPage.parameters.duplicate='true', 'display:none;', 'display:inline-block;'))} vertical-align:bottom; margin-top:0px!important;"
-								 action="{!saveAndNext}" value="Save and Next" rerender="containerBlock" />
+								 action="{!saveAndNext}" value="Save and Follow-up" rerender="containerBlock" />
 							</div>
 
 
@@ -861,7 +897,7 @@
 						</apex:form>
 					</apex:outputPanel>
 
-					<apex:form>
+					<apex:form >
 						<apex:outputPanel id="recurrencePanel">
 							<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">Recurring Event</label>
 							<apex:inputcheckbox styleClass="form-control" value="{!event.IsRecurrence}" style="width:15px;">
@@ -893,8 +929,8 @@
 								<span id="education-title"></span>
 							</h3>
 						</div>
-						<div class="modal-body" id="education-body">
-
+						<div class="modal-body">
+							<p id="education-body" style="font-size:15px;"></p>
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -915,10 +951,13 @@
 		<script>
 
 			var educationtips = {
-				"question": { "title": "Open Ended Questions", "body": "Talking points that are to be prepared before an encounter." },
-				"result": { "title": "Results", "body": "The result of a completed encounter." },
-				"marketing": { "title": "Marketing Collateral", "body": "A marketing collateral that was used during the encounter." },
-				"data": { "title": "Data", "body": "Any information or data referenced in the encounter." }
+				"objective": { "title": "Objective", "body": "<b>Definition:</b> The call objective conveys the primary purpose of the encounter. What do you hope to achieve with the customer?</br></br><b>Instructions:</b> Clearly understand the purpose for the call and/or the desired outcome." },
+				"question": { "title": "Open Ended Questions", "body": "<b>Definition:</b> A question that initiates dialogue to propel the conversation in the direction of the encounter’s strategic topic and objective. These questions cannot be answered with a “yes” or “no” response. An open-ended question allows the respondent to include more information to clarify their own knowledge, thoughts and feelings. Open-ended questions result in more meaningful conversations, creating a deeper connection to the customer.</br></br><b>Instructions:</b> Prepare 2 or 3 questions to identify customer’s needs that cannot be answered in a short or single-word answer. Prepare these questions without assumption of the a customer’s current situation. Then actively LISTEN to form a response that provides a solution to their need.</br></br><b>Example:</b> What is the protocol for discharging ventilator patients from the ICU? Typically, what is the reason for a patient’s extended stay? What types of patients are you seeing in your unit today?" },
+				"results": { "title": "Summary and Results", "body": "<b>Definition:</b> This section describes what took place during the encounter</br></br><b>Instructions:</b> Only document what was accomplished or not as they tie to the objective of the call and the sales plan. Use the ARF method of documenting (Action, Results, Follow Up)</br></br><b>Example:</b> Dr. Cooper stated he knew very little about LTACH LOC.  He used to work at the IRF across the street and prefers to D/C patients to that clinical setting.  Education provided on our high acuity clinical capabilities. Discussion on benefits of using TCHs.Dr. Cooper met CEO, CCO, Med Dir and RT Director.  Surprised that we are a \"hospital.\"  Agreed to consider credentialing." },
+				"data": { "title": "Data", "body": "<b>Definition:</b> Any data items that will be presented during the encounter that are relevant to the objective.</br></br><b>Instructions:</b> Make sure the data is timely and professional.  The data should be relevant to the topic and objective of the encounter.</br></br><b>Example:</b> >$1.3MM MedPAR opportunity (ICU-specific) for St. Joseph’s hospital. 2019 Discharge Disposition – RTA 6%, LLOC 68%." },
+				"topic": { "title": "Topic", "body": "<b>Definition:</b>  What is the primary topic you will focus on?</br></br><b>Instructions:</b> Select the encounter topic that best conveys the primary focus during the encounter. For reporting purposes, only ONE topic can be chosen for each encounter. If multiple topics were discussed, choose the topic that was most imperative in helping to accomplish the desired objective." },
+				"agenda": { "title": "Topic", "body": "<b>Definition:</b> The planned discussion points to be delivered during the encounter and which Kindred representative will be presenting them.</br></br><b>Instructions:</b> List the pre-planned topics to be discussed. All Kindred participants should be listed here.</br></br><b>Example:</b></br>- Initial introductions with Dr. Cooper (all)</br>- Discuss vent weaning protocol (Amy)</br>- Review quality sheet (Dan)</br>- Potential dates for in-service with pulmonary group (Amy)" },
+				"nextsteps": {"title": "Next Steps / Follow-up Actions", "body": "<b>Definition:</b> The actionable items that are required as follow-up from the information gathered during the current encounter.  These next steps allow for sequential messaging to create continued dialogue for a next encounter.  (Notes written from this section will populate in the next call scheduled.)</br></br><b>Instructions:</b> Tie this section to the discussion documented in the Summary & Results section. During the discussion, what steps were discovered that will continue Kindred’s value proposition in the next discussion?Include any notes or reminders will you want to bring into the next encounter.</br></br><b>Example:</b> Follow-up with quality outcomes for vent patients at Kindred. Educate on benefits of sending patients to KND before IRF if clinically appropriate. Find relevant success story.Dr. Cooper will tour KND LTACH next Thurs."},
 			};
 
 			var addedContacts = [];
@@ -940,7 +979,7 @@
 
 				$(document).on("click", ".educationtip", function () {
 					$("#education-title").text(educationtips[$(this).attr('id')].title);
-					$("#education-body").text(educationtips[$(this).attr('id')].body);
+					$("#education-body").html(educationtips[$(this).attr('id')].body);
 					$('#educationModal').modal('show');
 				});
 

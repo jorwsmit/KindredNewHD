@@ -642,11 +642,11 @@ public Boolean isInvitee;
 			eventSubject = String.valueOf(event.Description);
 			if(eventSubject!=null && (eventSubject.contains('Submitted Assessment for ') || eventSubject.contains('Submitted Reassessment for '))) {
 				eventSubject = eventSubject.replace('Submitted Assessment for ', '').replace('Submitted Reassessment for ', '');
-				eventSubject = eventSubject + ': '+e.Subject;
+				eventSubject = eventSubject + ': Assessment';
 			}
 		} else if(e.Who.Name != null) {
-			if(contactTiles.containsKey(e.WhoId)) eventSubject = e.Who.Name + ' - '+contactTiles.get(e.WhoId).Title__c+': '+e.Subject;
-			else eventSubject = e.Who.Name + ': '+e.Subject;
+			if(contactTiles.containsKey(e.WhoId)) eventSubject = e.Who.Name + ' - '+contactTiles.get(e.WhoId).Title__c+': '+e.SalesHD_Call_Objective__c;
+			else eventSubject = e.Who.Name + ': '+e.SalesHD_Call_Objective__c;
 		}
 		calendarEvent temp = new calendarEvent();
 		temp.eventId=e.Id; temp.eventSubject=eventSubject; temp.eventDatetime=e.startDateTime;
@@ -781,7 +781,7 @@ private static Blob invite(Event e, String location) {
 	                    'DTSTART:'+ start + '\n' + 'DTEND:'+ ending + '\n' + 'DTSTAMP:'+ current + '\n' + 'LOCATION:'+ location + '\n'+
 	                    'ORGANIZER;CN=noreply@salesforce.com:MAILTO:noreply@salesforce.com\n' + 'UID:' + String.valueOf(Crypto.getRandomLong()) + '\n' +
 	                    'CREATED:'+ current + '\n' + 'LAST-MODIFIED:'+ current + '\n' +
-	                    'SEQUENCE:0' + '\n' + 'STATUS:CONFIRMED' + '\n' + 'SUMMARY:'+ e.Subject +'\n' + 'TRANSP:OPAQUE' + '\n' +
+	                    'SEQUENCE:0' + '\n' + 'STATUS:CONFIRMED' + '\n' + 'SUMMARY:'+ e.SalesHD_Call_Objective__c +'\n' + 'TRANSP:OPAQUE' + '\n' +
 	                    'END:VEVENT'+ '\n' + 'END:VCALENDAR';
 	return Blob.valueof(attachment);
 }
