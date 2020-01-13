@@ -986,7 +986,7 @@ public Boolean isActive;
 	Test.setCurrentPage(pageRef);
 
 	Contact pr = new Contact();
-	pr.FirstName='test'; pr.LastName='request'; pr.Requested_Physician_NPI__c='12345';
+	pr.FirstName='test'; pr.LastName='request'; pr.Requested_Physician_NPI__c='1234567890';
 	pr.MailingStreet='680 South Fourth Street'; pr.MailingCity='Louisville';
 	pr.MailingState='KY'; pr.MailingPostalCode='40202';
 
@@ -998,7 +998,23 @@ public Boolean isActive;
 	Test.stopTest();
 }
 
-@isTest static void NewPhysicianRequest_saveNewError() {
+@isTest static void NewPhysicianRequest_saveNewNpi() {
+	PageReference pageRef = Page.SalesHD_NewPhysicianRequest;
+	Test.setCurrentPage(pageRef);
+
+	Contact pr = new Contact();
+	pr.FirstName='test'; pr.LastName='request'; pr.Requested_Physician_NPI__c='1234567890';
+	insert pr;
+	pageRef.getParameters().put('id',pr.id);
+	ApexPages.StandardController sc = new ApexPages.standardController(pr);
+	SalesHD_NewPhysicianRequest controller = new SalesHD_NewPhysicianRequest(sc);
+	controller.physician = pr;
+	Test.startTest();
+	controller.saveNew();
+	Test.stopTest();
+}
+
+@isTest static void NewPhysicianRequest_saveNewNoNpi() {
 	PageReference pageRef = Page.SalesHD_NewPhysicianRequest;
 	Test.setCurrentPage(pageRef);
 
@@ -1014,12 +1030,29 @@ public Boolean isActive;
 	Test.stopTest();
 }
 
+@isTest static void NewPhysicianRequest_saveNewInvalidNpi() {
+	PageReference pageRef = Page.SalesHD_NewPhysicianRequest;
+	Test.setCurrentPage(pageRef);
+
+	Contact pr = new Contact();
+	pr.FirstName='test'; pr.LastName='request'; pr.Requested_Physician_NPI__c='123';
+	insert pr;
+	pageRef.getParameters().put('id',pr.id);
+	ApexPages.StandardController sc = new ApexPages.standardController(pr);
+	SalesHD_NewPhysicianRequest controller = new SalesHD_NewPhysicianRequest(sc);
+	controller.physician = pr;
+	Test.startTest();
+	controller.saveNew();
+	Test.stopTest();
+}
+
 @isTest static void NewPhysicianRequest_sendEmail() {
 	RecordType requestRecordType = [select Id from RecordType where
 	                                Name='HD Physician Requests' and SObjectType='Contact' limit 1];
 
 	Contact pr = new Contact();
-	pr.FirstName='test'; pr.LastName='request'; pr.Requested_Physician_NPI__c='12345';
+	pr.FirstName='test'; pr.LastName='request'; pr.Requested_Physician_NPI__c='1234567890';
+	pr.HD_Specialties__c='Cardiology';
 	pr.MailingStreet='680 South Fourth Street'; pr.MailingCity='Louisville';
 	pr.MailingState='KY'; pr.MailingPostalCode='40202'; pr.RecordTypeId=requestRecordType.Id;
 

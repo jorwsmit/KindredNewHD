@@ -180,6 +180,7 @@ public PageReference sendEmail(){
     mail.setHtmlBody(emailBody +'<br/><br/>'+ '<a href="'+publicUrl+
                      '">'+thisCollateral.title+'</a>');
 	Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+	contactEmail = '';
 	return null;
 }
     

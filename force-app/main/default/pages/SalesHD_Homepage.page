@@ -783,6 +783,11 @@
 										<b>Salesforce Reports</b>
 									</a>
 								</div>
+								<div>
+									<a onclick="window.location='/01Z/o?isdtp=vw';">
+										<b>Dashboards</b>
+									</a>
+								</div>
 							</div>
 						</div>
 

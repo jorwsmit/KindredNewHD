@@ -919,17 +919,17 @@ var unitId;
 var accountId;
 
 function navToAccount(accountId){
-	breadcrumbStateSaver('{!contact.Id}', '{!contact.Name}');
+	breadcrumbStateSaver('{!contact.Id}', '{!JSENCODE(contact.Name)}');
 	window.location='/apex/SalesHD_Account?id='+accountId;
 }
 
 function navToUnit(accountId){
-	breadcrumbStateSaver('{!contact.Id}', '{!contact.Name}');
+	breadcrumbStateSaver('{!contact.Id}', '{!JSENCODE(contact.Name)}');
 	window.location='/apex/SalesHD_Unit?id='+accountId;
 }
 
 function navToContact(contactId){
-	breadcrumbStateSaver('{!contact.Id}', '{!contact.Name}');
+	breadcrumbStateSaver('{!contact.Id}', '{!JSENCODE(contact.Name)}');
 	window.location='/apex/SalesHD_Contact?id='+contactId;
 }
 

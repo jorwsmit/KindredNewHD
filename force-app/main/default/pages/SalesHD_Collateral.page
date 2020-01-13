@@ -705,10 +705,10 @@
                                     <form>
                                         <div class="form-group">
                                             <label style="margin-bottom:0px;">Select a contact from your favorited list.</label>
-                                            <p class="red" style="font-size:14px;margin-bottom:10px;">*Only favorited contacts with email addresses will be listed.</p>
-                                            <apex:inputHidden value="{!contactEmail}" id="email" required="true" />
-                                            <input class="form-control" id="contactName" placeholder="Favorited Contact" />
-                                            <!-- <ul id="contactList" style="display:none;"></ul> -->
+                                            <p class="red" style="font-size:14px;margin-bottom:10px;"></p>
+                                            <!-- <apex:inputHidden value="{!contactEmail}" id="email" required="true" /> -->
+                                            <apex:input styleClass="form-control" value="{!contactEmail}" id="email" html-placeholder="Email" required="true"/>
+                                            <a id="pasteEmail">Prepopulate from Favorited Contact Emails</a>
                                             <ul id="contactList" style="display:none;">
                                                 <apex:repeat value="{!favoritedContactList}" var="con">
                                                     <li data-contactemail="{!con.Contact__r.Email}"><b>{!con.Contact__r.Name}</b> - {!con.Contact__r.Email}</li>
@@ -796,17 +796,17 @@
             // }
 
             $(document).on("click", '#contactList li', function () {
-                $('#contactName').val($(this).text());
+                $('#email').val($(this).text());
                 document.getElementById('{!$Component.emailForm.email}').value = $(this).data('contactemail');
                 $('#contactList').slideUp();
             });
 
-            $(document).on("click", '#contactName', function () {
+            $(document).on("click", '#pasteEmail', function () {
                 $('#contactList').slideDown();
             });
 
             $(document).click(function (e) {
-                if (!$('#contactName').is(e.target) && $('#contactName').has(e.target).length === 0) {
+                if ((!$('#pasteEmail').is(e.target) && $('#pasteEmail').has(e.target).length === 0)) {
                     $('#contactList').slideUp();
                 }
             });
