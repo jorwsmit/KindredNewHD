@@ -621,9 +621,8 @@
 
 	<body>
 
-		<div class="slds-scope">
-
-			<c:SalesHD_RedesignNav/>
+		
+		
 
 			<div class="container white-bg shadow">
 				<div class="row inner-container">

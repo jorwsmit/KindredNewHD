@@ -1,0 +1,15 @@
+<apex:page showHeader="false" lightningStyleSheets="true" standardStylesheets="false" sidebar="false" applyHtmlTag="false"
+    applyBodyTag="false" docType="html-5.0">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <body>
+        <div class="slds-scope">
+
+            <c:SalesHD_EncountersToTarget/>
+        </div>
+    </body>
+
+    </html>
+
+
+</apex:page>

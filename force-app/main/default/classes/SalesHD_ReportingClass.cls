@@ -1,4 +1,4 @@
-public without sharing class SalesHD_ReportingController {
+public without sharing class SalesHD_ReportingClass {
 
 private static Integer targetEncountersPerDay = 2;
 
@@ -44,8 +44,8 @@ public Integer encounterTotal;
 public Integer encounterTarget;
 }
 
-public SalesHD_ReportingController() {
-	encountersLastWeek = '';
+public SalesHD_ReportingClass() {
+	encountersLastWeek = '[]';
 	encountersLastWeekAdmin = '';
 
 	// for(Dashboard db : [select id, RunningUser.UserRoleId, Title from Dashboard WHERE id=:dashboardID]) {
@@ -54,21 +54,17 @@ public SalesHD_ReportingController() {
 }
 
 public void eLastWeek(){
-	encountersLastWeek = JSON.serializePretty(getEncountersLastWeek(null));
+	encountersLastWeek = JSON.serializePretty(getEncountersLastWeek(UserInfo.getUserRoleId()));
 }
 
-public void eLastWeekAdmin(){
-	encountersLastWeekAdmin = JSON.serializePretty(getEncountersLastWeek('00E130000020vp7'));
-}
-
-public void eSummaryAdmin(){
-	encounterSummaryAdmin = JSON.serializePretty(getEncounterSummary('00E130000020vp7'));
+public void eLastWeekSummary(){
+	encountersLastWeek = JSON.serializePretty(getEncounterSummary(UserInfo.getUserRoleId()));
 }
 
 public static Map<Id, Map<Id, encounterSummary> > getEncounterSummary(Id rId){
 	set<Id> allSubRoleIds;
-	if(rId!=null) allSubRoleIds = getSubRoleIds(new set<ID> {rId});
-	else allSubRoleIds = getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()});
+	allSubRoleIds = getSubRoleIds(new set<ID> {rId});
+	allSubRoleIds.add(rId);
 
 	Map<Id, String> roleIdArea = new Map<Id, String>();
 	for(User u : [select area__c, userRoleId from user where area__c!=null and userRoleId in :allSubRoleIds and isActive=true]) {
@@ -130,10 +126,10 @@ public static Map<Id, Map<Id, encounterSummary> > getEncounterSummary(Id rId){
 	return result;
 }
 
-public static List<encounterLastWeek> getEncountersLastWeek(Id rId){
+public static String getEncountersLastWeek(Id rId){
 	set<Id> allSubRoleIds;
-	if(rId!=null) allSubRoleIds = getSubRoleIds(new set<ID> {rId});
-	else allSubRoleIds = getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()});
+	allSubRoleIds = getSubRoleIds(new set<ID> {rId});
+    allSubRoleIds.add(rId);
 
 	Map<Id, String> roleIdArea = new Map<Id, String>();
 	Map<Id, Integer> roleIdUserTotal = new Map<Id, Integer>();
@@ -147,19 +143,33 @@ public static List<encounterLastWeek> getEncountersLastWeek(Id rId){
 	}
 
 	List<encounterLastWeek> result = new List<encounterLastWeek>();
-	for(AggregateResult ar : [select owner.userRoleId roleId, count(Id) total from event where
+    List<List<String>> result2 = new List<List<String>>();
+    result2.add(new List<String> {'Market', 'Total Encounters', 'Targeted Encounters'});
+    String res = '{ "cols" : [{"id":"","label":"Market","pattern":"","type":"string"}, ' +
+    '{"id":"","label":"Total Encounters","pattern":"","type":"number"}, ' +
+    '{"id":"","label":"Targeted Encounters","pattern":"","type":"number"}],'+
+    '"rows": [';
+	// for(AggregateResult ar : [select owner.userRoleId roleId, count(Id) total from event where
+	//                         startDateTime=last_week and SalesHD_Account_Unit__c!=null and SalesHD_Complete__c=true
+	// 						and ownerId in (select id from user where isActive=true and area__c!=null) and owner.userRoleId in :allSubRoleIds group by owner.userRoleId]) {
+        for(AggregateResult ar : [select owner.userRoleId roleId, count(Id) total from event where
 	                        startDateTime=last_week and SalesHD_Account_Unit__c!=null and SalesHD_Complete__c=true
-							and ownerId in (select id from user where isActive=true and area__c!=null) and owner.userRoleId in :allSubRoleIds group by owner.userRoleId]) {
+							and ownerId in (select id from user where isActive=true and area__c!=null) and owner.userRoleId in :allSubRoleIds group by owner.userRoleId order by count(Id) desc]) {
 		encounterLastWeek temp = new encounterLastWeek();
-		String area = '';
+		String market = '';
 		Id roleId = String.valueOf(ar.get('roleId'));
-		if(roleIdArea.containsKey(roleId)) area = roleIdArea.get(roleId);
+		if(roleIdArea.containsKey(roleId)) market = roleIdArea.get(roleId);
 		Integer target;
 		if(roleIdUserTotal.containsKey(roleId)) target = roleIdUserTotal.get(roleId) * 5 * targetEncountersPerDay;
-		temp.market = area; temp.encounterTotal = Integer.valueOf(ar.get('total')); temp.encounterTarget = target;
+		temp.market = market; temp.encounterTotal = Integer.valueOf(ar.get('total')); temp.encounterTarget = target;
 		result.add(temp);
+        result2.add(new List<String> {market, String.valueOf(ar.get('total')), String.valueOf(target)});
+        res += '{"c":[{"v":"'+market+'","f":null},{"v":'+Integer.valueOf(ar.get('total'))+',"f":null},{"v":'+target+',"f":null}] },';
 	}
-	return result;
+    if(res.right(1) == ',') res = res.left(res.length()-1);
+    res += ']}';
+    return res;
+	// return result2;
 }
 
 private static set<Id> getSubRoleIds(set<Id> roleIds) {
