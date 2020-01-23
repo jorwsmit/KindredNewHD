@@ -78,7 +78,7 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 	thisEvent = (Event)stdController.getRecord();
 
 	for(Event e : [select Id, OwnerId, CreatedById, StartDatetime, EndDatetime, WhoId, Who.Name,
-	WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
+	               WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
 		if(e.StartDatetime!=null) {
 			startDateFormated = e.StartDatetime.format();
 			startDate = e.StartDatetime.date();
@@ -508,7 +508,7 @@ public PageReference saveAndNext() {
 	thisEvent.EndDateTime = thisEvent.StartDateTime.addMinutes(duration);
 	// thisEvent.EndDateTime = Datetime.newInstance(endDate, endTime);
 
-	PageReference eventPage;
+	PageReference eventPage = null;
 
 	try{
 		if(thisEvent.SalesHD_Complete__c==true && (thisEvent.Result__c==null || thisEvent.SalesHD_Close_Customer_Commitment__c==null)) {
@@ -565,15 +565,31 @@ public PageReference saveAndNext() {
 		ApexPages.addMessages(ex);
 	}
 
-	eventPage.setRedirect(true);
+	if(eventPage!=null) eventPage.setRedirect(true);
 	return eventPage;
 }
 
 public PageReference saveAndNew() {
-	saveEvent();
-	PageReference eventPage = new PageReference('/apex/SalesHD_NewEncounter');
-	eventPage.setRedirect(true);
+	// if(thisEvent.SalesHD_Complete__c==true && (thisEvent.Result__c==null ||
+	//                                            thisEvent.SalesHD_Close_Customer_Commitment__c==null)) {
+	// 	ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,
+	// 	                                           'Results and Close / Customer Commitment must be filled out for a complete encounter.'));
+	// } else {
+	// 	saveEvent();
+	// }
+
+	PageReference eventPage = null;
+	eventPage = saveEvent();
+	if(eventPage!=null) {
+		eventPage = new PageReference('/apex/SalesHD_NewEncounter');
+		eventPage.setRedirect(true);
+	}
 	return eventPage;
+
+	// saveEvent();
+	// PageReference eventPage = new PageReference('/apex/SalesHD_NewEncounter');
+	// eventPage.setRedirect(true);
+	// return eventPage;
 }
 
 public PageReference deleteEvent() {

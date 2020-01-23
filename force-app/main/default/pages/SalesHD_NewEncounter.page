@@ -1033,14 +1033,14 @@
 
 			function loadPage() {
 
-				if ('{!contactName}' == '') $("#contact").val(contactHtml);
-				if ('{!accountName}' == '') $("#account").val(accountHtml);
-				if ('{!unitName}' == '') $("#unit").val(unitHtml);
+				if ('{!JSENCODE(contactName)}' == '') $("#contact").val(contactHtml);
+				if ('{!JSENCODE(accountName)}' == '') $("#account").val(accountHtml);
+				if ('{!JSENCODE(unitName)}' == '') $("#unit").val(unitHtml);
 				if ({!unitList
 			}.length == 0) $("#unitList").html(unitListHtml);
 			$("#addedContacts").html(additionalContactHtml);
 
-			if ('{!contactName}' != '' || contactHtml != '') $("#addMoreContacts").show();
+			if ('{!JSENCODE(contactName)}' != '' || contactHtml != '') $("#addMoreContacts").show();
 
 			$("#unit").attr("name", Math.random().toString(36).substring(7));
 			$("#contact").attr("name", Math.random().toString(36).substring(7));
