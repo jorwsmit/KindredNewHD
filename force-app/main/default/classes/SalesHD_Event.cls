@@ -570,14 +570,6 @@ public PageReference saveAndNext() {
 }
 
 public PageReference saveAndNew() {
-	// if(thisEvent.SalesHD_Complete__c==true && (thisEvent.Result__c==null ||
-	//                                            thisEvent.SalesHD_Close_Customer_Commitment__c==null)) {
-	// 	ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR,
-	// 	                                           'Results and Close / Customer Commitment must be filled out for a complete encounter.'));
-	// } else {
-	// 	saveEvent();
-	// }
-
 	PageReference eventPage = null;
 	eventPage = saveEvent();
 	if(eventPage!=null) {
@@ -585,11 +577,6 @@ public PageReference saveAndNew() {
 		eventPage.setRedirect(true);
 	}
 	return eventPage;
-
-	// saveEvent();
-	// PageReference eventPage = new PageReference('/apex/SalesHD_NewEncounter');
-	// eventPage.setRedirect(true);
-	// return eventPage;
 }
 
 public PageReference deleteEvent() {
