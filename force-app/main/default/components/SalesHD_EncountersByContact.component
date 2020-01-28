@@ -3,7 +3,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        <title>Encounters Last Week Admin</title>
+        
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
             crossorigin="anonymous" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
@@ -23,7 +23,7 @@
 
     <body>
         <div class="slds-scope">
-            <div id="encountersToTarget"></div>
+            <div id="encountersByContact"></div>
         </div>
         <!-- Lightning Wrapper -->
 
@@ -35,44 +35,45 @@
         <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
         <script>
             $(document).ready(function () {
-                encountersToTarget();
+                encountersByContact();
             });
         </script>
         <apex:outputPanel id="dataFunction">
-            <script>    
+            <script>
+                //     function loadData() {
+                // console.log('{!data}');
+                //     }
+
                 function loadData() {
 
-                    google.load('visualization', '1', {packages:['corechart']});
+                    google.load('visualization', '1', { packages: ['corechart'] });
                     google.setOnLoadCallback(drawChart);
                 }
 
                 function drawChart() {
 
-                    var data = new google.visualization.DataTable({!encountersLastWeek});
+                    var data = new google.visualization.DataTable({!encountersByContact});
 
-                var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2]);
+                // var view = new google.visualization.DataView(data);
+                // view.setColumns([0, 1,
+                //     {
+                //         calc: "stringify",
+                //         sourceColumn: 1,
+                //         type: "string",
+                //         role: "annotation"
+                //     },
+                //     2]);
 
-                var chartHeight = data.getNumberOfRows() * 40;
 
                 var options = {
-                    height: chartHeight,
-                    title: 'Encounters to Target',
-                    'chartArea': {'width': '60%', 'height': '85%'},
-                    'legend': {'position': 'top'},
-                    backgroundColor: { fill:'transparent' },
-                    vAxis: { textStyle: { fontSize: 11 } }
+                    height: 500,
+                    title: 'Encounters by Contact Titles',
+                    pieSliceText: 'label',
+                    backgroundColor: { fill:'transparent' }
                 };
 
-                var chart = new google.visualization.BarChart(document.getElementById("encountersToTarget"));
-                chart.draw(view, options);
+                var chart = new google.visualization.PieChart(document.getElementById("encountersByContact"));
+                chart.draw(data, options);
 
                 }
 
@@ -84,7 +85,7 @@
     </html>
 
     <apex:form>
-        <apex:actionFunction name="encountersToTarget" action="{!eLastWeek}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
+        <apex:actionFunction name="encountersByContact" action="{!eLastWeekContact}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
     </apex:form>
 
 

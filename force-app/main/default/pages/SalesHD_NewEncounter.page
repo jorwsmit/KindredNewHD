@@ -772,8 +772,8 @@
 							<!-- <label class="required">*Type</label>
 							<apex:inputField styleClass="form-control" value="{!event.Type}" html-placeholder="Type" required="true" /> -->
 							
-							<label class="required">*Medium</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Medium__c}" html-placeholder="Medium"
+							<label class="required">*Contact Method</label>
+							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Contact_Method__c}" html-placeholder="Medium"
 							 required="true" />
 							
 							<label class="required">*Objective

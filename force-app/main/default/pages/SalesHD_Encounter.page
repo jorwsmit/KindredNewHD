@@ -760,8 +760,8 @@
 							</div> -->
 							
 							<div>
-								<label style="display:inline-block;">Medium:</label>
-								<p style="display:inline-block;">{!event.SalesHD_Medium__c}</p>
+								<label style="display:inline-block;">Contact Method:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
 							</div>
 							
 							<div>
