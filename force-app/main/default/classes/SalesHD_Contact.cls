@@ -1,4 +1,4 @@
-global with sharing class SalesHD_Contact {
+global without sharing class SalesHD_Contact {
 
 
 	public Contact cont {get; set;}

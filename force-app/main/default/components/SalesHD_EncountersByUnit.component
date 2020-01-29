@@ -1,5 +1,4 @@
 <apex:component controller="SalesHD_ReportingClass">
-
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
@@ -49,7 +48,8 @@
                 function drawChart() {
 
                     var data = new google.visualization.DataTable({!encountersByUnit});
-
+                    console.log({!encountersByUnit});
+                    
                 var options = {
                     height: 500,
                     title: 'Encounters by Unit',

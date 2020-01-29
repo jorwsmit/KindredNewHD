@@ -1,5 +1,5 @@
 <apex:page showHeader="false" lightningStyleSheets="true" standardStylesheets="false" sidebar="false" applyHtmlTag="false"
-    applyBodyTag="false" docType="html-5.0">
+    applyBodyTag="false" docType="html-5.0" controller="SalesHD_ReportingClass">
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
@@ -12,61 +12,76 @@
             .report-container {
                 background-color: #fff;
                 border-radius: 7px;
-                margin:10px;
+                margin: 10px;
             }
-            .col-md-6{
+
+            .col-md-6 {
                 padding: 10px !important;
             }
         </style>
     </head>
 
-    <body id="dashboard-body">
-        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <div class="slds-scope">
+    <apex:outputPanel id="dashboard-output">
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="report-container">
-                        <c:SalesHD_EncountersToTarget/>
+        <body id="dashboard-body">
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <div class="slds-scope">
+                <apex:form>
+                    <div class="row">
+                        <div class="col-md-12">{!dateRange}</div>
+                        <div class="col-md-6">
+                            <apex:commandButton action="{!previousWeek}" value="Previous Week"></apex:commandButton>
+                        </div>
+                        <div class="col-md-6">
+                            <apex:commandButton action="{!nextWeek}" value="Next Week"></apex:commandButton>
+                        </div>
                     </div>
+                </apex:form>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersToTarget/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByContact/>
+                        </div>
+
+                    </div>
+
                 </div>
-                <div class="col-md-6">
-                    <div class="report-container">
-                        <c:SalesHD_EncountersByContact/>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByMedium/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByObjective/>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByUnit/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        
                     </div>
 
                 </div>
 
             </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="report-container">
-                        <c:SalesHD_EncountersByMedium/>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="report-container">
-                        <c:SalesHD_EncountersByObjective/>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="report-container">
-                        <c:SalesHD_EncountersByUnit/>
-                    </div>
-                </div>
-                <div class="col-md-6">
-
-                </div>
-
-            </div>
-
-        </div>
-    </body>
+        </body>
+    </apex:outputPanel>
 
     </html>
 

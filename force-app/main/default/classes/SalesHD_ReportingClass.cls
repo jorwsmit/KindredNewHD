@@ -1,5 +1,6 @@
 public without sharing class SalesHD_ReportingClass {
 
+
 private static Integer targetEncountersPerDay = 2;
 
 private static Id dashboardRunningUserRoleId = null;
@@ -35,6 +36,8 @@ public String encountersByUnit {get; set;}
 public String debugstr {get; set;}
 public String data {get; set;}
 
+public String dateRange {get; set;}
+public static Date lowDate, highDate;
 
 public class encounterSummary {
 public String clName = '';
@@ -54,12 +57,21 @@ public Integer encounterTarget;
 }
 
 public SalesHD_ReportingClass() {
+	setWeeks();
+	dateRange = lowDate.format() + ' - ' + highDate.format();
+
 	encountersLastWeek = '[]';
 	encountersLastWeekAdmin = '';
+}
 
-	// for(Dashboard db : [select id, RunningUser.UserRoleId, Title from Dashboard WHERE id=:dashboardID]) {
-	//     dashboardRunningUserRoleId = db.RunningUser.UserRoleId;
-	// }
+public static void setWeeks(){
+	Integer weekOffset = 0;
+	if(ApexPages.currentPage().getParameters().get('offset')!=null) {
+		weekOffset=Integer.valueOf(ApexPages.currentPage().getParameters().get('offset'));
+	}
+
+	lowDate = Date.today().toStartOfWeek().addDays(7*weekOffset);
+	highDate = lowDate.addDays(7);
 }
 
 public void eLastWeek(){
@@ -90,8 +102,8 @@ public static String getEncountersContact(Id rId){
 	Map<String, String> contacts = new Map<String, String>();
 
 	List<id> contactIds = new List<id>();
-
-	for(event e : [select whoId from event where owner.userRoleId in :allSubRoleIds and startDateTime=last_week]) {
+	setWeeks();
+	for(event e : [select whoId from event where owner.userRoleId in :allSubRoleIds and startDateTime>=:lowDate and startDateTime<=:highDate]) {
 		contactIds.add(e.whoId);
 	}
 
@@ -106,8 +118,9 @@ public static String getEncountersContact(Id rId){
 
 
 	Map<String, Integer> contactTitleTotals = new Map<String, Integer>();
+	setWeeks();
 	for(AggregateResult ar : [select count(id) totalByContact, whoId
-	                          from event where owner.userRoleId in :allSubRoleIds and startDateTime=last_week group by whoId]) {
+	                          from event where owner.userRoleId in :allSubRoleIds and startDateTime>=:lowDate and startDateTime<=:highDate group by whoId]) {
 
 		Integer totalByContact = Integer.valueOf(ar.get('totalByContact'));
 		String contactId = String.valueOf(ar.get('whoId'));
@@ -119,13 +132,6 @@ public static String getEncountersContact(Id rId){
 			contactTitleTotals.put(contacts.get(contactId), totalByContact);
 		}
 
-
-		// if(contactTitleBuckets.containsKey(contacts.get(contactId))) {
-		// 	if(contactTitleBuckets.get(contacts.get(contactId))=='Physician') physicianEncounters+=totalByContact;
-		// 	else if(contactTitleBuckets.get(contacts.get(contactId))=='Nurse Practitioner') npEncounters+=totalByContact;
-		// 	else if(contactTitleBuckets.get(contacts.get(contactId))=='Case Manager') cmEncounters+=totalByContact;
-		// 	else if(contactTitleBuckets.get(contacts.get(contactId))=='Director') directorEncounters+=totalByContact;
-		// } else otherEncounters+=totalByContact;
 	}
 
 	String res = '{ "cols" : [{"id":"","label":"Contact Title","pattern":"","type":"string"}, ' +
@@ -137,8 +143,6 @@ public static String getEncountersContact(Id rId){
 	if(res.right(1) == ',') res = res.left(res.length()-1);
 	res += ']}';
 	return res;
-	// return JSON.serializePretty(contactTitleTotals);
-
 }
 
 public static String getEncountersMedium(Id rId){
@@ -149,9 +153,9 @@ public static String getEncountersMedium(Id rId){
 	String res = '{ "cols" : [{"id":"","label":"Contact Title","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
 	             '"rows": [';
-
+	setWeeks();
 	for(AggregateResult ar : [select count(id) totalByMedium, SalesHD_Contact_Method__c
-	                          from event where owner.userRoleId in :allSubRoleIds and startDateTime=last_week group by SalesHD_Contact_Method__c]) {
+	                          from event where owner.userRoleId in :allSubRoleIds and startDateTime>=:lowDate and startDateTime<=:highDate group by SalesHD_Contact_Method__c]) {
 		Integer totalByMedium = Integer.valueOf(ar.get('totalByMedium'));
 		String medium = '-';
 		if(ar.get('SalesHD_Contact_Method__c')!=null) medium = String.valueOf(ar.get('SalesHD_Contact_Method__c'));
@@ -170,10 +174,10 @@ public static String getEncountersObjective(Id rId){
 	String res = '{ "cols" : [{"id":"","label":"Objective","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
 	             '"rows": [';
-
+	setWeeks();
 	for(AggregateResult ar : [select count(id) totalByObjective, SalesHD_Call_Objective__c
-	                          from event where owner.userRoleId in :allSubRoleIds and startDateTime=last_week
-							  group by SalesHD_Call_Objective__c]) {
+	                          from event where owner.userRoleId in :allSubRoleIds and startDateTime>=:lowDate and startDateTime<=:highDate
+	                          group by SalesHD_Call_Objective__c]) {
 		Integer totalByObjective = Integer.valueOf(ar.get('totalByObjective'));
 		String objective = '-';
 		if(ar.get('SalesHD_Call_Objective__c')!=null) objective = String.valueOf(ar.get('SalesHD_Call_Objective__c'));
@@ -195,25 +199,26 @@ public static String getEncountersUnit(Id rId){
 	             '"rows": [';
 
 	List<Id> accountUnitIds = new List<Id>();
+	setWeeks();
 	for(Event e : [select SalesHD_Account_Unit__c from event
-	where owner.userRoleId in :allSubRoleIds and startDateTime=last_week]){
+	               where owner.userRoleId in :allSubRoleIds and startDateTime>=:lowDate and startDateTime<=:highDate]) {
 		accountUnitIds.add(e.SalesHD_Account_Unit__c);
 	}
 
 	Map<Id, String> unitNames = new Map<Id, String>();
-	for(Account_Unit__c au : [select Id, Unit__r.Name, Account__r.Name from Account_Unit__c where Id in :accountUnitIds]){
+	for(Account_Unit__c au : [select Id, Unit__r.Name, Account__r.Name from Account_Unit__c where Id in :accountUnitIds]) {
 		if(au.Unit__r.Name!='Administrative') unitNames.put(au.Id, au.Account__r.Name+' - '+au.Unit__r.Name);
 		else unitNames.put(au.Id, au.Account__r.Name+' - Global / Director');
 	}
-
+	setWeeks();
 	for(AggregateResult ar : [select count(id) totalByUnit, SalesHD_Account_Unit__c
-	                          from event where owner.userRoleId in :allSubRoleIds and startDateTime=last_week
-							  group by SalesHD_Account_Unit__c]) {
+	                          from event where owner.userRoleId in :allSubRoleIds and startDateTime>=:lowDate and startDateTime<=:highDate
+	                          group by SalesHD_Account_Unit__c]) {
 		Integer totalByUnit = Integer.valueOf(ar.get('totalByUnit'));
 		String unit = '-';
 		if(ar.get('SalesHD_Account_Unit__c')!=null &&
-		unitNames.containsKey(String.valueOf(ar.get('SalesHD_Account_Unit__c'))))
-		unit = String.valueOf(unitNames.get(String.valueOf(ar.get('SalesHD_Account_Unit__c'))));
+		   unitNames.containsKey(String.valueOf(ar.get('SalesHD_Account_Unit__c'))))
+			unit = String.valueOf(unitNames.get(String.valueOf(ar.get('SalesHD_Account_Unit__c'))));
 
 		res += '{"c":[{"v":"'+unit+'","f":null},{"v":'+totalByUnit+',"f":null}] },';
 	}
@@ -221,73 +226,6 @@ public static String getEncountersUnit(Id rId){
 	res += ']}';
 	return res;
 }
-
-
-
-// public static Map<Id, Map<Id, encounterSummary> > getEncounterSummary(Id rId){
-// 	set<Id> allSubRoleIds;
-// 	allSubRoleIds = getSubRoleIds(new set<ID> {rId});
-// 	allSubRoleIds.add(rId);
-
-// 	Map<Id, String> roleIdArea = new Map<Id, String>();
-// 	for(User u : [select area__c, userRoleId from user where area__c!=null and userRoleId in :allSubRoleIds and isActive=true]) {
-// 		if(!roleIdArea.containsKey(u.userRoleId)) roleIdArea.put(u.userRoleId, u.area__c);
-// 	}
-
-// 	Map<Id, Map<Id, encounterSummary> > result = new Map<Id, Map<Id, encounterSummary> >();
-
-// 	Map<Id, String> contacts = new Map<Id, String>();
-
-// 	List<id> contactIds = new List<id>();
-
-// 	for(event e : [select whoId from event where owner.userRoleId in :allSubRoleIds and startDateTime=last_week]) {
-// 		contactIds.add(e.whoId);
-// 	}
-
-// 	for(contact c : [select id, title__c from contact where id in :contactIds]) {
-// 		if(c.title__c!=null) contacts.put(c.id, c.title__c);
-// 	}
-
-// 	for(event e : [select id, whoId, owner.userRoleId, owner.name, ownerId from event where owner.userRoleId in :allSubRoleIds and startDateTime=last_week]) {
-// 		encounterSummary temp = new encounterSummary();
-
-// 		// Map<Id, encounterSummary> temp = new Map<Id, encounterSummary>();
-
-// 		if(!result.containsKey(e.owner.userRoleId)) result.put(e.owner.userRoleId, new Map<Id,encounterSummary> {e.ownerId=>new encounterSummary()});
-// 		else if(!result.get(e.owner.userRoleId).containsKey(e.ownerId)) result.get(e.owner.userRoleId).put(e.ownerId, new encounterSummary());
-
-// 		// temp = result.get(e.owner.userRoleId);
-
-// 		temp = result.get(e.owner.userRoleId).get(e.ownerId);
-
-// 		if(temp.clMarket=='' && roleIdArea.containsKey(e.owner.userRoleId)) temp.clMarket = roleIdArea.get(e.owner.userRoleId);
-// 		if(temp.clName=='') temp.clName = e.owner.name;
-
-// 		if(contactTitleBuckets.containsKey(contacts.get(e.whoId))) {
-// 			// temp.clMarket = contactTitleBuckets.get(contacts.get(e.whoId));
-
-// 			if(contactTitleBuckets.get(contacts.get(e.whoId))=='Physician') temp.physicianEncounters++;
-// 			else if(contactTitleBuckets.get(contacts.get(e.whoId))=='Nurse Practitioner') temp.npEncounters++;
-// 			else if(contactTitleBuckets.get(contacts.get(e.whoId))=='Case Manager') temp.cmEncounters++;
-// 			else if(contactTitleBuckets.get(contacts.get(e.whoId))=='Director') temp.directorEncounters++;
-// 			else temp.otherEncounters++;
-
-// 		} else temp.otherEncounters++;
-
-// 		temp.totalEncounters++;
-
-// 		// temp.clName = e.owner.name;
-
-// 		result.get(e.owner.userRoleId).put(e.ownerId, temp);
-
-
-// 		result.put(e.owner.userRoleId, result.get(e.owner.userRoleId));
-
-// 		// result.put(e.id, new List<encounterSummary>{temp});
-// 	}
-
-// 	return result;
-// }
 
 public static String getEncountersLastWeek(Id rId){
 	set<Id> allSubRoleIds;
@@ -312,12 +250,11 @@ public static String getEncountersLastWeek(Id rId){
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}, ' +
 	             '{"id":"","label":"Targeted Encounters","pattern":"","type":"number"}],'+
 	             '"rows": [';
-	// for(AggregateResult ar : [select owner.userRoleId roleId, count(Id) total from event where
-	//                         startDateTime=last_week and SalesHD_Account_Unit__c!=null and SalesHD_Complete__c=true
-	// 						and ownerId in (select id from user where isActive=true and area__c!=null) and owner.userRoleId in :allSubRoleIds group by owner.userRoleId]) {
+
+	setWeeks();
 	for(AggregateResult ar : [select owner.userRoleId roleId, count(Id) total from event where
-	                          startDateTime=last_week and SalesHD_Account_Unit__c!=null and SalesHD_Complete__c=true
-	                                                                                                             and ownerId in (select id from user where isActive=true and area__c!=null) and owner.userRoleId in :allSubRoleIds group by owner.userRoleId order by count(Id) desc]) {
+	                          startDateTime>=:lowDate and startDateTime<=:highDate and SalesHD_Account_Unit__c!=null and SalesHD_Complete__c=true
+	                                                                                                                                          and ownerId in (select id from user where isActive=true and area__c!=null) and owner.userRoleId in :allSubRoleIds group by owner.userRoleId order by count(Id) desc]) {
 		encounterLastWeek temp = new encounterLastWeek();
 		String market = '';
 		Id roleId = String.valueOf(ar.get('roleId'));
@@ -342,6 +279,27 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	}
 	if (!returnRoleIds.isEmpty()) returnRoleIds.addAll(getSubRoleIds(returnRoleIds));
 	return returnRoleIds;
+}
+
+public PageReference nextWeek(){
+	return weekAdjust(true);
+}
+
+public PageReference previousWeek(){
+	return weekAdjust(false);
+}
+
+private static PageReference weekAdjust(Boolean add){
+	Integer weekOffset = 0;
+	if(ApexPages.currentPage().getParameters().get('offset')!=null) {
+		weekOffset=Integer.valueOf(ApexPages.currentPage().getParameters().get('offset'));
+	}
+	if(add) weekOffset++;
+	else weekOffset--;
+	PageReference page = new PageReference('/apex/SalesHD_DashboardCL');
+	page.getParameters().put('offset', String.valueOf(weekOffset));
+	page.setRedirect(true);
+	return page;
 }
 
 }

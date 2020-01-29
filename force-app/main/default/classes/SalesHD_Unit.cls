@@ -45,7 +45,7 @@ private static Map<String, String> unitContactsMap = new Map<String, String> {
 	'Physician - Intensivist/Critical Care'=>'Provider',
 	'Physician - Specialty'=>'Provider',
 	'Physician - Hospitalist/Internal Med'=>'Provider',
-	'Resident,'=>'Provider'
+	'Resident'=>'Provider'
 };
 
 public SalesHD_Unit(ApexPages.StandardController stdController) {
