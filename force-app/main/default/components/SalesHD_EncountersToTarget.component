@@ -41,7 +41,7 @@
             <script>    
                 function loadData() {
 
-                    google.load('visualization', '1', {packages:['corechart']});
+                    google.load('visualization', '1', { packages: ['corechart'] });
                     google.setOnLoadCallback(drawChart);
                 }
 
@@ -50,32 +50,60 @@
                     var data = new google.visualization.DataTable({!encountersLastWeek});
 
                 var view = new google.visualization.DataView(data);
-                view.setColumns([0, 1,
-                    {
-                        calc: "stringify",
-                        sourceColumn: 1,
-                        type: "string",
-                        role: "annotation"
-                    },
-                    2]);
+                // view.setColumns([0, 1,
+                //     {
+                //         calc: "stringify",
+                //         sourceColumn: 1,
+                //         type: "string",
+                //         role: "annotation"
+                //     },
+                //     2]);
 
-                var chartHeight = data.getNumberOfRows() * 40;
+                view.setColumns([0, 1, 2]);
+
+                var chartHeight = data.getNumberOfRows() * 25;
 
                 var options = {
                     height: chartHeight,
                     title: 'Encounters to Target',
-                    'chartArea': {'width': '60%', 'height': '85%'},
-                    'legend': {'position': 'top'},
-                    backgroundColor: { fill:'transparent' },
-                    vAxis: { textStyle: { fontSize: 11 } }
-                };
-
-                var chart = new google.visualization.BarChart(document.getElementById("encountersToTarget"));
-                chart.draw(view, options);
-
-                }
-
-
+                    'chartArea': { 'width': '55%', 'height': '85%' },
+                    'legend': { 'position': 'top' },
+                    backgroundColor: { fill: 'transparent' },
+                    vAxis: { textStyle: { fontSize: 11 } },
+                    hAxis: { textStyle: { fontSize: 13 } },
+                    isStacked: true,
+                    titleTextStyle: {
+                        fontSize: 12,
+                    },
+                    legend: {position: 'top', textStyle: {fontSize: 12}}
+                                                        };
+                                        
+                                                        var chart = new google.visualization.BarChart(document.getElementById("encountersToTarget"));
+                                                        chart.draw(view, options);
+                                                        drawVAxisLine(chart, 10);  //set x value where line shoud be located
+                                        }
+                                        
+                function drawVAxisLine(chart, value) {
+                    var layout = chart.getChartLayoutInterface();
+                                            var chartArea = layout.getChartAreaBoundingBox();
+                        
+                                            var svg = chart.getContainer().getElementsByTagName('svg')[0];
+                                            var xLoc = layout.getXLocation(value)
+                                            svg.appendChild(createLine(xLoc, chartArea.top + chartArea.height, xLoc, chartArea.top, '#22c970', 2)); // axis line
+                                        }
+                        
+                function createLine(x1, y1, x2, y2, color, w) {
+                    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                                            line.setAttribute('x1', x1);
+                                            line.setAttribute('y1', y1);
+                                            line.setAttribute('x2', x2);
+                                            line.setAttribute('y2', y2);
+                                            line.setAttribute('stroke', color);
+                                            line.setAttribute('stroke-width', w);
+                                            return line;
+                                        }
+                        
+                        
             </script>
         </apex:outputPanel>
     </body>

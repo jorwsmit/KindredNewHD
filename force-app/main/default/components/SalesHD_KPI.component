@@ -1,0 +1,86 @@
+<apex:component controller="SalesHD_ReportingClass">
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>CL KPI</title>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+        <style>
+            .kpi {
+                font-size: 20px;
+                padding: 10px;
+                text-align: center;
+            }
+
+            .cl-name {
+                font-weight: 100 !important;
+                margin-top: 12px !important;
+            }
+
+            .kpi-header{
+                text-transform: uppercase;
+                font-weight: 900;
+                font-size: 13px;
+                height: 30px;
+                line-height: 12px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="row kpi">
+            <div class="col-md-2">
+                <h3 class="cl-name">{!clName}</h3>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">Referrals Per Day</div>
+                <div class="text-primary">1.85</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">Admits Per Day</div>
+                <div class="text-primary">0.78</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">Batting Average</div>
+                <div class="text-primary">91.67%</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">CMI</div>
+                <div class="text-success">1.23</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">Referral Lag Time</div>
+                <div class="text-warning">18.20</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">Admit Lag Time</div>
+                <div class="text-warning">4.50</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">Conversion %</div>
+                <div class="text-warning">42.25%</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">ICU Referral %</div>
+                <div class="text-danger">8.70%</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">Encounters Per Day - Month</div>
+                <div class="text-danger">0.62</div>
+            </div>
+            <div class="col-md-1">
+                <div class="kpi-header">Encounters Per Day - Quarter</div>
+                <div class="text-danger">0.46</div>
+            </div>
+        </div>
+    </body>
+
+    </html>
+
+</apex:component>

@@ -3,7 +3,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        <title>CL Dashboard</title>
+        <title>Manager Dashboard</title>
         <style>
             #dashboard-body {
                 background-color: #E0E2E7;
@@ -18,12 +18,14 @@
             .col-md-6 {
                 padding: 10px !important;
             }
-            h2{
+
+            h2 {
                 font-size: 16px !important;
                 font-weight: bold !important;
                 padding: 10px 0px !important;
             }
-            .btn{
+
+            .btn {
                 margin: 10px 0px !important;
             }
         </style>
@@ -36,17 +38,27 @@
             <div class="slds-scope">
                 <apex:form>
                     <div class="row" style="background-color:#007bff; color:#fff;">
-                        <div class="col-md-12"><h2 class="text-center ">{!dateRange}</h2></div>
+                        <div class="col-md-12">
+                            <h2 class="text-center ">{!dateRange}</h2>
+                        </div>
                         <div class="col-md-3 offset-md-3">
                             <apex:commandButton style="color:#fff;" styleClass="btn btn-secondary btn-block" action="{!previousWeek}" value="Previous Week"></apex:commandButton>
                         </div>
                         <div class="col-md-3">
                             <apex:commandButton style="color:#fff;" styleClass="btn btn-secondary btn-block" action="{!nextWeek}" value="Next Week"></apex:commandButton>
                         </div>
+                        <div class="col-md-6 offset-md-3">
+                            <apex:selectList size="1" value="{!selectedCL}" style="width:100%;color:black;">
+                                <apex:selectOptions value="{!CLPicklist}" />
+                                <apex:actionsupport event="onchange" action="{!selectCL}"/>
+                            </apex:selectList>
+                        </div>
                     </div>
                 </apex:form>
 
-    
+
+
+            <apex:outputPanel rendered="{!IF(selectedCL!=null, true, false)}">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="report-container">
@@ -54,6 +66,7 @@
                         </div>
                     </div>
                 </div>
+            </apex:outputPanel>
 
                 <div class="row">
                     <div class="col-md-6">
@@ -88,6 +101,20 @@
                     <div class="col-md-6">
                         <div class="report-container">
                             <c:SalesHD_EncountersByUnit/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByAccount/>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_UpcomingEncounters/>
                         </div>
                     </div>
                     <div class="col-md-6">

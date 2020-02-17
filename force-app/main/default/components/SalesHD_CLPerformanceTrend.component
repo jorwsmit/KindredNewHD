@@ -2,7 +2,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        <title>Encounters Last Week Admin</title>
+        <title>CL Performance Trend</title>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
             crossorigin="anonymous" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
@@ -11,18 +11,26 @@
         <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
         <apex:slds />
         <style>
-            .my-table th,
-            .my-table td {
-                padding: 5px;
-                border: 1px solid rgb(8, 7, 7);
-                font-size: 15px;
-            }
         </style>
     </head>
 
     <body>
         <div class="slds-scope">
-            <div id="encountersByUnit"></div>
+            <div id="clPerformanceTrend" style="height:500px;"></div>
+
+            <div style="text-align:center; height:50px;">
+                <apex:form id="admitRevenueSelection">
+                    <apex:outputPanel rendered="{!IF(admitsRevenue=null, true, false)}">
+                        <div>Select Admissions or Revenue</div>
+                    </apex:outputPanel>
+
+                    <apex:selectList size="1" value="{!admitsRevenue}">
+                        <apex:selectOptions value="{!admitsRevenuePicklist}" />
+                        <apex:actionsupport event="onchange" action="{!spTrend}" rerender="admitRevenueSelection,dataFunction" oncomplete="loadData();" />
+                    </apex:selectList>
+                </apex:form>
+            </div>
+
         </div>
         <!-- Lightning Wrapper -->
 
@@ -34,31 +42,45 @@
         <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
         <script>
             $(document).ready(function () {
-                encountersByUnit();
+                clPerformanceTrend();
             });
         </script>
         <apex:outputPanel id="dataFunction">
-            <script>
+            <script>    
                 function loadData() {
-
                     google.load('visualization', '1', { packages: ['corechart'] });
                     google.setOnLoadCallback(drawChart);
                 }
 
                 function drawChart() {
 
-                    var data = new google.visualization.DataTable({!encountersByUnit});
+                    var data = new google.visualization.DataTable({!clPerformanceTrend});
+
+                var view = new google.visualization.DataView(data);
+
+
+                view.setColumns([0, 1, 2]);
+
+                // var chartHeight = data.getNumberOfRows() * 25;
+
                 var options = {
+                    // height: chartHeight,
                     height: 500,
-                    title: 'Encounters by Unit',
-                    pieSliceText: 'label',
-                    backgroundColor: { fill:'transparent' }
+                    title: 'CL Performance Trend',
+                    backgroundColor: { fill: 'transparent' },
+                    vAxis: { minValue: 0, textStyle: { fontSize: 11 } },
+                    hAxis: { slantedText: true, slantedTextAngle: 60, textStyle: { fontSize: 11 } },
+                    titleTextStyle: {
+                        fontSize: 12,
+                    },
+                    trendlines: { 0: { type: 'exponential', color: '#22c970', } },
                 };
 
-                var chart = new google.visualization.PieChart(document.getElementById("encountersByUnit"));
-                chart.draw(data, options);
+                var chart = new google.visualization.LineChart(document.getElementById("clPerformanceTrend"));
+                chart.draw(view, options);
+                                        }
 
-                }
+
 
 
             </script>
@@ -68,7 +90,7 @@
     </html>
 
     <apex:form>
-        <apex:actionFunction name="encountersByUnit" action="{!eLastWeekUnit}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
+        <apex:actionFunction name="clPerformanceTrend" action="{!spTrend}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
     </apex:form>
 
 
