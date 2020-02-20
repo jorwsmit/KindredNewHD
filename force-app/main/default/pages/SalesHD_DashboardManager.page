@@ -53,12 +53,18 @@
                                 <apex:actionsupport event="onchange" action="{!selectCL}"/>
                             </apex:selectList>
                         </div>
+                        <div class="col-md-6 offset-md-3">
+                            <apex:selectList size="1" value="{!selectedAccount}" style="width:100%;color:black;">
+                                <apex:selectOptions value="{!AccountPicklist}" />
+                                <apex:actionsupport event="onchange" action="{!selectAccount}"/>
+                            </apex:selectList>
+                        </div>
                     </div>
                 </apex:form>
 
 
 
-            <apex:outputPanel rendered="{!IF(selectedCL!=null, true, false)}">
+            <!-- <apex:outputPanel rendered="{!IF(selectedCL!=null, true, false)}">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="report-container">
@@ -66,12 +72,12 @@
                         </div>
                     </div>
                 </div>
-            </apex:outputPanel>
+            </apex:outputPanel> -->
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_EncountersToTarget/>
+                            <c:SalesHD_CLPerformanceTrend/>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -119,7 +125,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_CLPerformanceTrend/>
+                            <c:SalesHD_EncountersToTarget/>
                         </div>
                     </div>
 

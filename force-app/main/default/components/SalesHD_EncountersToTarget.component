@@ -65,7 +65,7 @@
 
                 var options = {
                     height: chartHeight,
-                    title: 'Encounters to Target',
+                    title: 'Planned vs. Unplanned Encounters to Target',
                     'chartArea': { 'width': '55%', 'height': '85%' },
                     'legend': { 'position': 'top' },
                     backgroundColor: { fill: 'transparent' },

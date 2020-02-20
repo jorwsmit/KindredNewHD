@@ -47,18 +47,18 @@
                 </apex:form>
 
     
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-md-12">
                         <div class="report-container">
                             <c:SalesHD_KPI/>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="row">
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_EncountersToTarget/>
+                            <c:SalesHD_CLPerformanceTrend/>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -92,7 +92,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_CLPerformanceTrend/>
+                            <c:SalesHD_EncountersToTarget/>
                         </div>
                     </div>
 

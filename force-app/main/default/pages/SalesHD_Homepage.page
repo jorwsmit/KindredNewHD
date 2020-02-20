@@ -621,8 +621,9 @@
 
 	<body>
 
-		
-		
+		<div class="slds-scope">
+
+			<c:SalesHD_RedesignNav />
 
 			<div class="container white-bg shadow">
 				<div class="row inner-container">
@@ -738,9 +739,9 @@
 							</div>
 
 							<!-- <div style="padding:0px 0px 10px 0px!important;">
-								<button class="btn btn-primary btn-block rounded" onclick="window.location='/apex/SalesHD_AssessmentAudit';">
-									<i class="fas fa-list-alt"></i> Assessment Audit</button>
-							</div> -->
+                                <button class="btn btn-primary btn-block rounded" onclick="window.location='/apex/SalesHD_AssessmentAudit';">
+                                    <i class="fas fa-list-alt"></i> Assessment Audit</button>
+                            </div> -->
 						</apex:outputPanel>
 
 						<div style="padding:0px 0px 10px 0px!important;">
@@ -778,14 +779,21 @@
 								<i class="fas fa-chart-pie icon icon-lightblue" style="padding:10px 9px 10px 9px;" aria-hidden="true"></i> Reports</h3>
 							<div style="margin-left:10px;" id="reports">
 								<div>
-									<a onclick="window.location='/00O/o?isdtp=vw';">
+									<a target="_blank" href="/00O/o?isdtp=vw">
 										<b>Salesforce Reports</b>
 									</a>
 								</div>
 								<div>
-									<a onclick="window.location='/01Z/o?isdtp=vw';">
-										<b>Dashboards</b>
-									</a>
+									<apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+										<a target="_blank" href="/apex/SalesHD_DashboardManager">
+											<b>Dashboard</b>
+										</a>
+									</apex:outputPanel>
+									<apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
+										<a target="_blank" href="/apex/SalesHD_DashboardCL">
+											<b>Dashboard</b>
+										</a>
+									</apex:outputPanel>
 								</div>
 							</div>
 						</div>
@@ -891,16 +899,6 @@
 
 				}, { escape: false });
 
-				// SalesHD_Homepage.getLeaderboard(function (callback, event) {
-				// 	$("#leaderboard").html('');
-				// 	var leaderboard = JSON.parse(callback);
-				// for (user of leaderboard) {
-				// 	$("#leaderboard").append('<li><div class="row"><div class="col-md-1" style="font-size:35px;padding-top:12px;">' + user.ranking + '</div>' +
-				// 		'<div class="col-md-1" style="padding:0px!important;"><img style="border-radius:25px;border:2px solid #157DFA;" src="' + user.photoUrl + '"/></div>' +
-				// 		'<div class="col-md-7"><div><b>' + user.name + '</b></div><div style="font-weight:lighter;">' + user.market + '</div></div>' +
-				// 		'<div class="col-md-3" style="text-align:right;padding-top:12px;">' + user.revenue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</div></div></li>');
-				// }
-				// }, { escape: false });
 
 				$('#directorySearch').keyup(function () {
 					$("#directory li").each(function () {
@@ -911,14 +909,6 @@
 						}
 					});
 				});
-
-				// SalesHD_Homepage.getMessages(function (callback, event) {
-				// 	var messages = JSON.parse(callback);
-				// 	if (messages.length > 0) $('#corporateMessages').html('');
-				// 	for (message of messages) {
-				// 		$('#corporateMessages').append('<li><h5 style="font-size:15px;"><b>' + message.author + '</b> ' + message.authorTitle + '</h5>' + message.message + '</li>')
-				// 	}
-				// }, { escape: false });
 
 				var messages = {!messagesJSON
 			};
@@ -937,7 +927,7 @@
 					'<div class="col-md-7"><div><b>' + leader.name + '</b></div><div style="font-weight:lighter;">' + leader.market + '</div></div>' +
 					'<div class="col-md-3" style="text-align:right;padding-top:12px;">' + leader.revenue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '</div></div></li>');
 			}
-			}
+            }
 
 
 
@@ -957,7 +947,7 @@
 
 
 
-			});
+            });
 
 			function openResource(id) {
 				if ((typeof sforce != 'undefined') && sforce && (!!sforce.one)) {
