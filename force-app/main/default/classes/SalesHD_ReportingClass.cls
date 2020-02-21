@@ -7,6 +7,39 @@ private static Id dashboardRunningUserRoleId = null;
 
 private static Set<String> csuiteTitles = new Set<String> {'CCO', 'CEO', 'CFO', 'CMO', 'COO', 'CNO'};
 
+private static Map<String, String> unitBuckets = new Map<String, String> {
+	'INTENSIVE CARE UNIT' => 'ICU',
+	'ICU - CARDIAC' => 'ICU',
+	'ICU - SURGICAL' => 'ICU',
+	'ICU - NEURO' => 'ICU',
+	'ICU - CV SURGERY' => 'ICU',
+	'ICU - TRANSPLANT' => 'ICU',
+	'ICU - BURN' => 'ICU',
+	'ICU - TRAUMA' => 'ICU',
+
+	'SDU - CARDIAC' => 'SDU',
+	'SDU - SURGICAL' => 'SDU',
+	'SDU - VENT/PULMONARY' => 'SDU',
+	'STEP-DOWN' => 'SDU',
+
+	'MED-SURG' => 'M/S',
+
+	'Administrative' => 'Global/Director',
+
+	'OTHER' => 'Other',
+	'EMERGENCY ROOM' => 'Other',
+	'REHAB UNIT' => 'Other',
+	'SKILLED NURSING UNIT' => 'Other',
+	'HOME' => 'Other',
+	'PHYSICIAN OFFICE' => 'Other',
+	'SKILLED NURSING FAC' => 'Other',
+	'EMERGENCY DEPARTMENT' => 'Other',
+	'OUTPATIENT CLINIC' => 'Other',
+	'HOME WITH HH' => 'Other',
+	'OBSERVATION' => 'Other',
+	'CARDIAC CARE UNIT' => 'Other'
+};
+
 private static Map<String, String> contactTitleBuckets = new Map<String, String> {
 	'Physician - Intensivist/Critical Care' => 'Physician',
 	'Physician - Specialty' => 'Physician',
@@ -501,15 +534,22 @@ public static String getEncountersUnit(Id rId, Id cl, Id accountId){
 		       group by SalesHD_Account_Unit__r.Unit__r.Name];
 	}
 
+	Map<String, Integer> unitGroupTotals = new Map<String, Integer>();
 	for(AggregateResult ar : ars) {
 		Integer totalByUnit = Integer.valueOf(ar.get('totalByUnit'));
 		String unit = '-';
-		if(ar.get('unit')!=null) {
-			if(ar.get('unit')=='Administrative') unit = 'Global / Director';
-			else unit = String.valueOf(ar.get('unit'));
-		}
+		if(ar.get('unit')!=null ) {
+			if(unitBuckets.containsKey(String.valueOf(ar.get('unit'))))
+			unit = unitBuckets.get(String.valueOf(ar.get('unit')));
+			else
+			unit = String.valueOf(ar.get('unit'));
 
-		res += '{"c":[{"v":"'+unit+'","f":null},{"v":'+totalByUnit+',"f":null}] },';
+			if(unitGroupTotals.containsKey(unit)) unitGroupTotals.put(unit, unitGroupTotals.get(unit)+totalByUnit);
+			else unitGroupTotals.put(unit, totalByUnit);
+		}
+	}
+	for(String unit : unitGroupTotals.keySet()){
+		res += '{"c":[{"v":"'+unit+'","f":null},{"v":'+unitGroupTotals.get(unit)+',"f":null}] },';
 	}
 	if(res.right(1) == ',') res = res.left(res.length()-1);
 	res += ']}';
