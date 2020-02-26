@@ -64,7 +64,7 @@ public class SalesHD_TestReporting {
 	System.runAs ( thisUser ) {
 		User usr = new User(Alias = 'newUser2', Email='testhduser2@kndcrm.com',
 		                    EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
-		                    LocaleSidKey='en_US', ProfileId = '00ea0000001serv',
+		                    LocaleSidKey='en_US', ProfileId = '00e1B000000jWdg',
 		                    TimeZoneSidKey='America/Los_Angeles', UserName='testhduser2@kndcrm.com', UserRoleId='00E130000020vp7');
 		insert usr;
 

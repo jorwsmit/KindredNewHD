@@ -63,7 +63,7 @@ private class SalesHD_TestRedesign {
 	System.runAs ( thisUser ) {
 		User usr = new User(Alias = 'newUser2', Email='testhduser2@kndcrm.com',
 		                    EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
-		                    LocaleSidKey='en_US', ProfileId = '00ea0000001serv',
+		                    LocaleSidKey='en_US', ProfileId = '00e1B000000jWdg',
 		                    TimeZoneSidKey='America/Los_Angeles', UserName='testhduser2@kndcrm.com', UserRoleId='00E130000020vp7');
 		insert usr;
 
@@ -1081,5 +1081,62 @@ public Boolean isActive;
 	SalesHD_Collaterals controller = new SalesHD_Collaterals();
 	Test.stopTest();
 }
+
+// @isTest static void NewPhysicianRequest_saveNew() {
+// 	PageReference pageRef = Page.SalesHD_NewPhysicianRequest;
+// 	Test.setCurrentPage(pageRef);
+//
+// 	New_Physician_Request__c pr = new New_Physician_Request__c();
+// 	pr.First_Name__c='test'; pr.Last_Name__c='request'; pr.Requested_Physician_NPI__c='12345';
+// 	pr.Mailing_Street__c='680 South Fourth Street'; pr.Mailing_City__c='Louisville';
+// 	pr.Mailing_State__c='KY'; pr.Mailing_Postal_Code__c='40202';
+//
+//
+// 	ApexPages.StandardController sc = new ApexPages.standardController(pr);
+// 	SalesHD_NewPhysicianRequest controller = new SalesHD_NewPhysicianRequest(sc);
+// 	controller.physician = pr;
+// 	controller.saveNew();
+// }
+//
+// @isTest static void NewPhysicianRequest_saveNewError() {
+// 	PageReference pageRef = Page.SalesHD_NewPhysicianRequest;
+// 	Test.setCurrentPage(pageRef);
+//
+// 	New_Physician_Request__c pr = new New_Physician_Request__c();
+// 	pr.First_Name__c='test'; pr.Last_Name__c='request';
+// 	insert pr;
+// 	pageRef.getParameters().put('id',pr.id);
+// 	ApexPages.StandardController sc = new ApexPages.standardController(pr);
+// 	SalesHD_NewPhysicianRequest controller = new SalesHD_NewPhysicianRequest(sc);
+// 	controller.physician = pr;
+// 	Test.startTest();
+// 	controller.saveNew();
+// 	Test.stopTest();
+// }
+//
+// @isTest static void NewPhysicianRequest_sendEmail() {
+// 	New_Physician_Request__c pr = new New_Physician_Request__c();
+// 	pr.First_Name__c='test'; pr.Last_Name__c='request'; pr.Requested_Physician_NPI__c='12345';
+// 	pr.Mailing_Street__c='680 South Fourth Street'; pr.Mailing_City__c='Louisville';
+// 	pr.Mailing_State__c='KY'; pr.Mailing_Postal_Code__c='40202';
+//
+// 	insert pr;
+//
+// 	SalesHD_Redesign__c setting = new SalesHD_Redesign__c();
+// 	setting.Name = 'Meditech Team Email';
+// 	setting.Meditech_Request_Email__c = 'test@test.org';
+// 	insert setting;
+//
+// 	setting = new SalesHD_Redesign__c();
+// 	setting.Name = 'HD Admin ReplyTo Physician Requests';
+// 	setting.Meditech_Request_Email__c = 'test@test.org';
+// 	insert setting;
+//
+// 	Test.startTest();
+// 	SalesHD_NewPhysicianRequest.sendEmail();
+// 	Test.stopTest();
+// }
+
+
 
 }
