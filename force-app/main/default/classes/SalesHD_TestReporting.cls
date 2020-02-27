@@ -71,6 +71,36 @@ public class SalesHD_TestReporting {
 		Alert_and_Comment__c ac = new Alert_and_Comment__c(Datetime__c=System.now(), Comment_By__c=thisUser.Id,
 		                                                   Type__c='HD Corporate Message', Comment__c='Test');
 		insert ac;
+
+		List<SalesHD_KPI__c> kpis = new List<SalesHD_KPI__c>();
+		SalesHD_KPI__c kpi = new SalesHD_KPI__c(CL__c=usr.Id,Admit_Lag_Time__c=null,
+		Admits_Per_Day__c=1, Batting_Average__c=2, CMI__c=1, Conversion_Percentage__c=4, Encounters_Per_Day_Quarter__c=1,
+		Encounters_Per_Day_Month__c=1.25, ICU_Referral_Percentage__c=null,  Referral_Lag_Time__c=3,
+		Referrals_Per_Day__c=1, KPI_Date__c=Date.ValueOf(System.now()));
+		kpis.add(kpi);
+
+		List<RecordType> kpiRecordType = [select Id from RecordType where name = 'KPI High Baseline' or
+		name = 'KPI Middle Baseline' or name = 'KPI Low Baseline' order by name];
+
+		kpi = new SalesHD_KPI__c(Admit_Lag_Time__c=2,
+		Admits_Per_Day__c=2, Batting_Average__c=2, CMI__c=2, Conversion_Percentage__c=2, Encounters_Per_Day_Quarter__c=2,
+		Encounters_Per_Day_Month__c=2, ICU_Referral_Percentage__c=2,  Referral_Lag_Time__c=2,
+		Referrals_Per_Day__c=2, KPI_Date__c=Date.ValueOf(System.now()), RecordTypeId=kpiRecordType[0].Id);
+		kpis.add(kpi);
+
+		kpi = new SalesHD_KPI__c(Admit_Lag_Time__c=1.5,
+		Admits_Per_Day__c=1.5, Batting_Average__c=1.5, CMI__c=1.5, Conversion_Percentage__c=1.5, Encounters_Per_Day_Quarter__c=1.5,
+		Encounters_Per_Day_Month__c=1.5, ICU_Referral_Percentage__c=1.5,  Referral_Lag_Time__c=1.5,
+		Referrals_Per_Day__c=1.5, KPI_Date__c=Date.ValueOf(System.now()), RecordTypeId=kpiRecordType[2].Id);
+		kpis.add(kpi);
+		
+		kpi = new SalesHD_KPI__c(Admit_Lag_Time__c=1,
+		Admits_Per_Day__c=1, Batting_Average__c=1, CMI__c=1, Conversion_Percentage__c=1, Encounters_Per_Day_Quarter__c=1,
+		Encounters_Per_Day_Month__c=1, ICU_Referral_Percentage__c=1,  Referral_Lag_Time__c=1,
+		Referrals_Per_Day__c=1, KPI_Date__c=Date.ValueOf(System.now()), RecordTypeId=kpiRecordType[1].Id);
+		kpis.add(kpi);
+
+		insert kpis;
 	}
 }
 
@@ -164,6 +194,16 @@ public class SalesHD_TestReporting {
     SalesHD_ReportingClass controller = new SalesHD_ReportingClass();
     controller.admitsRevenue = 'Admissions';
 	controller.spTrend();
+	Test.stopTest();
+}
+
+@isTest static void Reporting_getKpi() {
+	User u = [select id from user where username='testhduser2@kndcrm.com'];
+	PageReference pageRef = Page.SalesHD_DashboardManager;
+	Test.setCurrentPage(pageRef);
+    Test.startTest();
+    SalesHD_ReportingClass controller = new SalesHD_ReportingClass();
+	controller.getKpi(u.Id);
 	Test.stopTest();
 }
 
