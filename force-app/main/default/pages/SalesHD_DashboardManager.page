@@ -28,6 +28,18 @@
             .btn {
                 margin: 10px 0px !important;
             }
+
+            body input[type="submit"] {
+                color: #fff;
+                background-color: #6c757d;
+                border-color: #6c757d;
+            }
+
+            body input[type="submit"]:hover {
+                color: #fff;
+                background-color: #5a6268;
+                border-color: #545b62;
+            }
         </style>
     </head>
 
@@ -42,10 +54,10 @@
                             <h2 class="text-center ">{!dateRange}</h2>
                         </div>
                         <div class="col-md-3 offset-md-3">
-                            <apex:commandButton style="color:#fff;" styleClass="btn btn-secondary btn-block" action="{!previousWeek}" value="Previous Week"></apex:commandButton>
+                            <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!previousWeek}" value="Previous Week"></apex:commandButton>
                         </div>
                         <div class="col-md-3">
-                            <apex:commandButton style="color:#fff;" styleClass="btn btn-secondary btn-block" action="{!nextWeek}" value="Next Week"></apex:commandButton>
+                            <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!nextWeek}" value="Next Week"></apex:commandButton>
                         </div>
                         <div class="col-md-6 offset-md-3">
                             <apex:selectList size="1" value="{!selectedCL}" style="width:100%;color:black;">
@@ -64,15 +76,15 @@
 
 
 
-            <!-- <apex:outputPanel rendered="{!IF(selectedCL!=null, true, false)}">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="report-container">
-                            <c:SalesHD_KPI/>
+                <apex:outputPanel rendered="{!IF(kpi!=null, true, false)}">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="report-container" style="overflow-x:auto;margin-left:5px;margin-right:5px;">
+                                <c:SalesHD_KPI/>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </apex:outputPanel> -->
+                </apex:outputPanel>
 
                 <div class="row">
                     <div class="col-md-6">

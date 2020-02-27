@@ -23,18 +23,27 @@
                 margin-top: 12px !important;
             }
 
-            .kpi-header{
+            .kpi-header {
                 text-transform: uppercase;
                 font-weight: 900;
                 font-size: 13px;
                 height: 30px;
                 line-height: 12px;
             }
+            #kpiTable{
+                margin: 10px;
+            }
+            
+            #kpiTable td, #kpiTable th{
+                border: 1px solid #aaaaaa;
+                white-space: nowrap;
+                text-align: center;
+            }
         </style>
     </head>
 
     <body>
-        <div class="row kpi">
+        <!-- <div class="row kpi">
             <div class="col-md-2">
                 <h3 class="cl-name">{!clName}</h3>
             </div>
@@ -78,7 +87,93 @@
                 <div class="kpi-header">Encounters Per Day - Quarter</div>
                 <div class="text-danger">0.46</div>
             </div>
-        </div>
+        </div> -->
+
+        <table id="kpiTable" class="table table-sm" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Referrals_Per_Day__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Admits_Per_Day__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Batting_Average__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.CMI__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Referral_Lag_Time__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Admit_Lag_Time__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Conversion_Percentage__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.ICU_Referral_Percentage__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Encounters_Per_Day_Month__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Encounters_Per_Day_Quarter__c.Label}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{!kpi.CL__r.Name}</td>
+                    <td class="{!kpiColors[0]}">{!kpi.Referrals_Per_Day__c}</td>
+                    <td class="{!kpiColors[1]}">{!kpi.Admits_Per_Day__c}</td>
+                    <td class="{!kpiColors[2]}">{!kpi.Batting_Average__c} {!IF(kpi.Batting_Average__c!=null,"%","")}</td>
+                    <td class="{!kpiColors[2]}">{!kpi.CMI__c}</td>
+                    <td class="{!kpiColors[4]}">{!kpi.Referral_Lag_Time__c}</td>
+                    <td class="{!kpiColors[5]}">{!kpi.Admit_Lag_Time__c}</td>
+                    <td class="{!kpiColors[6]}">{!kpi.Conversion_Percentage__c} {!IF(kpi.Conversion_Percentage__c!=null,"%","")}</td>
+                    <td class="{!kpiColors[7]}">{!kpi.ICU_Referral_Percentage__c} {!IF(kpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                    <td class="{!kpiColors[8]}">{!kpi.Encounters_Per_Day_Month__c}</td>
+                    <td class="{!kpiColors[9]}">{!kpi.Encounters_Per_Day_Quarter__c}</td>
+                </tr>
+                <tr style="height:20px;border:none;"></tr>
+                <tr style="height:30px;">
+                    <td class="bg-primary"></td>
+                    <td>Higher is better</td>
+                    <td>Higher is better</td>
+                    <td>Higher is better</td>
+                    <td>Higher is better</td>
+                    <td>Lower is better</td>
+                    <td>Lower is better</td>
+                    <td>Higher is better</td>
+                    <td>Higher is better</td>
+                    <td>Higher is better</td>
+                    <td>Higher is better</td>
+                </tr>
+                <tr>
+                    <td class="bg-success"></td>
+                    <td>{!highKpi.Referrals_Per_Day__c}</td>
+                    <td>{!highKpi.Admits_Per_Day__c}</td>
+                    <td>{!highKpi.Batting_Average__c} {!IF(highKpi.Batting_Average__c!=null,"%","")}</td>
+                    <td>{!highKpi.CMI__c}</td>
+                    <td>{!highKpi.Referral_Lag_Time__c}</td>
+                    <td>{!highKpi.Admit_Lag_Time__c}</td>
+                    <td>{!highKpi.Conversion_Percentage__c} {!IF(highKpi.Conversion_Percentage__c!=null,"%","")}</td>
+                    <td>{!highKpi.ICU_Referral_Percentage__c} {!IF(highKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                    <td>{!highKpi.Encounters_Per_Day_Month__c}</td>
+                    <td>{!highKpi.Encounters_Per_Day_Quarter__c}</td>
+                </tr>
+                <tr>
+                    <td class="bg-warning"></td>
+                    <td>{!middleKpi.Referrals_Per_Day__c}</td>
+                    <td>{!middleKpi.Admits_Per_Day__c}</td>
+                    <td>{!middleKpi.Batting_Average__c} {!IF(middleKpi.Batting_Average__c!=null,"%","")}</td>
+                    <td>{!middleKpi.CMI__c}</td>
+                    <td>{!middleKpi.Referral_Lag_Time__c}</td>
+                    <td>{!middleKpi.Admit_Lag_Time__c}</td>
+                    <td>{!middleKpi.Conversion_Percentage__c} {!IF(middleKpi.Conversion_Percentage__c!=null,"%","")}</td>
+                    <td>{!middleKpi.ICU_Referral_Percentage__c} {!IF(middleKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                    <td>{!middleKpi.Encounters_Per_Day_Month__c}</td>
+                    <td>{!middleKpi.Encounters_Per_Day_Quarter__c}</td>
+                </tr>
+                <tr>
+                    <td class="bg-danger"></td>
+                    <td>{!lowKpi.Referrals_Per_Day__c}</td>
+                    <td>{!lowKpi.Admits_Per_Day__c}</td>
+                    <td>{!lowKpi.Batting_Average__c} {!IF(lowKpi.Batting_Average__c!=null,"%","")}</td>
+                    <td>{!lowKpi.CMI__c}</td>
+                    <td>{!lowKpi.Referral_Lag_Time__c}</td>
+                    <td>{!lowKpi.Admit_Lag_Time__c}</td>
+                    <td>{!lowKpi.Conversion_Percentage__c} {!IF(lowKpi.Conversion_Percentage__c!=null,"%","")}</td>
+                    <td>{!lowKpi.ICU_Referral_Percentage__c} {!IF(lowKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                    <td>{!lowKpi.Encounters_Per_Day_Month__c}</td>
+                    <td>{!lowKpi.Encounters_Per_Day_Quarter__c}</td>
+                </tr>
+            </tbody>
+        </table>
     </body>
 
     </html>

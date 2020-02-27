@@ -106,6 +106,12 @@ public string clName {get; set;}
 
 public string selectedAccount {get; set;}
 
+public SalesHD_KPI__c kpi {get; set;}
+public SalesHD_KPI__c highKpi {get; set;}
+public SalesHD_KPI__c middleKpi {get; set;}
+public SalesHD_KPI__c lowKpi {get; set;}
+public List<String> kpiColors {get; set;}
+
 public String dateRange {get; set;}
 public static Datetime lowDate, highDate;
 
@@ -123,6 +129,8 @@ public SalesHD_ReportingClass() {
 
 	clName = UserInfo.getName();
 
+	kpiColors = new List<String> {'', '', '', '', '', '', '', '', '', ''};
+
 	if(ApexPages.currentPage().getParameters().get('cl')!=null) {
 
 		for(User u : [select id, name, userRoleId from User where id=:ApexPages.currentPage().getParameters().get('cl')]) {
@@ -133,9 +141,61 @@ public SalesHD_ReportingClass() {
 		}
 	}
 
+	if(selectedCL!=null) getKpi(selectedCL);
+	else getKpi(UserInfo.getUserId());
+
 	if(ApexPages.currentPage().getParameters().get('account')!=null) {
 		selectedAccount = ApexPages.currentPage().getParameters().get('account');
 	}
+
+}
+
+public void getKpi(Id clId){
+	// SalesHD_KPI__c highKpi, middleKpi, lowKpi;
+	for(SalesHD_KPI__c kpis : [select CL__r.Name,Admit_Lag_Time__c,
+	                           Admits_Per_Day__c, Batting_Average__c, CMI__c, Conversion_Percentage__c, Encounters_Per_Day_Quarter__c,
+	                           Encounters_Per_Day_Month__c, ICU_Referral_Percentage__c,  Referral_Lag_Time__c,
+	                           Referrals_Per_Day__c, RecordType.Name from SalesHD_KPI__c where (CL__c=:clId or
+	                        	RecordType.Name='KPI High Baseline' or RecordType.Name='KPI Middle Baseline' or RecordType.Name='KPI Low Baseline') and KPI_Date__C=this_quarter]) {
+		if(kpis.RecordType.Name=='KPI High Baseline') highKpi = kpis;
+		else if(kpis.RecordType.Name=='KPI Middle Baseline') middleKpi = kpis;
+		else if(kpis.RecordType.Name=='KPI Low Baseline') lowKpi = kpis;
+		else if(kpis.CL__c==clId) kpi = kpis;
+	}
+
+	if(kpi!=null && highKpi!=null && middleKpi!=null && lowKpi!=null) {
+			kpiColors[0] = kpiColor(kpi.Referrals_Per_Day__c, highKpi.Referrals_Per_Day__c, middleKpi.Referrals_Per_Day__c, lowKpi.Referrals_Per_Day__c);
+			kpiColors[1] = kpiColor(kpi.Admits_Per_Day__c, highKpi.Admits_Per_Day__c, middleKpi.Admits_Per_Day__c, lowKpi.Admits_Per_Day__c);
+			kpiColors[2] = kpiColor(kpi.Batting_Average__c, highKpi.Batting_Average__c, middleKpi.Batting_Average__c, lowKpi.Batting_Average__c);
+			kpiColors[3] = kpiColor(kpi.CMI__c, highKpi.CMI__c, middleKpi.CMI__c, lowKpi.CMI__c);
+			kpiColors[4] = kpiColorLowerIsBetter(kpi.Referral_Lag_Time__c, highKpi.Referral_Lag_Time__c, middleKpi.Referral_Lag_Time__c, lowKpi.Referral_Lag_Time__c);
+			kpiColors[5] = kpiColorLowerIsBetter(kpi.Admit_Lag_Time__c, highKpi.Admit_Lag_Time__c, middleKpi.Admit_Lag_Time__c, lowKpi.Admit_Lag_Time__c);
+			kpiColors[6] = kpiColor(kpi.Conversion_Percentage__c, highKpi.Conversion_Percentage__c, middleKpi.Conversion_Percentage__c, lowKpi.Conversion_Percentage__c);
+			kpiColors[7] = kpiColor(kpi.ICU_Referral_Percentage__c, highKpi.ICU_Referral_Percentage__c, middleKpi.ICU_Referral_Percentage__c, lowKpi.ICU_Referral_Percentage__c);
+			kpiColors[8] = kpiColor(kpi.Encounters_Per_Day_Month__c, highKpi.Encounters_Per_Day_Month__c, middleKpi.Encounters_Per_Day_Month__c, lowKpi.Encounters_Per_Day_Month__c);
+			kpiColors[9] = kpiColor(kpi.Encounters_Per_Day_Quarter__c, highKpi.Encounters_Per_Day_Quarter__c, middleKpi.Encounters_Per_Day_Quarter__c, lowKpi.Encounters_Per_Day_Quarter__c);					
+	}
+}
+
+public static string kpiColor(Decimal clValue, Decimal highValue, Decimal middleValue, Decimal lowValue ){
+	if(clValue!=null && highValue!=null && middleValue!=null && lowValue!=null) {
+		if(clValue>highValue) return 'bg-primary';
+		else if(clValue<=highValue && clValue>middleValue) return 'bg-success';
+		else if(clValue<=middleValue && clValue>lowValue) return 'bg-warning';
+		else if(clValue<=lowValue) return 'bg-danger';
+		else return '';
+	} else return '';
+
+}
+
+public static string kpiColorLowerIsBetter(Decimal clValue, Decimal highValue, Decimal middleValue, Decimal lowValue ){
+	if(clValue!=null && highValue!=null && middleValue!=null && lowValue!=null) {
+		if(clValue<highValue) return 'bg-primary';
+		else if(clValue>=highValue && clValue<middleValue) return 'bg-success';
+		else if(clValue>=middleValue && clValue<lowValue) return 'bg-warning';
+		else if(clValue>=lowValue) return 'bg-danger';
+		else return '';
+	} else return '';
 
 }
 
@@ -540,15 +600,15 @@ public static String getEncountersUnit(Id rId, Id cl, Id accountId){
 		String unit = '-';
 		if(ar.get('unit')!=null ) {
 			if(unitBuckets.containsKey(String.valueOf(ar.get('unit'))))
-			unit = unitBuckets.get(String.valueOf(ar.get('unit')));
+				unit = unitBuckets.get(String.valueOf(ar.get('unit')));
 			else
-			unit = String.valueOf(ar.get('unit'));
+				unit = String.valueOf(ar.get('unit'));
 
 			if(unitGroupTotals.containsKey(unit)) unitGroupTotals.put(unit, unitGroupTotals.get(unit)+totalByUnit);
 			else unitGroupTotals.put(unit, totalByUnit);
 		}
 	}
-	for(String unit : unitGroupTotals.keySet()){
+	for(String unit : unitGroupTotals.keySet()) {
 		res += '{"c":[{"v":"'+unit+'","f":null},{"v":'+unitGroupTotals.get(unit)+',"f":null}] },';
 	}
 	if(res.right(1) == ',') res = res.left(res.length()-1);
