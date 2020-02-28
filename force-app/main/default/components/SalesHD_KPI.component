@@ -111,7 +111,7 @@
                     <td class="{!kpiColors[0]}">{!kpi.Referrals_Per_Day__c}</td>
                     <td class="{!kpiColors[1]}">{!kpi.Admits_Per_Day__c}</td>
                     <td class="{!kpiColors[2]}">{!kpi.Batting_Average__c} {!IF(kpi.Batting_Average__c!=null,"%","")}</td>
-                    <td class="{!kpiColors[2]}">{!kpi.CMI__c}</td>
+                    <td class="{!kpiColors[3]}">{!kpi.CMI__c}</td>
                     <td class="{!kpiColors[4]}">{!kpi.Referral_Lag_Time__c}</td>
                     <td class="{!kpiColors[5]}">{!kpi.Admit_Lag_Time__c}</td>
                     <td class="{!kpiColors[6]}">{!kpi.Conversion_Percentage__c} {!IF(kpi.Conversion_Percentage__c!=null,"%","")}</td>
