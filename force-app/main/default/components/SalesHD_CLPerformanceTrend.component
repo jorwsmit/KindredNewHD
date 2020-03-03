@@ -16,6 +16,7 @@
 
     <body>
         <div class="slds-scope">
+            <p style="text-align:center;font-weight:bold;padding-top:25px;">CL Performance Trend</p>
             <div id="clPerformanceTrend" style="height:500px;"></div>
 
             <div style="text-align:center; height:50px;">
@@ -26,7 +27,8 @@
 
                     <apex:selectList size="1" value="{!admitsRevenue}">
                         <apex:selectOptions value="{!admitsRevenuePicklist}" />
-                        <apex:actionsupport event="onchange" action="{!spTrend}" rerender="admitRevenueSelection,dataFunction" oncomplete="loadData();" />
+                        <apex:actionsupport event="onchange" action="{!spTrend}" rerender="admitRevenueSelection,dataFunction" oncomplete="loadData();"
+                        />
                     </apex:selectList>
                 </apex:form>
             </div>
@@ -66,7 +68,11 @@
                 var options = {
                     // height: chartHeight,
                     height: 500,
-                    title: 'CL Performance Trend',
+                    // title: 'CL Performance Trend',
+                    chartArea: {
+                        height: 375,
+                        bottom: 100
+                    },
                     backgroundColor: { fill: 'transparent' },
                     vAxis: { minValue: 0, textStyle: { fontSize: 11 } },
                     hAxis: { slantedText: true, slantedTextAngle: 60, textStyle: { fontSize: 11 } },
