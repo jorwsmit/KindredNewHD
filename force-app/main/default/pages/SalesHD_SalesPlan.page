@@ -1,0 +1,1194 @@
+<apex:page showHeader="false" standardController="Sales_Plans__c" extensions="SalesHD_SalesPlan" lightningStyleSheets="true"
+    standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>Sales Plan</title>
+
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/> -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+        <style>
+            a {
+                color: #208FFF !important;
+                text-decoration: underline !important;
+            }
+
+            a:hover {
+                color: #1773d1 !important;
+            }
+
+            div {
+                font-size: 20px;
+            }
+
+            body {
+                font-family: "Salesforce Sans", Arial, sans-serif !important;
+                margin: 0px;
+                background-color: #E0E2E7;
+            }
+
+            input {
+                display: block;
+            }
+
+            form {
+                width: 100%;
+            }
+
+            form label {
+                font-size: 24px !important;
+                font-weight: bold !important;
+            }
+
+            textarea,
+            input {
+                color: #3E3E3C !important;
+                font-size: 18px !important;
+            }
+
+            textarea::placeholder,
+            input::placeholder {
+                font-size: 18px !important;
+            }
+
+            .LightningDesign {
+                color: #3E3E3C !important;
+            }
+
+            .LightningDesign::selection {
+                color: #3E3E3C !important;
+            }
+
+            .reassignButton {
+                position: fixed;
+                bottom: 0px;
+                left: 50%;
+                margin-left: -250px;
+            }
+
+            .reassignButton button {
+                width: 500px !important;
+            }
+
+            .l-space {
+                margin: 20px;
+            }
+
+            .s-space {
+                margin: 10px;
+            }
+
+            .spinner {
+                text-align: center;
+                color: #157DFA;
+                position: relative;
+                left: 50%;
+            }
+
+            .tableCheck {
+                position: relative;
+                left: 45%;
+            }
+
+            .btn {
+                font-size: 20px !important;
+                border: none !important;
+                color: #FFFFFF !important;
+            }
+
+            .row {
+                margin-left: 0px !important;
+                margin-right: 0px !important;
+            }
+
+            table {
+                overflow: hidden;
+            }
+
+            table td,
+            table th {
+                border: 1px solid #ddd;
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+            }
+
+            table thead th {
+                text-align: center !important;
+            }
+
+            table tbody td {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+
+            .userList {
+                border: 1px solid #ced4da !important;
+                border-radius: 7px;
+                max-height: 450px;
+                overflow: auto;
+                display: none;
+            }
+
+            .userList li {
+                cursor: pointer;
+                padding-left: 5px;
+                padding-right: 5px;
+                border-bottom: 1px solid #ced4da !important;
+            }
+
+            .shadow {
+                -webkit-box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, 0.25);
+                -moz-box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, 0.25);
+                box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, 0.25);
+            }
+
+            .header {
+                padding-top: 80px;
+                padding-bottom: 20px;
+                width: 100vw;
+                color: white;
+                text-align: center;
+                background-color: #E55442;
+            }
+
+            .header h1 {
+                z-index: 10;
+                position: fixed;
+                background-color: #E55442;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                top: 0px;
+                width: 100%;
+            }
+
+            .back-btn {
+                z-index: 100;
+                position: fixed;
+                top: 0px;
+                left: 10px;
+                font-size: 48px !important;
+                cursor: pointer;
+            }
+
+            .modal {
+                font-family: "Salesforce Sans", Arial, sans-serif !important;
+                color: #3E3E3C !important;
+            }
+
+            .modal ul li {
+                border-bottom: 1px solid #e9ecef;
+                padding: 10px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .modal-body {
+                max-height: 375px;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .modal-title {
+                font-weight: normal !important;
+                color: #157DFA !important;
+            }
+
+            .modal-subtitle {
+                font-weight: lighter !important;
+            }
+
+            .btn-primary {
+                background-color: #157DFA !important;
+            }
+
+            .btn-primary:active {
+                background-color: #1f6bc6 !important;
+            }
+
+            .btn-secondary {
+                background-color: #808285 !important;
+            }
+
+            .btn-secondary:active {
+                background-color: #6c6e70 !important;
+            }
+
+            #profilePhoto,
+            #profilePhoto img {
+                z-index: 200;
+                position: fixed;
+                right: 10px;
+                top: 10px;
+                width: 58px;
+                height: 58px;
+                border-radius: 100%;
+                border: 2px solid #FFFFFF;
+                background-color: #E0E2E7;
+                cursor: pointer;
+            }
+
+            h1 {
+                font-size: 48px !important;
+                font-weight: bold !important;
+            }
+
+            .name {
+                font-weight: lighter !important;
+            }
+
+            h2 {
+                font-size: 36px !important;
+                font-weight: lighter !important;
+            }
+
+            h3 {
+                font-size: 25px !important;
+                font-weight: bold !important;
+            }
+
+            form label {
+                padding: 10px 0px 0px 0px !important;
+                margin-bottom: 0px;
+                font-size: 20px !important;
+                font-weight: normal !important;
+            }
+
+            h5 {
+                font-size: 18px !important;
+                font-weight: lighter !important;
+            }
+
+            .thin {
+                font-weight: lighter !important;
+            }
+
+            .italic {
+                font-style: italic !important;
+            }
+
+            .icon {
+                color: white;
+                margin-left: 10px;
+                border-radius: 7px;
+            }
+
+            .icon-green {
+                background-color: #2BC100;
+            }
+
+            .icon-purple {
+                background-color: #A644D2;
+            }
+
+            .icon-account-purple {
+                background-color: #E55442 !important;
+            }
+
+            .icon-pink {
+                background-color: #FF74C0;
+            }
+
+            .icon-lightblue {
+                background-color: #37D5EC;
+            }
+
+            .icon-blue {
+                background-color: #157DFA;
+            }
+
+            .icon-yellow {
+                background-color: #FFD000;
+            }
+
+            .icon-red {
+                background-color: #FF0036;
+            }
+
+            .icon-grey {
+                background-color: #808285;
+            }
+
+            .bg-danger {
+                background-color: #FF3B39 !important;
+            }
+
+            .card {
+                border-radius: 7px;
+                cursor: pointer;
+            }
+
+            .card-header i {
+                font-size: 50px;
+            }
+
+            .card-body {
+                height: 200px;
+                overflow: auto;
+            }
+
+            .ppt {
+                color: #FF6600;
+            }
+
+            .col-md-4 {
+                padding: 0px 10px 0px 10px;
+                margin-bottom: 20px;
+            }
+
+            .white-bg {
+                background-color: #FFFFFF !important;
+            }
+
+            .blue-bg {
+                background-color: #157DFA !important;
+            }
+
+            .rounded {
+                padding: 15px 0px 15px 0px !important;
+                border-radius: 7px !important;
+            }
+
+            .inner-container {
+                padding: 0px !important;
+            }
+
+            .inner-container div:not(:last-child) {
+                padding-right: 10px !important;
+            }
+
+            .container {
+                padding: 10px !important;
+                margin-top: 10px !important;
+                margin-bottom: 10px !important;
+                border-radius: 7px;
+            }
+
+            .container:last-of-type {
+                margin-top: 10px;
+                margin-bottom: 20px;
+            }
+
+            .no-bg-container {
+                background-color: transparent !important;
+            }
+
+            .action-item-label {
+                font-size: 20px !important;
+                font-weight: bold !important;
+            }
+
+            .action-items,
+            .action-items div {
+                font-size: 18px !important;
+                padding: 5px !important;
+            }
+
+            .action-items .row {
+                border: 1px solid #d8dde6;
+            }
+
+            .action-items .row:first-child {
+                border-radius: .25rem .25rem 0px 0px;
+                border-bottom: 0px;
+            }
+
+            .action-items .row:not(:first-child):not(:last-child) {
+                border-top: 1px solid #d8dde6;
+                border-bottom: 0px;
+            }
+
+            .action-items .row:last-child {
+                border-radius: 0px 0px .25rem .25rem;
+            }
+
+            .action-items .row:only-child {
+                border: 1px solid #d8dde6;
+                border-radius: .25rem;
+            }
+
+            .no-padding {
+                padding: 0px !important;
+            }
+
+            .no-margin {
+                margin: 0px !important;
+            }
+
+            .incomplete {
+                text-decoration: underline;
+                cursor: pointer;
+                color: #FF3B39 !important;
+            }
+
+            .complete {
+                text-decoration: underline;
+                cursor: pointer;
+                color: #25D96B !important;
+            }
+
+            .red {
+                color: #FF3B39 !important;
+            }
+
+            .grey {
+                color: #808285 !important;
+            }
+
+            .green {
+                color: #4CD964 !important;
+            }
+
+            .blue {
+                color: #208FFF !important;
+            }
+
+            .purple {
+                color: #E55442 !important;
+            }
+
+            .no-pad {
+                padding: 0px !important;
+            }
+
+            @media (min-width: 768px) {
+                .ui-autocomplete {
+                    max-width: 720px;
+                }
+            }
+
+            @media (min-width: 992px) {
+                .ui-autocomplete {
+                    max-width: 960px;
+                }
+            }
+
+            @media (min-width: 1200px) {
+                .ui-autocomplete {
+                    max-width: 1140px;
+                }
+            }
+
+
+            @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
+                .container {
+                    max-width: 1004px !important;
+                    margin: 20px 10px 20px 10px;
+                }
+                .ui-autocomplete {
+                    max-width: 1004px;
+                }
+                .container:nth-of-type(2) {
+                    margin: 20px 10px 10px 10px;
+                }
+                .container:last-of-type {
+                    margin: 10px 10px 20px 10px;
+                }
+            }
+
+            .upcoming-events {
+                display: inline-block !important;
+            }
+
+            #new-event {
+                width: 200px;
+                padding: 5px !important;
+                display: inline-block;
+                float: right;
+            }
+
+            @media (max-width:499px) {
+                .upcoming-events {
+                    display: block;
+                }
+                #new-event {
+                    margin-top: 10px;
+                    margin-left: 10px;
+                    float: none;
+                }
+
+                .inner-container div:not(:last-child) {
+                    padding-right: 0px !important;
+                }
+
+                .container {
+                    padding: 2px !important;
+                }
+
+            }
+
+            /* Calendar styling */
+
+            #ui-datepicker-div {
+                border-radius: 0.25rem;
+            }
+
+            .ui-datepicker-calendar,
+            .ui-datepicker-header {
+                background-color: white;
+                padding: 5px;
+                border: 1px solid #d8dde6;
+            }
+
+            .ui-datepicker-header {
+                margin-top: 5px;
+                border-radius: 0.25rem 0.25rem 0 0;
+            }
+
+            .ui-datepicker-calendar {
+                border-radius: 0 0 0.25rem 0.25rem;
+            }
+
+            .ui-datepicker-next {
+                position: relative;
+                left: 90px;
+            }
+
+            .ui-datepicker-calendar th,
+            .ui-datepicker-calendar td {
+                padding: 2px 5px 2px 5px;
+            }
+
+            /* End calendar styling */
+
+            .round-border {
+                border: 1px solid #ddd;
+                padding: 5px 7px 5px 7px;
+                border-radius: 100%;
+            }
+
+            .border-blue {
+                border-color: #208FFF !important;
+            }
+
+            ul {
+                padding-left: 0px;
+            }
+
+            ul li {
+                font-size: 15px;
+                line-height: 23px;
+                padding: 10px 0px 10px 0px;
+                margin-left: 10px !important;
+                margin-right: 10px !important;
+                border-bottom: 1px solid #ddd;
+                cursor: pointer;
+                list-style: none;
+            }
+
+            .cursor-pointer {
+                cursor: pointer;
+            }
+
+            .cursor-default {
+                cursor: default;
+            }
+
+            ul li:hover {
+                border-bottom: 1px solid #afafaf;
+            }
+
+            .nav-list li {
+                font-size: 20px;
+                display: inline-block;
+                border: none;
+                font-style: italic;
+                color: #FFFFFF;
+                padding: 10px 15px 10px 15px;
+                margin: 0px !important;
+                border-radius: 25px;
+            }
+
+            .nav-list li:hover {
+                border: none;
+            }
+
+            .nav-list li:hover:not(.selected) {
+                background-color: #afafaf;
+            }
+
+            .nav-list .selected {
+                background-color: #FFFFFF;
+                color: #157DFA;
+            }
+
+            .nav-container {
+                width: 100%;
+                padding: 3px !important;
+                margin-bottom: 15px !important;
+                z-index: 11;
+                position: fixed;
+                top: 0px;
+                padding-left: 70px !important;
+            }
+
+            .progress {
+                margin-top: 10px;
+                margin-left: 10px;
+                height: 50px;
+                border-radius: 7px;
+            }
+
+            #accountSearchInput {
+                border: 1px solid #ddd;
+                width: 100%;
+                border-radius: 25px;
+            }
+
+            .ui-autocomplete {
+                background-color: #FFFFFF;
+                margin-right: 20px;
+                margin-top: 10px;
+                border-radius: 7px;
+                max-height: 510px;
+                overflow: auto;
+            }
+
+            .ui-helper-hidden-accessible {
+                display: none;
+            }
+
+            #stateChoices {
+                max-height: 400px;
+                overflow: auto;
+            }
+
+            #searchSpinner {
+                display: none;
+                float: right;
+                position: relative;
+                top: -18px;
+                right: 25px;
+            }
+
+            .dateFormat {
+                display: none;
+            }
+
+            #nonconversionTable tr td {
+                padding: 0px !important;
+            }
+
+            #nonconversionTable tr td input {
+                width: 100%;
+                height: 100%;
+            }
+
+            #planTable tr:last-child {
+                border: 2px solid #ddd;
+            }
+
+            #planTable tr:last-child td:first-child {
+                color: #157DFA;
+                font-weight: bold;
+            }
+
+            .strat-row {
+                margin-top: 10px;
+            }
+
+            .strat-row .col-sm-6:first-child {
+                padding-left: 0px;
+            }
+
+            .strat-row .col-sm-6:last-child {
+                padding-right: 0px;
+            }
+
+            #educationTip .modal-body {
+                font-size: 14px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <div class="slds-scope">
+
+            <c:SalesHD_RedesignNav/>
+
+            <div class="header">
+                <span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
+                <h1>Sales Plan</h1>
+                <h2>{!planDate}</h2>
+            </div>
+
+            <div class="container white-bg shadow">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th colspan="3">Admits MTD</th>
+                            <th colspan="3">Admits YTD</th>
+                        </tr>
+                        <tr>
+                            <th>Favorited Account</th>
+                            <th>{!planDateLastYear}</th>
+                            <th>{!planDateLastMonth}</th>
+                            <th>Variance</th>
+                            <th>{!planDateLastYear}</th>
+                            <th>{!planDateLastMonth}</th>
+                            <th>Variance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="planTable">
+                        <!-- <apex:repeat value="{!accountMetrics}" var="accountMetric">
+                            <tr>
+                                <td>{!accountMetric.accountName}</td>
+                                <td>{!accountMetric.cyMtdAdmit}</td>
+                                <td>{!accountMetric.pyMtdAdmit}</td>
+                            </tr>
+                        </apex:repeat> -->
+                    </tbody>
+                </table>
+            </div>
+
+            <apex:form id="planForm">
+                <div class="container white-bg shadow">
+                    <table id="nonconversionTable">
+                        <thead>
+                            <th colspan="4">Non-Conversion Summary</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Referrals</th>
+                                <td>
+                                    <!-- <apex:input value="{!referrals}" html-placeholder="Referrals">
+                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:input> -->
+                                    <apex:inputField value="{!Sales_Plans__c.SalesHD_Referrals__c}" html-placeholder="Referrals">
+                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
+                                </td>
+                                <th>Non-Converted</th>
+                                <td>
+                                    <!-- <apex:input value="{!nonconverted}" html-placeholder="Non-Converted">
+                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:input> -->
+                                    <apex:inputField value="{!Sales_Plans__c.SalesHD_Non_Converted__c}" html-placeholder="Non-Converted">
+                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Admits</th>
+                                <td>
+                                    <!-- <apex:input value="{!admits}" html-placeholder="Admits">
+                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:input> -->
+                                    <apex:inputField value="{!Sales_Plans__c.SalesHD_Admits__c}" html-placeholder="Admits">
+                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
+                                </td>
+                                <th>Pending</th>
+                                <td>
+                                    <!-- <apex:input value="{!pending}" html-placeholder="Pending">
+                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:input> -->
+                                    <apex:inputField value="{!Sales_Plans__c.SalesHD_Pending__c}" html-placeholder="Pending">
+                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Conversion %</th>
+                                <td>{!IF(Sales_Plans__c.SalesHD_Admits__c!=null, IF(admits!=0, TEXT(ROUND((Sales_Plans__c.SalesHD_Admits__c/Sales_Plans__c.SalesHD_Referrals__c)*100,
+                                    2)) & "%", ""), "")}</td>
+                                <th>True Non-Converted</th>
+                                <td>{!Sales_Plans__c.SalesHD_Non_Converted__c - Sales_Plans__c.SalesHD_Pending__c}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h3 style="margin-top:10px;">Non-Conversion Reasons
+                        <i onclick="getEducationTip('conversion');" class="text-primary fas fa-question-circle cursor-pointer"></i>
+                    </h3>
+                    <!-- <apex:form> -->
+                    <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c}" html-placeholder="Non-Conversion Reasons"
+                    />
+                    <!-- </apex:form> -->
+                </div>
+
+                <apex:pageMessages />
+
+                <apex:outputPanel id="accountPlans">
+                    <!-- <apex:form> -->
+                    <div class="container no-padding">
+                        <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save Plan"
+                            rerender="accountPlans" style="vertical-align:bottom; margin-top:10px!important;">
+                        </apex:commandButton>
+                    </div>
+                    <apex:repeat value="{!aPlans}" var="accountPlan">
+                        <div class="container white-bg shadow">
+                            <!-- <apex:form> -->
+                            <div>
+                                <h3>{!accountPlan.aPlan.Account__r.Name}
+                                    <!-- <a onclick="editAccountPlan($('.ap-challenge').closest().val());">
+                                        <i style="margin-left:20px;" class="far fa-edit"></i>
+                                    </a> -->
+                                    <a class="text-danger" style="float:right;" onclick="deleteAccountPlan('{!accountPlan.aPlan.Id}');">
+                                        <i style="margin-left:20px;" class="far fa-trash-alt"></i> Delete {!accountPlan.aPlan.Account__r.Name} Plan
+                                    </a>
+                                </h3>
+                                <label>{!$ObjectType.Account_Sales_Plan__c.fields.Challenges_Critical_Issues__c.Label}
+                                    <i onclick="getEducationTip('challenges');" class="text-primary fas fa-question-circle cursor-pointer"></i>
+                                </label>
+                                <apex:inputField styleClass="form-control" value="{!accountPlan.aPlan.Challenges_Critical_Issues__c}" html-placeholder="{!$ObjectType.Account_Sales_Plan__c.fields.Challenges_Critical_Issues__c.Label}"
+                                />
+                                <label>{!$ObjectType.Account_Sales_Plan__c.fields.Goal__c.Label}
+                                    <i onclick="getEducationTip('goal');" class="text-primary fas fa-question-circle cursor-pointer"></i>
+                                </label>
+                                <apex:inputField styleClass="form-control" value="{!accountPlan.aPlan.Goal__c}" html-placeholder="{!$ObjectType.Account_Sales_Plan__c.fields.Goal__c.Label}"
+                                />
+                                <!-- <label>{!$ObjectType.Account_Sales_Plan__c.fields.Strategy__c.Label}</label>
+                                <apex:inputField styleClass="form-control" value="{!accountPlan.aPlan.Strategy__c}" html-placeholder="{!$ObjectType.Account_Sales_Plan__c.fields.Strategy__c.Label}"
+                                /> -->
+
+                                <apex:variable value="1" var="stratNumber" />
+                                <apex:repeat value="{!accountPlan.strats}" var="strats">
+
+                                    <div style="margin-top:15px; margin-bottom:-10px;">
+                                        <label>Strategy {!stratNumber}
+                                            <i onclick="getEducationTip('strategy');" class="text-primary fas fa-question-circle cursor-pointer"></i>
+                                        </label>
+                                        <a class="text-danger" style="float:right;" onclick="deleteStrategy('{!strats.strat.Id}');">
+                                            <i style="margin-top:15px;margin-left:20px;" class="far fa-trash-alt"></i> Delete Strategy {!stratNumber}
+                                        </a>
+                                    </div>
+                                    <div style="margin-top:15px; padding:10px; border:1px solid #ddd; border-radius:7px;">
+                                        <div>
+                                            <h5 style="margin-bottom:5px;">{!$ObjectType.Account_Strategy__c.fields.Strategy__c.Label}</h5>
+                                            <apex:inputField styleClass="form-control" value="{!strats.strat.Strategy__c}" html-placeholder="{!$ObjectType.Account_Strategy__c.fields.Strategy__c.Label}"
+                                            />
+                                        </div>
+                                        <div class="row strat-row">
+                                            <div class="col-sm-6">
+                                                <h5>{!$ObjectType.Account_Strategy__c.fields.Due_Date__c.Label}</h5>
+                                                <apex:inputField type="date" styleClass="form-control" value="{!strats.strat.Due_Date__c}" html-placeholder="{!$ObjectType.Account_Strategy__c.fields.Due_Date__c.Label}"
+                                                />
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <h5>{!$ObjectType.Account_Strategy__c.fields.Complete__c.Label}</h5>
+                                                <apex:inputField style="margin-left:26px; margin-top:12px;" styleClass="form-control" value="{!strats.strat.Complete__c}"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div style="margin-top:10px;">
+
+                                            <div>
+                                                <h5>Related Encounters</h5>
+                                                <a href="/apex/saleshd_newencounter" class="btn btn-primary btn-sm" style="text-decoration:none!important;padding:1px 10px;font-size:18px!important;margin-top:-28px; float:right;"
+                                                    onclick="">
+                                                    <i class="fas fa-phone"></i> New Encounter
+                                                </a>
+                                            </div>
+                                            <apex:repeat value="{!strats.stratEncounters}" var="e">
+                                                <div>
+                                                    <a href="/apex/saleshd_encounter?id={!e.id}">
+                                                        <i class="{!IF(e.SalesHD_Complete__c=true, " fas fa-check-circle text-success ", "fas fa-times-circle text-danger ")}"></i>
+                                                        {!e.SalesHD_Call_Objective__c} with {!e.Who.Name} on {!CASE(MONTH(DATEVALUE(e.StartDateTime)), 1, "January", 2, "February",
+                                                        3, "March", 4, "April", 5, "May", 6, "June", 7, "July", 8, "August",
+                                                        9, "September", 10, "October", 11, "November", 12, "December", "None")&"/"&TEXT(DAY(DATEVALUE(e.StartDateTime)))&"/"&TEXT(YEAR(DATEVALUE(e.StartDateTime)))}
+                                                    </a>
+                                                </div>
+                                            </apex:repeat>
+                                        </div>
+                                    </div>
+                                    <apex:variable var="stratNumber" value="{!VALUE(stratNumber) + 1}" />
+                                </apex:repeat>
+
+                                <!-- <apex:pageMessages id="planMessages" /> -->
+
+                                <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!addStrategy}" value="Add Strategy"
+                                    rerender="planForm" style="vertical-align:bottom; margin-top:10px!important;">
+                                    <apex:param name="accountPlanId" value="{!accountPlan.aPlan.Id}" assignTo="{!accountPlanId}" />
+                                </apex:commandButton>
+
+
+                                <!-- <label>{!$ObjectType.Account_Sales_Plan__c.fields.Due_Date__c.Label}</label>
+                                <apex:inputField type="date" styleClass="form-control" value="{!accountPlan.aPlan.Due_Date__c}" html-placeholder="{!$ObjectType.Account_Sales_Plan__c.fields.Due_Date__c.Label}"
+                                /> -->
+                            </div>
+                            <div>
+                                <!-- <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save" rerender="accountPlans"
+                                    id="saveNew" style="vertical-align:bottom; margin-top:10px!important;">
+                                    <apex:param value="{!accountPlan.Goal__c}" assignTo="{!challenge}" />
+                                    </apex:commandButton> -->
+                            </div>
+                            <!-- </apex:form> -->
+
+                            <!-- <div>
+                                <label>Related Encounters</label>
+                                <div class="form-control">
+                                    <apex:repeat value="{!accountPlan.aEvents}" var="e">
+                                        <div>
+                                            <a href="/apex/saleshd_encounter?id={!e.id}">
+                                                <i class="{!IF(e.SalesHD_Complete__c=true, " fas fa-check-circle text-success ", "fas fa-times-circle text-danger ")}"></i>
+                                                {!e.SalesHD_Call_Objective__c} with {!e.Who.Name} at {!e.StartDateTime}
+                                            </a>
+                                        </div>
+                                    </apex:repeat>
+                                </div>
+                            </div> -->
+                        </div>
+                    </apex:repeat>
+                    <div class="container no-padding">
+                        <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save Plan"
+                            rerender="accountPlans" style="vertical-align:bottom; margin-top:10px!important;">
+                        </apex:commandButton>
+                    </div>
+                    <div class="container no-padding">
+                        <apex:actionStatus id="statusSpinner">
+                            <apex:facet name="start">
+
+                                <div class="slds-spinner_container" style="position:fixed; width:100vw; height:100vh;">
+                                    <div class="slds-spinner slds-spinner--large slds-spinner--brand">
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+
+                            </apex:facet>
+                        </apex:actionStatus>
+
+
+                    </div>
+                    <!-- </apex:form> -->
+                </apex:outputPanel>
+            </apex:form>
+
+            <div class="container no-padding">
+                <button class="btn btn-block btn-primary" data-toggle="modal" data-target="#addAccountPlanModal">
+                    <i class="fas fa-plus"></i> Add Account Plan</button>
+            </div>
+
+            <apex:form id="deleteAccountPlanForm">
+                <div id="deleteAccountPlanModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger">
+                                <h3 class="modal-title" style="color:#fff!important;">
+                                    <i style="margin-right:10px;" class="far fa-trash-alt"></i> Delete Account Plan
+                                </h3>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure that you want to delete the account plan? All associated strategies to this
+                                    plan will also be removed.</p>
+                            </div>
+
+                            <div class="modal-footer">
+                                <apex:inputHidden value="{!accountPlanId}" id="accountPlanId"></apex:inputHidden>
+                                <apex:commandButton styleClass="btn btn-danger" status="statusSpinner" action="{!deleteAccountPlan}" value="Delete Account Plan"
+                                    rerender="accountPlans" style="vertical-align:bottom; margin-top:0px!important; padding:8px 12px!important"
+                                    oncomplete="$('#deleteAccountPlanModal').modal('hide');">
+                                </apex:commandButton>
+                                <!-- <button type="button" class="btn btn-danger">Delete Account Plan</button> -->
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+
+                            <apex:pageMessages />
+                            <!-- </apex:form> -->
+                        </div>
+                    </div>
+                </div>
+                <apex:actionStatus id="statusSpinner">
+                    <apex:facet name="start">
+
+                        <div class="slds-spinner_container" style="position:fixed; left:0px; top:0px; width:100vw; height:100vh;">
+                            <div class="slds-spinner slds-spinner--large slds-spinner--brand">
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+
+                    </apex:facet>
+                </apex:actionStatus>
+            </apex:form>
+
+            <apex:form id="deleteStrategyForm">
+                <div id="deleteStrategyModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-danger">
+                                <h3 class="modal-title" style="color:#fff!important;">
+                                    <i style="margin-right:10px;" class="far fa-trash-alt"></i> Delete Strategy
+                                </h3>
+                            </div>
+                            <div class="modal-body">
+                                <p>Are you sure that you want to delete this strategy?</p>
+                            </div>
+
+                            <div class="modal-footer">
+                                <apex:inputHidden value="{!strategyId}" id="strategyId"></apex:inputHidden>
+                                <apex:commandButton styleClass="btn btn-danger" status="statusSpinner" action="{!deleteStrategy}" value="Delete Strategy"
+                                    rerender="accountPlans" style="vertical-align:bottom; margin-top:0px!important; padding:8px 12px!important"
+                                    oncomplete="$('#deleteStrategyForm').modal('hide');">
+                                </apex:commandButton>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+
+                            <apex:pageMessages />
+                        </div>
+                    </div>
+                </div>
+                <apex:actionStatus id="statusSpinner">
+                    <apex:facet name="start">
+
+                        <div class="slds-spinner_container" style="position:fixed; left:0px; top:0px; width:100vw; height:100vh;">
+                            <div class="slds-spinner slds-spinner--large slds-spinner--brand">
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+
+                    </apex:facet>
+                </apex:actionStatus>
+            </apex:form>
+
+            <apex:form id="addAccountPlanForm">
+                <div id="addAccountPlanModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary">
+                                <h3 class="modal-title" style="color:#fff!important;">
+                                    <i style="margin-right:10px;" class="far fa-trash-alt"></i> Add Account Plan
+                                </h3>
+                            </div>
+                            <div class="modal-body">
+                                <p>Select one of your available favorited accounts.</p>
+                                <apex:selectList size="1" value="{!selectedAccount}" style="width:100%;color:black;">
+                                    <apex:selectOptions value="{!AccountPicklist}" />
+                                    <!-- <apex:actionsupport event="onchange" action="{!selectAccount}"/> -->
+                                </apex:selectList>
+                            </div>
+
+                            <div class="modal-footer">
+                                <apex:inputHidden value="{!accountPlanId}" id="accountPlanId"></apex:inputHidden>
+                                <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!addAccountPlan}" value="Add Account Plan"
+                                    rerender="accountPlans" style="vertical-align:bottom; margin-top:0px!important; padding:8px 12px!important"
+                                    oncomplete="$('#addAccountPlanModal').modal('hide');">
+                                </apex:commandButton>
+                                <!-- <button type="button" class="btn btn-danger">Delete Account Plan</button> -->
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+
+                            <apex:pageMessages />
+                            <!-- </apex:form> -->
+                        </div>
+                    </div>
+                </div>
+                <apex:actionStatus id="statusSpinner">
+                    <apex:facet name="start">
+
+                        <div class="slds-spinner_container" style="position:fixed; left:0px; top:0px; width:100vw; height:100vh;">
+                            <div class="slds-spinner slds-spinner--large slds-spinner--brand">
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+
+                    </apex:facet>
+                </apex:actionStatus>
+            </apex:form>
+
+            <div id="educationTip" class="modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h3 class="modal-title" style="color:#fff!important;">
+                                <i style="margin-top:5px;margin-right:10px;" class="fas fa-question-circle"></i> <span></span>
+                            </h3>
+                        </div>
+                        <div class="modal-body">
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- Lightning Wrapper -->
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+        <script>
+            // Visualforce.remoting.timeout = 120000;
+            $(document).ready(function () {
+                for (am of {!accountMetrics
+            }) {
+                var mtdVarColor = '';
+                if (am.mtdVariance) {
+                    if (am.mtdVariance > 0) mtdVarColor = 'text-success';
+                    else if (am.mtdVariance < 0) mtdVarColor = 'text-danger';
+                }
+                var html = '<tr><td>' + am.accountName + '</td><td>' + am.pyMtdAdmit + '</td><td>' + am.cyMtdAdmit + '</td><td class="' + mtdVarColor + '">' + am.mtdVariance + '</td><td></td><td></td><td></td></tr>';
+                $("#planTable").append(html);
+            }
+            });
+
+            function deleteAccountPlan(accountPlanId) {
+                document.getElementById('{!$Component.deleteAccountPlanForm.accountPlanId}').value = accountPlanId;
+                $('#deleteAccountPlanModal').modal('show');
+            }
+            function deleteStrategy(strategyId) {
+                document.getElementById('{!$Component.deleteStrategyForm.strategyId}').value = strategyId;
+                $('#deleteStrategyModal').modal('show');
+            }
+
+            var educationTips = {
+                "goal": {                    
+"title": 'Goal', "body": '<b>Explanation:</b> Goals describe something specific you ' +
+                        'want to achieve this month. Goals should be ‘SMART’ – Specific, Measurable, ' +
+                        'Achievable, Relevant, Timebound.  Goals should work towards addressing the Challenges/Critical ' +
+                        'Issues you outlined, but it should take multiple steps to get to the goal over the course of a month. ' +
+                        'If a goal cannot be achieved this month, if it is still a viable goal, it can be moved ' +
+                        'over to the following month depending on progress.</br></br><b>Example:</b> Get first referral from ' +
+                        'this Account.</br></br><b>Example:</b> Get 1 referral from the MICU.</br></br><b>Example:</b> Increase ICU ' +
+                        'admissions by 2.</br></br><b>Example:</b> Get Physician Group aligned with Kindred Central.'            
+},
+            "conversion":{
+                "title":'Non-Conversion Reasons', "body":'Describe main issues that affect the conversion of your referrals. '+
+                'Be specific regarding individual physicians, key accounts/units, and any other factors.'
+            }, 
+            "challenges":{
+                "title":'Challeneges / Critical Issues', "body":'<b>Explanation:</b> Describe the main challenges you '+
+                'experienced last month and what you believe is causing it. Is it a volume issue or conversion '+
+                'problem? Specify which unit(s) presents the main challenges. Do not include any plans to '+
+                'address the issues. </br></br><b>Example:</b> No referrals in Dec or Jan from MICU. '+
+                'High RTAs to MICU (Main referring unit) in Oct & Nov 2019.  Champion ID Physician Group '+
+                'will no longer refer.  ICU CM no longer advocates for KND. </br></br><b>Example:</b> Volume down '+
+                'from all units. Account was without permanent coverage all of Q4 2019. '+
+                'Competitor CL took market share during this time.'
+            },
+            "strategy":{
+                "title":"Strategy", "body":'<b>Explanation:</b> Multiple individual strategies (aka action items) '+
+                'should be created to get you to your SMART goal(s) listed above. These should be items '+
+                'that the CL can complete themselves, not something that requires Kindred executive leadership. '+
+                'For each of the strategies you list, you will schedule 1 or more Encounters to help you '+
+                'achieve these.  Many of these will be bigger than one Encounter. For example, holding an '+
+                'in-service with a key physician group may require several other initial meetings with '+
+                'key contacts before you gain commitment for an in-service. </br></br><b>Example:</b> Secure 1:1 '+
+                'meeting with MD Group Director Dr. Wells by 2/15/20 to present clinical outcomes. </br></br>'+
+                '<b>Example:</b> Hold immediate flash calls with MICU team and Kindred when a patient RTA’s.</br></br>'+
+                '<b>Example:</b> Hold weekly touchbase with CM team to share success stories and discharge '+
+                'disposition data. </br></br><b>Example:</b> Lead in-service with Physician Group.'
+            }
+            }
+
+            function getEducationTip(clickedTip) {
+                if (educationTips.hasOwnProperty(clickedTip)) {
+                    $("#educationTip .modal-title span").text(educationTips[clickedTip].title);
+                    $("#educationTip .modal-body").html(educationTips[clickedTip].body);
+                    $("#educationTip").modal('show');
+                }
+            }
+        </script>
+    </body>
+
+    </html>
+</apex:page>

@@ -67,15 +67,15 @@
             }
 
             @media only screen and (max-width: 600px) {
-                #star{
+                #star {
                     font-size: 25px !important;
                     left: 0px !important;
                     top: 50px !important;
                 }
-                .header{
+                .header {
                     padding-top: 50px !important;
                 }
-                .name{
+                .name {
                     padding-left: 50px !important;
                     padding-right: 50px !important;
                     font-size: 25px !important;
@@ -126,6 +126,8 @@
                             <i class="fas fa-phone"></i> Encounters</a>
                         <a class="nav-item nav-link" href="/apex/saleshd_collaterals">
                             <i class="fas fa-mail-bulk"></i> Collaterals</a>
+                        <a class="nav-item nav-link" href="/apex/saleshd_salesplans">
+                            <i class="fas fa-notes-medical"></i> Sales Plans</a>
                     </div>
                 </div>
             </nav>
