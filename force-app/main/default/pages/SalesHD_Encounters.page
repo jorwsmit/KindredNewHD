@@ -740,6 +740,11 @@
       .table tbody td {
         padding: 2px !important;
       }
+
+      .strategy {
+        background-color: #E55442;
+        color: #fff;
+      }
     </style>
   </head>
 
@@ -815,7 +820,8 @@
 
             <div class="shadow white-bg rounded">
               <h3 class="thin italic">
-                <i class="fa fa-calendar-alt icon icon-blue" style="padding:10px 11px 10px 11px;" aria-hidden="true"></i> <span id="todayText" style="font-size:25px">Today</span>
+                <i class="fa fa-calendar-alt icon icon-blue" style="padding:10px 11px 10px 11px;" aria-hidden="true"></i>
+                <span id="todayText" style="font-size:25px">Today</span>
               </h3>
               <ul id="todaysEncounters">
                 <div class="grey" style="padding:10px;">
@@ -1036,13 +1042,14 @@
             html += '</tr>';
           }
           $("#calendar tbody").html(html);
-          $(".event").click(function () {
-            window.location.href = '/apex/SalesHD_Encounter?id=' + this.id;
-          });
+
+          // $(".event").click(function () {
+          //   window.location.href = '/apex/SalesHD_Encounter?id=' + this.id;
+          // });
 
           $("#calendar tbody tr td:not(.hideDay)").click(function () {
             $("#calendar tbody tr td:not(.hideDay)").removeClass('selected-day');
-            if (!$(this).hasClass('today')) $(this).addClass('selected-day');            
+            if (!$(this).hasClass('today')) $(this).addClass('selected-day');
             getDay($(this).data('date'));
           }).find('.event').click(function (e) { e.stopPropagation(); });
 
@@ -1062,8 +1069,13 @@
           if (data.events.hasOwnProperty(dayNumber.getDate())) {
             html += '<td data-date="' + dataDate + '" ' + today + '><div class="day">' + dayNumber.getDate() + '</div>';
             for (var event of data.events[dayNumber.getDate()]) {
-              if (event.complete) html += '<div class="event complete" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div>';
-              else html += '<div class="event" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div>';
+              if (event.eventId) {
+                if (event.complete) html += '<a href="/apex/saleshd_encounter?id=' + event.eventId + '"><div class="event complete" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
+                else html += '<a href="/apex/saleshd_encounter?id=' + event.eventId + '"<div class="event" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
+              } else {
+                html += '<div class="event strategy" id="' + event.strategyId + '"><b>' + event.eventSubject + '</b></div>';
+              }
+
             }
             html += '</td>';
           } else {
@@ -1085,14 +1097,14 @@
         // $("#todaysEncounters").html('<div style="margin-top:-255px;margin-left:65px;" class="slds-spinner slds-spinner--medium slds-spinner--brand"><div class="slds-spinner__dot-a"></div><div class="slds-spinner__dot-b"></div></div>');
         SalesHD_Event.getDay(day, function (callback, event) {
           var events = JSON.parse(callback);
-          if(day!=null) $('#todayText').text(moment(day).format('L'));
+          if (day != null) $('#todayText').text(moment(day).format('L'));
           else $('#todayText').text('Today');
           if (events.length > 0) $("#todaysEncounters").html('');
           else $("#todaysEncounters").html('<div class="grey" style="padding:10px;"><i class="fa fa-times-circle" aria-hidden="true"></i> You have no encounters scheduled today.</div>');
           for (var event of events) {
             var contact = '';
             if (event.hasOwnProperty('Who')) contact = event.Who.Name;
-            $("#todaysEncounters").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'"><b>' + 
+            $("#todaysEncounters").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'"><b>' +
               contact + ': ' + event.SalesHD_Call_Objective__c + '</b><br/>' + moment(event.StartDateTime).format('LT') + ' to ' + moment(event.EndDateTime).format('LT') + '</li>')
           }
         }, { escape: false });

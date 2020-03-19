@@ -602,6 +602,7 @@ public PageReference recurrenceClicked() {
 
 public class calendarEvent {
 public Id eventId;
+public Id strategyId;
 public String eventSubject;
 public Datetime eventDatetime;
 public Boolean complete;
@@ -658,6 +659,18 @@ public Boolean isInvitee;
 			calendarEvents.get(e.startDateTime.day()).add(temp);
 		} else{
 			calendarEvents.put(e.startDateTime.day(), new List<calendarEvent> {temp});
+		}
+	}
+
+	for(Account_Strategy__c aStrat : [select Due_Date__c, Account_Sales_Plan__r.Parent_Sales_Plan__c from Account_Strategy__c
+	where Due_Date__c>=:lowDate and Due_Date__c<=:highDate and Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId=:currentUser]){
+		calendarEvent temp = new calendarEvent();
+		temp.strategyId=aStrat.Account_Sales_Plan__r.Parent_Sales_Plan__c;
+		temp.eventSubject='Account Plan Strategy Due';
+		if(calendarEvents.containsKey(aStrat.Due_Date__c.day())) {
+			calendarEvents.get(aStrat.Due_Date__c.day()).add(temp);
+		} else{
+			calendarEvents.put(aStrat.Due_Date__c.day(), new List<calendarEvent> {temp});
 		}
 	}
 

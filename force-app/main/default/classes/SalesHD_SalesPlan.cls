@@ -1,5 +1,8 @@
 global without sharing class SalesHD_SalesPlan {
 
+public Integer newPlanMonth {get; set;}
+public Integer newPlanYear {get; set;}
+
 public Sales_Plans__c salesPlan {get; set;}
 public Date spDate {get; set;}
 public Id spOwner {get; set;}
@@ -89,6 +92,9 @@ public SalesHD_SalesPlan(ApexPages.StandardController stdController) {
 	getAccountPlansEvents();
 
 	if(ApexPages.currentPage().getParameters().get('id')!=null) accountMetrics = getAccountMetrics();
+
+	newPlanMonth = System.now().month();
+	newPlanYear = System.now().year();
 }
 
 public List<Sales_Plans__c> getMyPlans(){
@@ -314,4 +320,51 @@ public List<Selectoption> getAccountPicklist(){
 	return picklist;
 }
 
+Map<String, String> monthMap = new Map<String, String>{
+	'1'=>'January', '2'=>'February', '3'=>'March', '4'=>'April',
+	'5'=>'May', '6'=>'June', '7'=>'July', '8'=>'August', '9'=>'September',
+	'10'=>'October', '11'=>'November', '12'=>'December'};
+
+public List<Selectoption> getMonthPicklist(){
+	List<Selectoption> picklist = new List<selectoption>();
+	picklist.add(new selectOption('', '- Select a Month -'));
+	for(String monthNum : monthMap.keyset()){
+		picklist.add(new selectOption(monthNum, monthMap.get(monthNum)));
+	}
+	return picklist;
 }
+
+public List<Selectoption> getYearPicklist(){
+	List<Selectoption> picklist = new List<selectoption>();
+	Integer currentYear = System.now().year();
+	picklist.add(new selectOption('', '- Select a Year -'));
+	picklist.add(new selectOption(String.valueOf(currentYear-1), String.valueOf(currentYear-1)));
+	picklist.add(new selectOption(String.valueOf(currentYear), String.valueOf(currentYear)));
+	picklist.add(new selectOption(String.valueOf(currentYear+1), String.valueOf(currentYear+1)));
+	return picklist;
+}
+
+public PageReference saveNewPlan(){
+	if(newPlanYear!=null && newPlanMonth!=null){
+		Date lowPlanDate = Date.newInstance(newPlanYear,newPlanMonth,1);
+		Integer numberOfDays = Date.daysInMonth(lowPlanDate.year(), lowPlanDate.month());
+		Date highPlanDate = Date.newInstance(newPlanYear,newPlanMonth,numberOfDays);
+		List<Sales_Plans__c> plans = [select Id from Sales_Plans__c where OwnerId=:UserInfo.getUserId() and
+		SalesHD_Plan_date__c>=:lowPlanDate and SalesHD_Plan_date__c<=:highPlanDate];
+		if(plans.isEmpty()){
+			Sales_Plans__c sp = new Sales_Plans__c(SalesHD_Plan_Date__c=lowPlanDate);
+			insert sp;
+			PageReference page = new PageReference('/apex/SalesHD_SalesPlan?id='+sp.Id);
+			page.setRedirect(true);
+			return page;
+		} else{
+			ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.INFO, 'You already have a sales plan saved for '+
+			+monthMap.get(String.valueOf(newPlanMonth))+' '+newPlanYear+'.'));
+		}
+	}
+	return null;
+}
+
+}
+
+

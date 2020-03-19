@@ -668,22 +668,75 @@
             <c:SalesHD_RedesignNav/>
 
             <div class="container no-padding">
-                <button class="btn btn-block btn-primary">
+                <button class="btn btn-block btn-primary" data-toggle="modal" data-target="#newSalesPlanModal">
                     <i class="fas fa-plus"></i> New Sales Plan</button>
             </div>
 
             <div class="container white-bg shadow">
                 <h3 class="thin italic">
-                    <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;"
-                        aria-hidden="true"></i> My Sales Plans </h3>
+                    <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i> My Sales Plans </h3>
                 <apex:repeat value="{!myPlans}" var="plan" id="myPlans">
-
-                    <a href="/apex/SalesHD_SalesPlan?id={!plan.Id}"><b>Sales Plan</b> - {!CASE(MONTH(plan.SalesHD_Plan_Date__c), 1, "January", 2, "February", 
-                        3, "March",  4, "April",  5, "May",  6, "June", 7, "July", 8, "August", 9, "September", 10, "October", 11,
-                        "November", 12, "December", "None")&" "&TEXT(YEAR(plan.SalesHD_Plan_Date__c))}</a>
-
+                    <div>
+                        <a href="/apex/SalesHD_SalesPlan?id={!plan.Id}">
+                            <b>Sales Plan</b> - {!CASE(MONTH(plan.SalesHD_Plan_Date__c), 1, "January", 2, "February", 3, "March",
+                            4, "April", 5, "May", 6, "June", 7, "July", 8, "August", 9, "September", 10, "October", 11, "November",
+                            12, "December", "None")&" "&TEXT(YEAR(plan.SalesHD_Plan_Date__c))}</a>
+                    </div>
                 </apex:repeat>
             </div>
+
+            <apex:form id="newSalesPlanForm">
+                <div id="newSalesPlanModal" class="modal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-primary">
+                                <h3 class="modal-title" style="color:#fff!important;">
+                                    <i style="margin-right:10px;" class="far fa-trash-alt"></i> New Sales Plan
+                                </h3>
+                            </div>
+                            <div class="modal-body">
+                                <label>Sales Plan Month</label>
+                                <apex:selectList required="true" size="1" value="{!newPlanMonth}" style="width:100%;color:black;">
+                                    <apex:selectOptions value="{!MonthPicklist}" />
+                                </apex:selectList>
+
+                                <label>Sales Plan Year</label>
+                                <apex:selectList required="true" size="1" value="{!newPlanYear}" style="width:100%;color:black;">
+                                    <apex:selectOptions value="{!YearPicklist}" />
+                                </apex:selectList>
+                            </div>
+
+                            <div class="modal-footer">
+                                <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNewPlan}" value="Save New Sales Plan"
+                                    rerender="errorMessages" style="vertical-align:bottom; margin-top:0px!important; padding:8px 12px!important">
+                                </apex:commandButton>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            </div>
+
+                            <apex:outputPanel id="errorMessages">
+                                <div>
+                                    <apex:pageMessages />
+                                </div>
+                            </apex:outputPanel>
+
+
+                            <!-- </apex:form> -->
+                        </div>
+                    </div>
+                </div>
+                <apex:actionStatus id="statusSpinner">
+                    <apex:facet name="start">
+
+                        <div class="slds-spinner_container" style="position:fixed; left:0px; top:0px; width:100vw; height:100vh;">
+                            <div class="slds-spinner slds-spinner--large slds-spinner--brand">
+                                <div class="slds-spinner__dot-a"></div>
+                                <div class="slds-spinner__dot-b"></div>
+                            </div>
+                        </div>
+
+                    </apex:facet>
+                </apex:actionStatus>
+            </apex:form>
 
 
         </div>
