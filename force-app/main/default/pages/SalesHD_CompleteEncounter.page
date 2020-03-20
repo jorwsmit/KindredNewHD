@@ -721,6 +721,14 @@
 							<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results" required="true"
 							/>
 
+							<label style="width: 100%;">Summary and Results Continued
+								<span class="educationtip" id="results">
+									<i class="fas fa-question-circle blue pointer"></i>
+								</span>
+							</label>
+							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Results_Continued__c}" html-placeholder="Summary and Results Continued"
+							/>
+
 							<label style="width: 100%;">Next Encounter / Follow-up Actions
 								<span class="educationtip" id="nextsteps">
 									<i class="fas fa-question-circle blue pointer"></i>

@@ -316,6 +316,7 @@ public PageReference saveEvent(){
 				Event tempEvent = new Event();
 				tempEvent = thisEvent.clone(false, true);
 				tempEvent.Result__c=null;
+				tempEvent.SalesHD_Results_Continued__c=null;
 				tempEvent.SalesHD_Close_Customer_Commitment__c=null;
 				tempEvent.SalesHD_Complete__c=false;
 				insert tempEvent;
@@ -527,6 +528,7 @@ public PageReference saveAndNext() {
 				tempEvent2 = tempEvent.clone(false, true);
 				tempEvent2.SalesHD_Next_Encounter__c = null;
 				tempEvent2.Result__c=null;
+				tempEvent2.SalesHD_Results_Continued__c=null;
 				tempEvent2.SalesHD_Close_Customer_Commitment__c=null;
 				tempEvent2.SalesHD_Complete__c=false;
 				tempEvent2.SalesHD_Last_Encounter__c = tempEvent.SalesHD_Next_Encounter__c;
@@ -549,6 +551,7 @@ public PageReference saveAndNext() {
 				tempEvent = thisEvent.clone(false, true);
 				tempEvent.SalesHD_Next_Encounter__c = null;
 				tempEvent.Result__c=null;
+				tempEvent.SalesHD_Results_Continued__c=null;
 				tempEvent.SalesHD_Close_Customer_Commitment__c=null;
 				tempEvent.SalesHD_Complete__c=false;
 				tempEvent.SalesHD_Last_Encounter__c = thisEvent.SalesHD_Next_Encounter__c;
@@ -662,17 +665,17 @@ public Boolean isInvitee;
 		}
 	}
 
-	for(Account_Strategy__c aStrat : [select Due_Date__c, Account_Sales_Plan__r.Parent_Sales_Plan__c from Account_Strategy__c
-	where Due_Date__c>=:lowDate and Due_Date__c<=:highDate and Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId=:currentUser]){
-		calendarEvent temp = new calendarEvent();
-		temp.strategyId=aStrat.Account_Sales_Plan__r.Parent_Sales_Plan__c;
-		temp.eventSubject='Account Plan Strategy Due';
-		if(calendarEvents.containsKey(aStrat.Due_Date__c.day())) {
-			calendarEvents.get(aStrat.Due_Date__c.day()).add(temp);
-		} else{
-			calendarEvents.put(aStrat.Due_Date__c.day(), new List<calendarEvent> {temp});
-		}
-	}
+	// for(Account_Strategy__c aStrat : [select Due_Date__c, Account_Sales_Plan__r.Parent_Sales_Plan__c from Account_Strategy__c
+	// where Due_Date__c>=:lowDate and Due_Date__c<=:highDate and Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId=:currentUser]){
+	// 	calendarEvent temp = new calendarEvent();
+	// 	temp.strategyId=aStrat.Account_Sales_Plan__r.Parent_Sales_Plan__c;
+	// 	temp.eventSubject='Account Plan Strategy Due';
+	// 	if(calendarEvents.containsKey(aStrat.Due_Date__c.day())) {
+	// 		calendarEvents.get(aStrat.Due_Date__c.day()).add(temp);
+	// 	} else{
+	// 		calendarEvents.put(aStrat.Due_Date__c.day(), new List<calendarEvent> {temp});
+	// 	}
+	// }
 
 	return '{"startDay": "'+startDay+'", "startDayNumber": '+firstDay.day()+', "numberOfDays": '+numberOfDays+', "events":'+JSON.serialize(calendarEvents)+',"lowDate": "'+lowDate.format()+'","highDate": "'+highDate.format()+'"}';
 }

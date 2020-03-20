@@ -683,6 +683,8 @@
       .event {
         font-size: 13px !important;
         cursor: pointer;
+        text-decoration: none;
+        color: rgb(8,7,7);
         border: 1px solid #d8dde6;
         background-color: #efefef;
         margin: 0px 2px 1px 2px;
@@ -1070,10 +1072,10 @@
             html += '<td data-date="' + dataDate + '" ' + today + '><div class="day">' + dayNumber.getDate() + '</div>';
             for (var event of data.events[dayNumber.getDate()]) {
               if (event.eventId) {
-                if (event.complete) html += '<a href="/apex/saleshd_encounter?id=' + event.eventId + '"><div class="event complete" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
-                else html += '<a href="/apex/saleshd_encounter?id=' + event.eventId + '"<div class="event" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
+                if (event.complete) html += '<a style="text-decoration:none !important;" href="/apex/saleshd_encounter?id=' + event.eventId + '"><div class="event complete" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
+                else html += '<a style="text-decoration:none !important;" href="/apex/saleshd_encounter?id=' + event.eventId + '"><div class="event" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
               } else {
-                html += '<div class="event strategy" id="' + event.strategyId + '"><b>' + event.eventSubject + '</b></div>';
+                // html += '<div class="event strategy" id="' + event.strategyId + '"><b>' + event.eventSubject + '</b></div>';
               }
 
             }
