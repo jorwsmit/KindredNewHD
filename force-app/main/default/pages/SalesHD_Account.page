@@ -656,13 +656,15 @@
 				height: 29px;
 				border-radius: 20px;
 			}
-			.census .col-md-4{
+
+			.census .col-md-4 {
 				font-size: 15px;
 				text-align: center;
 				padding-left: 0px;
 				margin-bottom: 0px;
 			}
-			.census .col-md-4:first-child{
+
+			.census .col-md-4:first-child {
 				text-align: left;
 			}
 		</style>
@@ -678,28 +680,6 @@
 					<div class="slds-spinner__dot-b"></div>
 				</div>
 			</div>
-
-			<!-- <div class="nav-container blue-bg">
-				<div class="row">
-					<ul class="nav-list">
-						<li onclick="window.location.href='/apex/saleshd_homepage'">
-							<i class="fas fa-home"></i> HOME
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_accounts'">
-							<i class="fas fa-hospital"></i> MY ACCOUNTS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_contacts'">
-							<i class="fas fa-user-md"></i> MY CONTACTS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_encounters'">
-							<i class="fas fa-phone"></i> ENCOUNTERS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_collaterals'">
-							<i class="fas fa-mail-bulk"></i> Collaterals
-						</li>
-					</ul>
-				</div>
-			</div> -->
 
 			<c:SalesHD_RedesignNav/>
 
@@ -844,12 +824,12 @@
 
 						<div class="shadow white-bg rounded">
 							<h3 class="thin italic">
-								<i class="fa fa-clipboard-list icon icon-blue" style="padding:10px 13px 10px 13px;" aria-hidden="true"></i> Notes</h3>
+								<i class="fa fa-clipboard-list icon icon-blue" style="padding:10px 13px 10px 13px;" aria-hidden="true"></i> Notes and Attachments</h3>
 							<div style="padding:10px">
 								<button class="btn btn-success btn-block rounded" id="add-note" style="padding: 5px !important;" data-toggle="modal" data-target="#noteModal">
 									<i class="fa fa-plus-circle" aria-hidden="true"></i> Add Note</button>
 							</div>
-							<ul id="notes" >
+							<ul id="notes">
 								<div class="demo-only" style="position:relative; height:50px;">
 									<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
 										<span class="slds-assistive-text">Loading</span>
@@ -1003,19 +983,39 @@
 							<h3 class="bold">
 								<i aria-hidden="true" class="fa fa-clipboard-list"></i> Add Note</h3>
 						</div>
-						<div class="modal-body">
-							<form>
+						<apex:form>
+							<div class="modal-body">
+
 								<div class="form-group">
 									<label>Enter your note for {!account.name}</label>
-									<input class="form-control" id="titleInput" placeholder="Note Title" />
-									<textarea style="margin-top:10px;" class="form-control" id="noteInput" placeholder="Note Body" />
+									<apex:input required="true" styleClass="form-control" value="{!noteTitle}" html-placeholder="Note Title"></apex:input>
+									<apex:inputTextarea style="margin-top:10px" styleClass="form-control" value="{!noteBody}" html-placeholder="Note Body" />
+									<p style="padding-top:20px">
+										<b>Optional File Upload: </b>Use the button below to choose a file and upload it as an attachment to be assoicated
+										to the note.</p>
+									<div style="padding:10px; border:1px solid #ced4da; border-radius:.25rem;">
+										<apex:inputFile value="{!file}" fileName="{!fileName}" />
+									</div>
+									<apex:actionStatus id="statusSpinner">
+										<apex:facet name="start">
+
+											<div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:170px;">
+												<div class="slds-spinner__dot-a"></div>
+												<div class="slds-spinner__dot-b"></div>
+											</div>
+
+										</apex:facet>
+									</apex:actionStatus>
+
+									<apex:pageMessages />
 								</div>
-							</form>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#noteInput').val('');">Cancel</button>
-							<button type="button" class="btn btn-primary" id="saveNote">Save Note</button>
-						</div>
+							</div>
+							<div class="modal-footer">
+								<apex:commandButton styleClass="btn btn-primary" style="margin-left:5px!important;" value="Save Note" status="statusSpinner"
+								 action="{!newNote}" />
+								<button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding:2px 5px;">Cancel</button>
+							</div>
+						</apex:form>
 					</div>
 				</div>
 			</div>
@@ -1071,248 +1071,24 @@
 		 crossorigin="anonymous"></script>
 		<script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
-		<script>
+		<apex:form>
+			<apex:actionFunction name="rerenderScripts" rerender="scripts"></apex:actionFunction>
+			<apex:outputPanel id="scripts">
 
-			$(document).ready(function () {
 
-				$("#followup-date").datepicker({ minDate: 0 });
-				showBreadCrumb();
-				loadPage();
+				<script>
 
-				$('#star').click(function () {
-					$('#star').html('<div class="demo-only" style="position:relative; top: 10px; height:40px;">' +
-						'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
-						'<span class="slds-assistive-text">Loading</span>' +
-						'<div class="slds-spinner__dot-a"></div>' +
-						'<div class="slds-spinner__dot-b"></div>' +
-						'</div>' +
-						'</div>');
-					SalesHD_Account.favoriteUnfavoriteAccount('{!account.id}', function (callback, event) {
+					$(document).ready(function () {
+
+						$("#followup-date").datepicker({ minDate: 0 });
+						showBreadCrumb();
 						loadPage();
-					}, { escape: false });
-				});
 
-				$('#saveFollowup').click(function () {
-					$('#followupModal').modal('hide');
-					SalesHD_Account.saveFollowup('{!account.id}', $('#followup-date').val(), function (callback, event) {
-						$('#followup-date').val('');
-						loadPage();
-					}, { escape: false });
-				});
-
-				$('#editUnits').click(function () {
-					$('#unitModal').modal('show');
-				});
-
-				$('#contactInput').click(function () {
-					$('#contactList').show();
-				});
-
-				$(document).click(function (e) {
-					if (!$('#contactInput').is(e.target) && $('#contactInput').has(e.target).length === 0) {
-						$('#contactList').hide();
-					}
-				});
-
-				$('#contactInput').keyup(function () {
-					$("#contactList li").each(function () {
-						if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#contactInput").val().toUpperCase().replace(/\s/g, '')) > -1) {
-							$(this).show();
-						} else {
-							$(this).hide();
-						}
-					});
-				});
-
-				$('#saveContact').click(function () {
-					$('#contactError').hide();
-					var contactId = $('#contactInput').data('contactid');
-					if (contactId) {
-						$('#contactModal').modal('hide');
-						$('#contactInput').val('');
-						$('#contactInput').data('contactid', '');
-						SalesHD_Account.saveContact('{!account.Id}', contactId, function (callback, event) {
-							loadPage();
-						}, { escape: false });
-					} else {
-						$('#contactError').show();
-					}
-				});
-
-				$('#saveNote').unbind().click(function () {
-					if ($('#noteInput').val() && $('#titleInput').val()) {
-						$("#spinner").show();
-						SalesHD_Account.saveNote('{!account.Id}', $('#noteInput').val(), $('#titleInput').val(), function (callback, event) {
-							$('#noteInput').val('');
-							$('#titleInput').val('');
-							loadPage();
-							$("#noteModal").modal('hide');
-						}, { escape: false });
-					}
-				});
-
-				$('#removeNote').click(function () {
-					if (noteId) {
-						$("#notes").html('<div class="demo-only" style="position:relative; height:50px;">' +
-							'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
-							'<span class="slds-assistive-text">Loading</span>' +
-							'<div class="slds-spinner__dot-a"></div>' +
-							'<div class="slds-spinner__dot-b"></div>' +
-							'</div>' +
-							'</div>');
-						SalesHD_Account.deleteNote(noteId, function (callback, event) {
-							loadPage();
-						}, { escape: false });
-					}
-					$("#noteRemoveModal").modal('hide');
-				});
-
-				$('#updateNote').click(function () {
-					// console.log(noteId);
-					if (noteId) {
-						$("#notes").html('<div class="demo-only" style="position:relative; height:50px;">' +
-							'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
-							'<span class="slds-assistive-text">Loading</span>' +
-							'<div class="slds-spinner__dot-a"></div>' +
-							'<div class="slds-spinner__dot-b"></div>' +
-							'</div>' +
-							'</div>');
-						SalesHD_Account.updateNote(noteId, $('#editBodyInput').val(), $('#editTitleInput').val(), function (callback, event) {
-							loadPage();
-						}, { escape: false });
-					}
-					$("#noteEditModal").modal('hide');
-				});
-
-			});
-
-			function showBreadCrumb() {
-				$("#breadcrumb").html(sessionStorage.hdBreadcrumb);
-				$("#breadcrumb a").click(function () {
-					var link;
-					link = $(this).data('link');
-					$("#breadcrumb").find('a').slice($(this).index()).remove();
-					$("#breadcrumb").find('span').slice($(this).index() - 1).remove();
-					sessionStorage.hdBreadcrumb = $("#breadcrumb").html();
-					if ($(this).data('type') == 'contact') navToContact(link);
-					else if ($(this).data('type') == 'account') navToAccount(link);
-					else if ($(this).data('type') == 'unit') navToUnit(link);
-					else navHome();
-				});
-			}
-
-			function breadcrumbStateSaver(link, text) {
-				if (typeof (Storage) != "undefined") {
-					if (sessionStorage.hdBreadcrumb) {
-						var breadcrumb = sessionStorage.hdBreadcrumb;
-						sessionStorage.hdBreadcrumb = breadcrumb + '<span>></span> <a class="blue-link" data-link="' + link + '" data-type="account">' + text + '</a>';
-					} else {
-						sessionStorage.hdBreadcrumb = '<a class="blue-link" data-link="' + link + '" data-type="account">' + text + '</a>';
-					}
-				}
-			}
-
-				var accountName = '{!JSENCODE(account.Name)}';
-			function navToContact(contactId) {
-				breadcrumbStateSaver('{!account.Id}', accountName);
-				window.location = '/apex/SalesHD_Contact?id=' + contactId;
-			}
-
-			function navToAccount(accountId) {
-				breadcrumbStateSaver('{!account.Id}', accountName);
-				window.location = '/apex/SalesHD_Account?id=' + accountId;
-			}
-
-			function navToUnit(unitId) {
-				breadcrumbStateSaver('{!account.Id}', accountName);
-				window.location = '/apex/SalesHD_Unit?id=' + unitId;
-			}
-
-			function navHome(accountId) {
-				window.location = '/apex/SalesHD_Homepage';
-			}
-
-			var noteId;
-
-			function loadPage() {
-				$("#spinner").hide();
-				SalesHD_Account.getCsuite('{!account.id}', function (callback, event) {
-					var data = JSON.parse(callback);
-					$("#csuite").html('');
-					for (var csuite of data) {
-						$("#csuite").append('<li onclick="navToContact(\'' + csuite.Id + '\')"><b>' + csuite.Name + '</b></br>' + csuite.Title__c + '</li>');
-					}
-				}, { escape: false });
-
-				SalesHD_Account.getDirectors('{!account.id}', function (callback, event) {
-					var data = JSON.parse(callback);
-					$("#directors").html('');
-					for (var directors of data) {
-						$("#directors").append('<li onclick="navToContact(\'' + directors.Id + '\')"><b>' + directors.Name + '</b></br>' + directors.Title__c + '</li>');
-					}
-				}, { escape: false });
-
-				SalesHD_Account.getContacts('{!account.id}', function (callback, event) {
-					var data = JSON.parse(callback);
-					$("#contacts").html('');
-					for (var contact of data) {
-						$("#contacts").append('<li onclick="navToContact(\'' + contact.Id + '\')"><b>' + contact.Name + '</b></br>' + contact.Title__c + '</li>');
-					}
-				}, { escape: false });
-
-				SalesHD_Account.getFavoritedContacts(function (callback, event) {
-					var data = JSON.parse(callback);
-					$("#contactList").html('');
-					for (var contacts of data) {
-						var contact = contacts.Contact__r;
-						$("#contactList").append('<li data-contactid="' + contact.Id + '">' + contact.Name + '</li>');
-					}
-					$('#contactList li').click(function () {
-						$('#contactInput').val($(this).text()).data('contactid', $(this).data('contactid'));
-					});
-				}, { escape: false });
-
-				SalesHD_Account.getUnits('{!account.id}', function (callback, event) {
-					var data = JSON.parse(callback);
-					
-					$("#units").html('');
-					$("#unitModalList").html('');
-					$("#unitModal").modal('hide');
-					for (var unit of data) {						
-						if (unit.isActive) {
-							// $("#units").append('<li onclick="window.location=\'/apex/SalesHD_Unit?id='+unit.Id+'\'"><span class="blue"><b>'+unit.Unit__r.Name+'</b> '+10+' Beds</span></br>'+
-							// Math.floor(Math.random() * 10)+' Contacts</br><b>Conversion</b> '+Math.floor(Math.random() * (100 * 10 - 1 * 10) + 1 * 10) / (1*10)+'%</li>');
-							$("#units").append('<li onclick="navToUnit(\'' + unit.unitId + '\')""><span class="blue"><b>' + unit.name + '</b> '+unit.nickname+'</span><span style="float:right;"></span></br>' + unit.contactCount +
-								'<div class="row census"><div class="col-md-4">'+unit.censusDate+'</div><div class="col-md-4">'+unit.census+'</div><div class="col-md-4">'+unit.beds+'</div></div></li>');
-
-								
-
-							$('#unitModalList').append('<div><input style="margin-top:7px;" checked="checked" class="form-check-input" type="checkbox" value="' + unit.unitId + '"><span style="margin-left:25px;">' + unit.name + '</span></div>');
-						} else {
-							$('#unitModalList').append('<div><input style="margin-top:7px;" class="form-check-input" type="checkbox" value="' + unit.unitId + '"><span style="margin-left:25px;">' + unit.name + '</span></div>');
-						}
-
-					}
-
-					$('#saveUnit').click(function () {
-						var units = [];
-						$('#unitModalList input').each(function () {
-							var checked = false;
-							if ($(this).is(':checked')) checked = true;
-							units.push({ "unitId": $(this).val(), "isActive": checked });
-						});
-						SalesHD_Account.saveUnits('{!account.id}', JSON.stringify(units), function (callback, event) {
-							loadPage();
-						}, { escape: false });
-					});
-
-				}, { escape: false });
-
-				SalesHD_Account.getNotes('{!account.id}', function (callback, event) {
-					var data = JSON.parse(callback);
-					$("#notes").html('');
-					for (var note of data) {
-						$('#notes').append('<li id="' + note.Id + '" style="cursor:default;"><b class="note-title">' + note.Title + '</b> <span style="float:right;"> <span class="text-primary editNote" style="cursor:pointer; padding-right:5px;"><i class="fas fa-edit"></i> Edit </span> <span class="text-danger removeNote" style="cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</span> </span> <br/> <span class="note-body">' + note.TextPreview + '</span></li>');
+						$("#notes").html('');
+						var notes = {!notes
+					};
+					for (var note of notes) {
+						$('#notes').append('<li id="' + note.noteId + '" style="cursor:default;"><b class="note-title">' + note.title + '</b> <span style="float:right;"> <span class="text-primary editNote" style="cursor:pointer; padding-right:5px;"><i class="fas fa-edit"></i> Edit </span> <span class="text-danger removeNote" style="cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</span> </span> <br/> <span class="note-body">' + note.body + '</span>' + note.fileLink + '</li>');
 					}
 
 					$(".removeNote").click(function () {
@@ -1327,50 +1103,292 @@
 						$("#noteEditModal").modal('show');
 					});
 
-				}, { escape: false });
 
-				SalesHD_Account.isFavorited('{!account.id}', function (callback, event) {
-					if (callback) {
-						$('#star').html('<i class="fas fa-star"></i>');
-					} else {
-						$('#star').html('<i class="far fa-star"></i>');
+					$('#star').click(function () {
+						$('#star').html('<div class="demo-only" style="position:relative; top: 10px; height:40px;">' +
+							'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
+							'<span class="slds-assistive-text">Loading</span>' +
+							'<div class="slds-spinner__dot-a"></div>' +
+							'<div class="slds-spinner__dot-b"></div>' +
+							'</div>' +
+							'</div>');
+						SalesHD_Account.favoriteUnfavoriteAccount('{!account.id}', function (callback, event) {
+							loadPage();
+						}, { escape: false });
+					});
+
+					$('#saveFollowup').click(function () {
+						$('#followupModal').modal('hide');
+						SalesHD_Account.saveFollowup('{!account.id}', $('#followup-date').val(), function (callback, event) {
+							$('#followup-date').val('');
+							loadPage();
+						}, { escape: false });
+					});
+
+					$('#editUnits').click(function () {
+						$('#unitModal').modal('show');
+					});
+
+					$('#contactInput').click(function () {
+						$('#contactList').show();
+					});
+
+					$(document).click(function (e) {
+						if (!$('#contactInput').is(e.target) && $('#contactInput').has(e.target).length === 0) {
+							$('#contactList').hide();
+						}
+					});
+
+					$('#contactInput').keyup(function () {
+						$("#contactList li").each(function () {
+							if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#contactInput").val().toUpperCase().replace(/\s/g, '')) > -1) {
+								$(this).show();
+							} else {
+								$(this).hide();
+							}
+						});
+					});
+
+					$('#saveContact').click(function () {
+						$('#contactError').hide();
+						var contactId = $('#contactInput').data('contactid');
+						if (contactId) {
+							$('#contactModal').modal('hide');
+							$('#contactInput').val('');
+							$('#contactInput').data('contactid', '');
+							SalesHD_Account.saveContact('{!account.Id}', contactId, function (callback, event) {
+								loadPage();
+							}, { escape: false });
+						} else {
+							$('#contactError').show();
+						}
+					});
+
+					$('#removeNote').click(function () {
+						if (noteId) {
+							$("#notes").html('<div class="demo-only" style="position:relative; height:50px;">' +
+								'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
+								'<span class="slds-assistive-text">Loading</span>' +
+								'<div class="slds-spinner__dot-a"></div>' +
+								'<div class="slds-spinner__dot-b"></div>' +
+								'</div>' +
+								'</div>');
+							SalesHD_Account.deleteNote(noteId, function (callback, event) {
+								// loadPage();
+								loadNotes();
+							}, { escape: false });
+						}
+						$("#noteRemoveModal").modal('hide');
+					});
+
+					$('#updateNote').click(function () {
+						if (noteId) {
+							$("#notes").html('<div class="demo-only" style="position:relative; height:50px;">' +
+								'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
+								'<span class="slds-assistive-text">Loading</span>' +
+								'<div class="slds-spinner__dot-a"></div>' +
+								'<div class="slds-spinner__dot-b"></div>' +
+								'</div>' +
+								'</div>');
+							SalesHD_Account.updateNote(noteId, $('#editBodyInput').val(), $('#editTitleInput').val(), function (callback, event) {
+								loadNotes()
+							}, { escape: false });
+						}
+						$("#noteEditModal").modal('hide');
+					});
+
+					});
+
+					function showBreadCrumb() {
+						$("#breadcrumb").html(sessionStorage.hdBreadcrumb);
+						$("#breadcrumb a").click(function () {
+							var link;
+							link = $(this).data('link');
+							$("#breadcrumb").find('a').slice($(this).index()).remove();
+							$("#breadcrumb").find('span').slice($(this).index() - 1).remove();
+							sessionStorage.hdBreadcrumb = $("#breadcrumb").html();
+							if ($(this).data('type') == 'contact') navToContact(link);
+							else if ($(this).data('type') == 'account') navToAccount(link);
+							else if ($(this).data('type') == 'unit') navToUnit(link);
+							else navHome();
+						});
 					}
-				}, { escape: false });
 
-				SalesHD_Account.getEncounters('{!account.id}', function (callback, event) {
-					var events = JSON.parse(callback);
-					$("#pastevents").html('');
-					$("#futureevents").html('');
-
-					for (var eventRelation of events.pastEvents) {
-						var event = eventRelation.Event;
-
-						var account = '<i class="fas fa-times"></i>';
-						var unit = '<i class="fas fa-times"></i>';
-						if (event.hasOwnProperty('What')) account = event.What.Name;
-						if (event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name;
-						if (unit == 'Administrative') unit = 'Global / Director';
-						$("#pastevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
-							'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
-									+event.SalesHD_Call_Objective__c+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b></li>');
+					function breadcrumbStateSaver(link, text) {
+						if (typeof (Storage) != "undefined") {
+							if (sessionStorage.hdBreadcrumb) {
+								var breadcrumb = sessionStorage.hdBreadcrumb;
+								sessionStorage.hdBreadcrumb = breadcrumb + '<span>></span> <a class="blue-link" data-link="' + link + '" data-type="account">' + text + '</a>';
+							} else {
+								sessionStorage.hdBreadcrumb = '<a class="blue-link" data-link="' + link + '" data-type="account">' + text + '</a>';
+							}
+						}
 					}
-					for (var eventRelation of events.futureEvents) {
-						var event = eventRelation.Event;
 
-						var account = '<i class="fas fa-times"></i>';
-						var unit = '<i class="fas fa-times"></i>';
-						if (event.hasOwnProperty('What')) account = event.What.Name;
-						if (event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name;
-						if (unit == 'Administrative') unit = 'Global / Director';
-						$("#futureevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
-							'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
-									+event.SalesHD_Call_Objective__c+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b></li>');
+					var accountName = '{!JSENCODE(account.Name)}';
+					function navToContact(contactId) {
+						breadcrumbStateSaver('{!account.Id}', accountName);
+						window.location = '/apex/SalesHD_Contact?id=' + contactId;
 					}
-				}, { escape: false });
 
-			}
+					function navToAccount(accountId) {
+						breadcrumbStateSaver('{!account.Id}', accountName);
+						window.location = '/apex/SalesHD_Account?id=' + accountId;
+					}
 
-		</script>
+					function navToUnit(unitId) {
+						breadcrumbStateSaver('{!account.Id}', accountName);
+						window.location = '/apex/SalesHD_Unit?id=' + unitId;
+					}
+
+					function navHome(accountId) {
+						window.location = '/apex/SalesHD_Homepage';
+					}
+
+					function loadNotes() {
+
+						SalesHD_Account.getNotesAsync('{!account.id}', function (callback, event) {
+							var data = JSON.parse(callback);
+							$("#notes").html('');
+							for (var note of data) {
+								$('#notes').append('<li id="' + note.noteId + '" style="cursor:default;"><b class="note-title">' + note.title + '</b> <span style="float:right;"> <span class="text-primary editNote" style="cursor:pointer; padding-right:5px;"><i class="fas fa-edit"></i> Edit </span> <span class="text-danger removeNote" style="cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</span> </span> <br/> <span class="note-body">' + note.body + '</span>' + note.fileLink + '</li>');
+							}
+
+							$(".removeNote").click(function () {
+								noteId = $(this).closest('li').attr('Id');
+								$("#noteRemoveModal").modal('show');
+							});
+
+							$(".editNote").click(function () {
+								noteId = $(this).closest('li').attr('Id');
+								$("#editBodyInput").val($(this).closest('li').find('.note-body').text());
+								$("#editTitleInput").val($(this).closest('li').find('.note-title').text());
+								$("#noteEditModal").modal('show');
+							});
+
+						}, { escape: false });
+
+					}
+
+					var noteId;
+
+					function loadPage() {
+						$("#spinner").hide();
+						SalesHD_Account.getCsuite('{!account.id}', function (callback, event) {
+							var data = JSON.parse(callback);
+							$("#csuite").html('');
+							for (var csuite of data) {
+								$("#csuite").append('<li onclick="navToContact(\'' + csuite.Id + '\')"><b>' + csuite.Name + '</b></br>' + csuite.Title__c + '</li>');
+							}
+						}, { escape: false });
+
+						SalesHD_Account.getDirectors('{!account.id}', function (callback, event) {
+							var data = JSON.parse(callback);
+							$("#directors").html('');
+							for (var directors of data) {
+								$("#directors").append('<li onclick="navToContact(\'' + directors.Id + '\')"><b>' + directors.Name + '</b></br>' + directors.Title__c + '</li>');
+							}
+						}, { escape: false });
+
+						SalesHD_Account.getContacts('{!account.id}', function (callback, event) {
+							var data = JSON.parse(callback);
+							$("#contacts").html('');
+							for (var contact of data) {
+								$("#contacts").append('<li onclick="navToContact(\'' + contact.Id + '\')"><b>' + contact.Name + '</b></br>' + contact.Title__c + '</li>');
+							}
+						}, { escape: false });
+
+						SalesHD_Account.getFavoritedContacts(function (callback, event) {
+							var data = JSON.parse(callback);
+							$("#contactList").html('');
+							for (var contacts of data) {
+								var contact = contacts.Contact__r;
+								$("#contactList").append('<li data-contactid="' + contact.Id + '">' + contact.Name + '</li>');
+							}
+							$('#contactList li').click(function () {
+								$('#contactInput').val($(this).text()).data('contactid', $(this).data('contactid'));
+							});
+						}, { escape: false });
+
+						SalesHD_Account.getUnits('{!account.id}', function (callback, event) {
+							var data = JSON.parse(callback);
+
+							$("#units").html('');
+							$("#unitModalList").html('');
+							$("#unitModal").modal('hide');
+							for (var unit of data) {
+								if (unit.isActive) {
+									$("#units").append('<li onclick="navToUnit(\'' + unit.unitId + '\')""><span class="blue"><b>' + unit.name + '</b> ' + unit.nickname + '</span><span style="float:right;"></span></br>' + unit.contactCount +
+										'<div class="row census"><div class="col-md-4">' + unit.censusDate + '</div><div class="col-md-4">' + unit.census + '</div><div class="col-md-4">' + unit.beds + '</div></div></li>');
+
+
+
+									$('#unitModalList').append('<div><input style="margin-top:7px;" checked="checked" class="form-check-input" type="checkbox" value="' + unit.unitId + '"><span style="margin-left:25px;">' + unit.name + '</span></div>');
+								} else {
+									$('#unitModalList').append('<div><input style="margin-top:7px;" class="form-check-input" type="checkbox" value="' + unit.unitId + '"><span style="margin-left:25px;">' + unit.name + '</span></div>');
+								}
+
+							}
+
+							$('#saveUnit').click(function () {
+								var units = [];
+								$('#unitModalList input').each(function () {
+									var checked = false;
+									if ($(this).is(':checked')) checked = true;
+									units.push({ "unitId": $(this).val(), "isActive": checked });
+								});
+								SalesHD_Account.saveUnits('{!account.id}', JSON.stringify(units), function (callback, event) {
+									loadPage();
+								}, { escape: false });
+							});
+
+						}, { escape: false });
+
+
+						SalesHD_Account.isFavorited('{!account.id}', function (callback, event) {
+							if (callback) {
+								$('#star').html('<i class="fas fa-star"></i>');
+							} else {
+								$('#star').html('<i class="far fa-star"></i>');
+							}
+						}, { escape: false });
+
+						SalesHD_Account.getEncounters('{!account.id}', function (callback, event) {
+							var events = JSON.parse(callback);
+							$("#pastevents").html('');
+							$("#futureevents").html('');
+
+							for (var eventRelation of events.pastEvents) {
+								var event = eventRelation.Event;
+
+								var account = '<i class="fas fa-times"></i>';
+								var unit = '<i class="fas fa-times"></i>';
+								if (event.hasOwnProperty('What')) account = event.What.Name;
+								if (event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name;
+								if (unit == 'Administrative') unit = 'Global / Director';
+								$("#pastevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
+									'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
+									+ event.SalesHD_Call_Objective__c + ': ' + eventRelation.Relation.Name + ' at ' + account + ' - ' + unit + '</b></li>');
+							}
+							for (var eventRelation of events.futureEvents) {
+								var event = eventRelation.Event;
+
+								var account = '<i class="fas fa-times"></i>';
+								var unit = '<i class="fas fa-times"></i>';
+								if (event.hasOwnProperty('What')) account = event.What.Name;
+								if (event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name;
+								if (unit == 'Administrative') unit = 'Global / Director';
+								$("#futureevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
+									'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
+									+ event.SalesHD_Call_Objective__c + ': ' + eventRelation.Relation.Name + ' at ' + account + ' - ' + unit + '</b></li>');
+							}
+						}, { escape: false });
+
+					}
+
+				</script>
+			</apex:outputPanel>
+		</apex:form>
 	</body>
 
 	</html>

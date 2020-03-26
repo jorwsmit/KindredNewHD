@@ -11,6 +11,20 @@ public Date censusDate {get; set;}
 public String currentCensusDateString {get; set;}
 public Boolean censusModal {get; set;}
 
+public List<notes> notesList {get; set;}
+public String notes {get; set;}
+public String noteTitle {get; set;}
+public String noteBody {get; set;}
+public blob file {get; set;}
+public String fileName {get; set;}
+
+public class notes {
+public String noteId;
+public String title;
+public String body;
+public String fileLink;
+}
+
 private static Id currentUser = UserInfo.getUserId();
 
 private static Map<String, String> unitContactsMap = new Map<String, String> {
@@ -50,6 +64,7 @@ private static Map<String, String> unitContactsMap = new Map<String, String> {
 
 public SalesHD_Unit(ApexPages.StandardController stdController) {
 	thisUnit = (Account_Unit__c)stdController.getRecord();
+	thisUnit = [select Id, Unit__r.Name, Account__r.Name from Account_Unit__c where Id=:thisUnit.Id];
 	for(Unit_Census__c uc : [select Census__c,Beds__c,Census_Date__c from Unit_Census__c where
 	                         Census_Date__c<=Today and Account_Unit__c=:thisUnit.Id order by Census_Date__c desc limit 1]) {
 		currentCensus = Integer.valueOf(uc.Census__c);
@@ -57,9 +72,13 @@ public SalesHD_Unit(ApexPages.StandardController stdController) {
 		currentBeds = Integer.valueOf(uc.Beds__c);
 		beds = Integer.valueOf(uc.Beds__c);
 		currentCensusDateString = uc.Census_Date__c.format();
-		
+
 	}
 	censusDate = System.now().date();
+
+	notes = JSON.serializePretty(getNotes(thisUnit.Id));
+	notesList = getNotes(thisUnit.Id);
+
 }
 
 public PageReference accountRedirect(){
@@ -122,39 +141,148 @@ public PageReference saveNickname() {
 	return null;
 }
 
-@RemoteAction global static String getNotes(Id unitId){
-	List<Id> noteDocumentIds = new List<Id>();
+// @RemoteAction global static String getNotes(Id unitId){
+// 	List<Id> noteDocumentIds = new List<Id>();
+// 	for(ContentDocumentLink cdl : [select ContentDocumentId from ContentDocumentLink where LinkedEntityId=:unitId]) {
+// 		noteDocumentIds.add(cdl.ContentDocumentId);
+// 	}
+// 	return JSON.serializePretty([select Id, Title, TextPreview from ContentNote where Id =: noteDocumentIds]);
+// }
+
+@RemoteAction global static String getNotesAsync(Id unitId){
+	return JSON.serializePretty(getNotes(unitId));
+}
+
+public static List<notes> getNotes(Id unitId){
+	List<Id> documentIds = new List<Id>();
 	for(ContentDocumentLink cdl : [select ContentDocumentId from ContentDocumentLink where LinkedEntityId=:unitId]) {
-		noteDocumentIds.add(cdl.ContentDocumentId);
+		documentIds.add(cdl.ContentDocumentId);
 	}
-	return JSON.serializePretty([select Id, Title, TextPreview from ContentNote where Id =: noteDocumentIds]);
+
+	List<notes> nList = new List<notes>();
+	for(ContentDocument cd : [select Id, LatestPublishedVersionId, LatestPublishedVersion.Title,
+	                          LatestPublishedVersion.Description, LatestPublishedVersion.TextPreview, FileType, FileExtension from ContentDocument
+	                          where Id =: documentIds]) {
+		notes n = new notes();
+		n.noteId = cd.Id;
+		n.title = cd.LatestPublishedVersion.Title;
+		n.body = '';
+		if(cd.LatestPublishedVersion.TextPreview!=null)
+			n.body = cd.LatestPublishedVersion.TextPreview;
+		if(cd.LatestPublishedVersion.Description!=null)
+			n.body = cd.LatestPublishedVersion.Description;
+		n.fileLink = '';
+		if(cd.FileType!='SNOTE')
+			n.fileLink = '<div><a class="blue-link" href="/sfc/servlet.shepherd/version/download/'+cd.LatestPublishedVersionId+'">'+
+			             cd.LatestPublishedVersion.Title+'.'+String.valueOf(cd.FileExtension).toLowerCase()+'</a></div>';
+		nList.add(n);
+	}
+	return nList;
 }
 
-@RemoteAction global static void deleteNote(Id noteId){
+private static ContentVersion prepareFile(blob file, String title, String fileName, String body){
+	ContentVersion cv = new ContentVersion();
+	cv.versionData = file;
+	cv.title = title;
+	cv.description = body;
+	cv.pathOnClient = fileName;
+	return cv;
+}
+
+@RemoteAction global static void deleteNote(Id documentId){
 	try{
-		ContentNote n = [select Id from ContentNote where Id=:noteId limit 1];
-		delete n;
+		ContentDocument cd = [select Id from ContentDocument where Id=:documentId limit 1];
+		delete cd;
 	}catch(DmlException ex) {
 		ApexPages.addMessages(ex);
 	}
 }
 
-@RemoteAction global static void updateNote(Id noteId, String noteInput, String titleInput){
+@RemoteAction global static void updateNote(Id documentId, String noteInput, String titleInput){
 	try{
-		ContentNote n = [select Id, Title, Content from ContentNote where Id=:noteId limit 1];
-		n.Title=titleInput;
-		n.Content=blob.valueOf(noteInput);
-		update n;
+		ContentDocument cd = [select LatestPublishedVersionId from ContentDocument where Id=:documentId limit 1];
+
+		List<ContentNote> notes = [select Id, Title, Content from ContentNote where
+		LatestPublishedVersionId=:cd.LatestPublishedVersionId limit 1];
+
+		List<ContentVersion> versions = [select Id, Title, Description from ContentVersion where
+		Id=:cd.LatestPublishedVersionId limit 1];
+
+		if(!notes.isEmpty()) {
+			notes[0].Title = titleInput;
+			notes[0].Content = blob.valueOf(noteInput);
+			update notes;
+		} else if(!versions.isEmpty()){
+			versions[0].Title = titleInput;
+			versions[0].Description = noteInput;
+			update versions;
+		}
+
 	}catch(DmlException ex) {
 		ApexPages.addMessages(ex);
 	}
 }
 
-@RemoteAction global static void saveNote(Id unitId, String noteInput, String titleInput){
-	ContentNote n = new ContentNote(Title=titleInput, Content=blob.valueOf(noteInput));
-	insert n;
-	ContentDocumentLink cdl = new ContentDocumentLink(LinkedEntityId=unitId, ContentDocumentId=n.Id, ShareType='V');
-	insert cdl;
+// @RemoteAction global static void saveNote(Id unitId, String noteInput, String titleInput){
+// 	ContentNote n = new ContentNote(Title=titleInput, Content=blob.valueOf(noteInput));
+// 	insert n;
+// 	ContentDocumentLink cdl = new ContentDocumentLink(LinkedEntityId=unitId, ContentDocumentId=n.Id, ShareType='V');
+// 	insert cdl;
+// }
+
+public PageReference newNote(){
+	if(noteBody==null && file==null) {
+		ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 'You must write a note, or attach a document to save.'));
+		return null;
+	} else {
+		try{
+			if(file!=null) {
+				List<ContentVersion> cvs = new List<ContentVersion>();
+				cvs.add(prepareFile(file, noteTitle, fileName, noteBody));
+				insert cvs;
+				List<ContentDocumentLink> cdls = new List<ContentDocumentLink>();
+				List<ContentWorkspaceDoc> cwds = new List<ContentWorkspaceDoc>();
+				List<Id> cdIds = new List<Id>();
+
+				String workspaceId = '';
+				for(ContentWorkspace cw : [select Id from ContentWorkspace where name='HD Shared Content']) {
+					workspaceId = cw.Id;
+				}
+
+				for(ContentVersion cv : [select ContentDocumentId from ContentVersion where Id in :cvs]) {
+					ContentDocumentLink cdl = new ContentDocumentLink();
+					cdl.ContentDocumentId = cv.ContentDocumentId;
+					cdIds.add(cv.ContentDocumentId);
+					cdl.LinkedEntityId = thisUnit.Id;
+					cdl.ShareType = 'V';
+					cdl.Visibility = 'AllUsers';
+					cdls.add(cdl);
+
+					if(workspaceId != '') {
+						ContentWorkspaceDoc cwd = new ContentWorkspaceDoc(ContentDocumentId=cv.ContentDocumentId, ContentWorkspaceId=workspaceId);
+						cwds.add(cwd);
+					}
+
+
+				}
+				insert cdls;
+				insert cwds;
+			} else if(noteBody!=null) {
+				ContentNote n = new ContentNote(Title=noteTitle, Content=blob.valueOf(noteBody));
+				insert n;
+				ContentDocumentLink cdl = new ContentDocumentLink(LinkedEntityId=thisUnit.Id, ContentDocumentId=n.Id, ShareType='V');
+				insert cdl;
+			}
+
+			PageReference page = new PageReference('/apex/SalesHD_Unit?id='+thisUnit.Id);
+			page.setRedirect(true);
+			return page;
+
+		} catch(DmlException ex) {
+			ApexPages.addMessages(ex);
+			return null;
+		}
+	}
 }
 
 @RemoteAction global static String getFavoriedContacts(){

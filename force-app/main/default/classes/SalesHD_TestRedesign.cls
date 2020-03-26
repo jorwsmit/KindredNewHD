@@ -119,11 +119,51 @@ private class SalesHD_TestRedesign {
 
 @isTest static void Account_saveNoteGetNotes() {
 	Test.startTest();
-	SalesHD_Account.saveNote([select Id from account where name='Test Account' limit 1][0].Id,
-	                         'noteInput', 'titleInput');
-	String s = SalesHD_Account.getNotes([select Id from account where name='Test Account' limit 1][0].Id);
-	List<ContentNote> notes = (List<ContentNote>) JSON.deserialize(s, List<ContentNote>.class);
-	SalesHD_Account.deleteNote(notes[0].Id);
+	Account acct = [select Id from account where name='Test Account' limit 1];
+	// SalesHD_Account.saveNote(accounts[0].Id,
+	//                          'noteInput', 'titleInput');
+
+	PageReference pageRef = Page.SalesHD_Account;
+	Test.setCurrentPage(pageRef);
+	pageRef.getParameters().put('id',acct.id);
+	ApexPages.StandardController sc = new ApexPages.standardController(acct);
+	SalesHD_Account controller = new SalesHD_Account(sc);
+	controller.noteBody = 'test';
+	controller.noteTitle = 'test';
+	controller.newNote();
+
+	String s = SalesHD_Account.getNotesAsync(acct.Id);
+	// List<ContentNote> notes = (List<ContentNote>) JSON.deserialize(s, List<ContentNote>.class);
+
+	List<Id> documentIds = new List<Id>();
+	for(ContentDocumentLink cdl : [select ContentDocumentId from ContentDocumentLink where LinkedEntityId=:acct.Id]) {
+		documentIds.add(cdl.ContentDocumentId);
+	}
+	List<ContentDocument> cd = [select Id, LatestPublishedVersionId, LatestPublishedVersion.Title,
+	                          LatestPublishedVersion.Description, LatestPublishedVersion.TextPreview, FileType, FileExtension from ContentDocument
+	                          where Id =: documentIds];
+
+	SalesHD_Account.updateNote(cd[0].Id, 'test', 'test');
+	SalesHD_Account.deleteNote(cd[0].Id);
+	Test.stopTest();
+}
+
+@isTest static void Account_saveFile() {
+	Test.startTest();
+	Account acct = [select Id from account where name='Test Account' limit 1];
+	// SalesHD_Account.saveNote(accounts[0].Id,
+	//                          'noteInput', 'titleInput');
+
+	PageReference pageRef = Page.SalesHD_Account;
+	Test.setCurrentPage(pageRef);
+	pageRef.getParameters().put('id',acct.id);
+	ApexPages.StandardController sc = new ApexPages.standardController(acct);
+	SalesHD_Account controller = new SalesHD_Account(sc);
+	controller.noteBody = 'test';
+	controller.noteTitle = 'test';
+	controller.file = Blob.valueOf('test');
+	controller.fileName = 'test';
+	controller.newNote();
 	Test.stopTest();
 }
 
@@ -150,6 +190,13 @@ public Boolean isActive;
 	Account acct = [select Id from account where name='Test Account' limit 1];
 	Test.startTest();
 	SalesHD_Account.getEncounters(acct.Id);
+	Test.stopTest();
+}
+
+@isTest static void Account_getDirectors() {
+	Account acct = [select Id from account where name='Test Account' limit 1];
+	Test.startTest();
+	SalesHD_Account.getDirectors(acct.Id);
 	Test.stopTest();
 }
 
@@ -830,17 +877,67 @@ public Boolean isActive;
 	Test.stopTest();
 }
 
+// @isTest static void Unit_saveNoteGetNotes() {
+// 	Account acct = [select Id from account where name='Test Account' limit 1];
+// 	Account_Unit__c au = [select Id, Active__c from Account_Unit__c where
+// 	                      Account__c=:acct.Id and Unit__r.Name!='Administrative' limit 1];
+// 	Test.startTest();
+// 	SalesHD_Unit.saveNote(au.Id,
+// 	                      'noteInput', 'titleInput');
+// 	String s = SalesHD_Unit.getNotes(au.Id);
+// 	List<ContentNote> notes = (List<ContentNote>) JSON.deserialize(s, List<ContentNote>.class);
+// 	SalesHD_Unit.updateNote(notes[0].Id,'noteInputUpdate', 'titleInputUpdate');
+// 	SalesHD_Unit.deleteNote(notes[0].Id);
+// 	Test.stopTest();
+// }
+
 @isTest static void Unit_saveNoteGetNotes() {
-	Account acct = [select Id from account where name='Test Account' limit 1];
-	Account_Unit__c au = [select Id, Active__c from Account_Unit__c where
-	                      Account__c=:acct.Id and Unit__r.Name!='Administrative' limit 1];
 	Test.startTest();
-	SalesHD_Unit.saveNote(au.Id,
-	                      'noteInput', 'titleInput');
-	String s = SalesHD_Unit.getNotes(au.Id);
-	List<ContentNote> notes = (List<ContentNote>) JSON.deserialize(s, List<ContentNote>.class);
-	SalesHD_Unit.updateNote(notes[0].Id,'noteInputUpdate', 'titleInputUpdate');
-	SalesHD_Unit.deleteNote(notes[0].Id);
+	Account_Unit__c au = [select Id, Active__c from Account_Unit__c where
+						Unit__r.Name!='Administrative' and 
+						Account__c in (select Id from account where name='Test Account') limit 1];
+
+	PageReference pageRef = Page.SalesHD_Unit;
+	Test.setCurrentPage(pageRef);
+	pageRef.getParameters().put('id',au.id);
+	ApexPages.StandardController sc = new ApexPages.standardController(au);
+	SalesHD_Unit controller = new SalesHD_Unit(sc);
+	controller.noteBody = 'test';
+	controller.noteTitle = 'test';
+	controller.newNote();
+
+	String s = SalesHD_Unit.getNotesAsync(au.Id);
+	// List<ContentNote> notes = (List<ContentNote>) JSON.deserialize(s, List<ContentNote>.class);
+
+	List<Id> documentIds = new List<Id>();
+	for(ContentDocumentLink cdl : [select ContentDocumentId from ContentDocumentLink where LinkedEntityId=:au.Id]) {
+		documentIds.add(cdl.ContentDocumentId);
+	}
+	List<ContentDocument> cd = [select Id, LatestPublishedVersionId, LatestPublishedVersion.Title,
+	                          LatestPublishedVersion.Description, LatestPublishedVersion.TextPreview, FileType, FileExtension from ContentDocument
+	                          where Id =: documentIds];
+
+	SalesHD_Unit.updateNote(cd[0].Id, 'test', 'test');
+	SalesHD_Unit.deleteNote(cd[0].Id);
+	Test.stopTest();
+}
+
+@isTest static void Unit_saveFile() {
+	Test.startTest();
+	Account_Unit__c au = [select Id, Active__c from Account_Unit__c where
+						Unit__r.Name!='Administrative' and 
+						Account__c in (select Id from account where name='Test Account') limit 1];
+
+	PageReference pageRef = Page.SalesHD_Unit;
+	Test.setCurrentPage(pageRef);
+	pageRef.getParameters().put('id',au.id);
+	ApexPages.StandardController sc = new ApexPages.standardController(au);
+	SalesHD_Unit controller = new SalesHD_Unit(sc);
+	controller.noteBody = 'test';
+	controller.noteTitle = 'test';
+	controller.file = Blob.valueOf('test');
+	controller.fileName = 'test';
+	controller.newNote();
 	Test.stopTest();
 }
 
@@ -856,8 +953,8 @@ public Boolean isActive;
 	                      Account__c=:acct.Id and Unit__r.Name!='Administrative' limit 1];
 	Contact con = [select Id from contact where name='Test Contact2' limit 1];
 	Test.startTest();
-	SalesHD_Unit.saveNote(au.Id,
-	                      'noteInput', 'titleInput');
+	// SalesHD_Unit.saveNote(au.Id,
+	//                       'noteInput', 'titleInput');
 	SalesHD_Unit.saveContact(au.Id, con.Id, 'Nurse Manager');
 	Test.stopTest();
 }

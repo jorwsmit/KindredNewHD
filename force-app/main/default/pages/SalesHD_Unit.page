@@ -1205,7 +1205,7 @@
 				</div>
 			</div>
 
-			<div class="modal fade" id="noteModal">
+			<!-- <div class="modal fade" id="noteModal">
 				<div class="modal-dialog modal-dialog-centered">
 					<div class="modal-content">
 						<div class="modal-header bg-primary">
@@ -1225,6 +1225,50 @@
 							<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="$('#noteInput').val('');">Cancel</button>
 							<button type="button" class="btn btn-primary" id="saveNote">Save Note</button>
 						</div>
+					</div>
+				</div>
+			</div> -->
+
+			<div class="modal fade" id="noteModal">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header bg-primary">
+							<h3 class="bold">
+								<i aria-hidden="true" class="fa fa-clipboard-list"></i> Add Note</h3>
+						</div>
+						<apex:form>
+							<div class="modal-body">
+
+								<div class="form-group">
+									<label>Enter your note for {!thisUnit.Unit__r.Name} - {!thisUnit.Account__r.Name}</label>
+									<apex:input required="true" styleClass="form-control" value="{!noteTitle}" html-placeholder="Note Title"></apex:input>
+									<apex:inputTextarea style="margin-top:10px" styleClass="form-control" value="{!noteBody}" html-placeholder="Note Body" />
+									<p style="padding-top:20px">
+										<b>Optional File Upload: </b>Use the button below to choose a file and upload it as an attachment to be assoicated
+										to the note.</p>
+									<div style="padding:10px; border:1px solid #ced4da; border-radius:.25rem;">
+										<apex:inputFile value="{!file}" fileName="{!fileName}" />
+									</div>
+									<apex:actionStatus id="statusSpinner">
+										<apex:facet name="start">
+
+											<div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:170px;">
+												<div class="slds-spinner__dot-a"></div>
+												<div class="slds-spinner__dot-b"></div>
+											</div>
+
+										</apex:facet>
+									</apex:actionStatus>
+
+									<apex:pageMessages />
+								</div>
+							</div>
+							<div class="modal-footer">
+								<apex:commandButton styleClass="btn btn-primary" style="margin-left:5px!important;" value="Save Note" status="statusSpinner"
+								 action="{!newNote}" />
+								<button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding:2px 5px;">Cancel</button>
+							</div>
+						</apex:form>
 					</div>
 				</div>
 			</div>
@@ -1387,84 +1431,103 @@
 				showBreadCrumb();
 				loadPage();
 
-				$('#contactInput').click(function () {
-					$('#contactList').show();
-				});
+				$("#notes").html('');
+				var notes = {!notes			
+};
+			for (var note of notes) {
+				$('#notes').append('<li id="' + note.noteId + '" style="cursor:default;"><b class="note-title">' + note.title + '</b> <span style="float:right;"> <span class="text-primary editNote" style="cursor:pointer; padding-right:5px;"><i class="fas fa-edit"></i> Edit </span> <span class="text-danger removeNote" style="cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</span> </span> <br/> <span class="note-body">' + note.body + '</span>' + note.fileLink + '</li>');
+			}
 
-				$(document).click(function (e) {
-					if (!$('#contactInput').is(e.target) && $('#contactInput').has(e.target).length === 0) {
-						$('#contactList').hide();
-					}
-				});
+			$(".removeNote").click(function () {
+				noteId = $(this).closest('li').attr('Id');
+				$("#noteRemoveModal").modal('show');
+			});
 
-				$('#contactInput').keyup(function () {
-					$("#contactList li").each(function () {
-						if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#contactInput").val().toUpperCase().replace(/\s/g, '')) > -1) {
-							$(this).show();
-						} else {
-							$(this).hide();
-						}
-					});
-				});
+			$(".editNote").click(function () {
+				noteId = $(this).closest('li').attr('Id');
+				$("#editBodyInput").val($(this).closest('li').find('.note-body').text());
+				$("#editTitleInput").val($(this).closest('li').find('.note-title').text());
+				$("#noteEditModal").modal('show');
+			});
 
-				$('#saveContact').click(function () {
-					$('#contactError').hide();
-					var contactId = $('#contactInput').data('contactid');
-					var title = $('#selectedTitle').children("option:selected").val();
-					if (contactId && title) {
-						$('#contactModal').modal('hide');
-						$('#contactInput').val('');
-						$('#selectedTitle').val('');
-						$('#contactInput').data('contactid', '');
-						SalesHD_Unit.saveContact('{!account_unit__c}', contactId, title, function (callback, event) {
-							// console.log(callback);
-							loadPage();
-						}, { escape: false });
+			$('#contactInput').click(function () {
+				$('#contactList').show();
+			});
+
+			$(document).click(function (e) {
+				if (!$('#contactInput').is(e.target) && $('#contactInput').has(e.target).length === 0) {
+					$('#contactList').hide();
+				}
+			});
+
+			$('#contactInput').keyup(function () {
+				$("#contactList li").each(function () {
+					if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#contactInput").val().toUpperCase().replace(/\s/g, '')) > -1) {
+						$(this).show();
 					} else {
-						$('#contactError').show();
+						$(this).hide();
 					}
 				});
+			});
 
-				$('#removeNote').click(function () {
-					if (noteId) {
-						$("#notes").html('<div class="demo-only" style="position:relative; height:50px;">' +
-							'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
-							'<span class="slds-assistive-text">Loading</span>' +
-							'<div class="slds-spinner__dot-a"></div>' +
-							'<div class="slds-spinner__dot-b"></div>' +
-							'</div>' +
-							'</div>');
-						SalesHD_Unit.deleteNote(noteId, function (callback, event) {
-							loadPage();
-						}, { escape: false });
-					}
-					$("#noteRemoveModal").modal('hide');
-				});
+			$('#saveContact').click(function () {
+				$('#contactError').hide();
+				var contactId = $('#contactInput').data('contactid');
+				var title = $('#selectedTitle').children("option:selected").val();
+				if (contactId && title) {
+					$('#contactModal').modal('hide');
+					$('#contactInput').val('');
+					$('#selectedTitle').val('');
+					$('#contactInput').data('contactid', '');
+					SalesHD_Unit.saveContact('{!account_unit__c}', contactId, title, function (callback, event) {
+						// console.log(callback);
+						loadPage();
+					}, { escape: false });
+				} else {
+					$('#contactError').show();
+				}
+			});
 
-				$('#updateNote').click(function () {
-					// console.log(noteId);
-					if (noteId) {
-						$("#notes").html('<div class="demo-only" style="position:relative; height:50px;">' +
-							'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
-							'<span class="slds-assistive-text">Loading</span>' +
-							'<div class="slds-spinner__dot-a"></div>' +
-							'<div class="slds-spinner__dot-b"></div>' +
-							'</div>' +
-							'</div>');
-						SalesHD_Unit.updateNote(noteId, $('#editBodyInput').val(), $('#editTitleInput').val(), function (callback, event) {
-							loadPage();
-						}, { escape: false });
-					}
-					$("#noteEditModal").modal('hide');
-				});
+			$('#removeNote').click(function () {
+				if (noteId) {
+					$("#notes").html('<div class="demo-only" style="position:relative; height:50px;">' +
+						'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
+						'<span class="slds-assistive-text">Loading</span>' +
+						'<div class="slds-spinner__dot-a"></div>' +
+						'<div class="slds-spinner__dot-b"></div>' +
+						'</div>' +
+						'</div>');
+					SalesHD_Unit.deleteNote(noteId, function (callback, event) {
+						loadNotes();
+					}, { escape: false });
+				}
+				$("#noteRemoveModal").modal('hide');
+			});
 
-				$('#saveFollowup').click(function () {
-					$('#followupModal').modal('hide');
-					// SalesHD_Unit.saveFollowup('{!account_unit__c}', $('#followup-date').val(), function(callback, event){
-					// 	$('#followup-date').val('');
-					// 	loadPage();
-					// }, {escape:false});
-				});
+			$('#updateNote').click(function () {
+				// console.log(noteId);
+				if (noteId) {
+					$("#notes").html('<div class="demo-only" style="position:relative; height:50px;">' +
+						'<div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">' +
+						'<span class="slds-assistive-text">Loading</span>' +
+						'<div class="slds-spinner__dot-a"></div>' +
+						'<div class="slds-spinner__dot-b"></div>' +
+						'</div>' +
+						'</div>');
+					SalesHD_Unit.updateNote(noteId, $('#editBodyInput').val(), $('#editTitleInput').val(), function (callback, event) {
+						loadNotes();
+					}, { escape: false });
+				}
+				$("#noteEditModal").modal('hide');
+			});
+
+			$('#saveFollowup').click(function () {
+				$('#followupModal').modal('hide');
+				// SalesHD_Unit.saveFollowup('{!account_unit__c}', $('#followup-date').val(), function(callback, event){
+				// 	$('#followup-date').val('');
+				// 	loadPage();
+				// }, {escape:false});
+			});
 
 			});
 
@@ -1485,6 +1548,29 @@
 
 			function navHome(accountId) {
 				window.location = '/apex/SalesHD_Homepage';
+			}
+
+			function loadNotes() {
+				SalesHD_Unit.getNotesAsync('{!thisUnit.id}', function (callback, event) {
+					var data = JSON.parse(callback);
+					$("#notes").html('');
+					for (var note of data) {
+						$('#notes').append('<li id="' + note.noteId + '" style="cursor:default;"><b class="note-title">' + note.title + '</b> <span style="float:right;"> <span class="text-primary editNote" style="cursor:pointer; padding-right:5px;"><i class="fas fa-edit"></i> Edit </span> <span class="text-danger removeNote" style="cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</span> </span> <br/> <span class="note-body">' + note.body + '</span>' + note.fileLink + '</li>');
+					}
+
+					$(".removeNote").click(function () {
+						noteId = $(this).closest('li').attr('Id');
+						$("#noteRemoveModal").modal('show');
+					});
+
+					$(".editNote").click(function () {
+						noteId = $(this).closest('li').attr('Id');
+						$("#editBodyInput").val($(this).closest('li').find('.note-body').text());
+						$("#editTitleInput").val($(this).closest('li').find('.note-title').text());
+						$("#noteEditModal").modal('show');
+					});
+
+				}, { escape: false });
 			}
 
 			function showBreadCrumb() {
@@ -1549,38 +1635,21 @@
 					$("#spinner").hide();
 				}, { escape: false });
 
-				SalesHD_Unit.getNotes('{!account_unit__c}', function (callback, event) {
-					var data = JSON.parse(callback);
-					$("#notes").html('');
-					for (var note of data) {
-						$('#notes').append('<li id="' + note.Id + '" style="cursor:default;"><b class="note-title">' + note.Title + '</b> <span style="float:right;"> <span class="text-primary editNote" style="cursor:pointer; padding-right:5px;"><i class="fas fa-edit"></i> Edit </span> <span class="text-danger removeNote" style="cursor:pointer;"><i class="fas fa-trash-alt"></i> Delete</span> </span> <br/> <span class="note-body">' + note.TextPreview + '</span></li>');
-					}
+				//getnotes here
 
-					$(".removeNote").click(function () {
-						noteId = $(this).closest('li').attr('Id');
-						$("#noteRemoveModal").modal('show');
-					});
 
-					$(".editNote").click(function () {
-						noteId = $(this).closest('li').attr('Id');
-						$("#editBodyInput").val($(this).closest('li').find('.note-body').text());
-						$("#editTitleInput").val($(this).closest('li').find('.note-title').text());
-						$("#noteEditModal").modal('show');
-					});
 
-				}, { escape: false });
-
-				$('#saveNote').unbind().click(function () {
-					if ($('#noteInput').val() && $('#titleInput').val()) {
-						$("#spinner").show();
-						$('#noteModal').modal('hide');
-						SalesHD_Unit.saveNote('{!account_unit__c}', $('#noteInput').val(), $('#titleInput').val(), function (callback, event) {
-							$('#noteInput').val('');
-							$('#titleInput').val('');
-							loadPage();
-						}, { escape: false });
-					}
-				});
+				// $('#saveNote').unbind().click(function () {
+				// 	if ($('#noteInput').val() && $('#titleInput').val()) {
+				// 		$("#spinner").show();
+				// 		$('#noteModal').modal('hide');
+				// 		SalesHD_Unit.saveNote('{!account_unit__c}', $('#noteInput').val(), $('#titleInput').val(), function (callback, event) {
+				// 			$('#noteInput').val('');
+				// 			$('#titleInput').val('');
+				// 			loadPage();
+				// 		}, { escape: false });
+				// 	}
+				// });
 
 				SalesHD_Unit.getEncounters('{!account_unit__c}', function (callback, event) {
 					var events = JSON.parse(callback);
@@ -1594,7 +1663,7 @@
 						if (event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name
 						$("#pastevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
 							'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
-									+event.SalesHD_Call_Objective__c+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b></li>');
+							+ event.SalesHD_Call_Objective__c + ': ' + eventRelation.Relation.Name + ' at ' + account + ' - ' + unit + '</b></li>');
 					}
 					for (var eventRelation of events.futureEvents) {
 						var event = eventRelation.Event;
@@ -1604,7 +1673,7 @@
 						if (event.hasOwnProperty('SalesHD_Account_Unit__r')) unit = event.SalesHD_Account_Unit__r.Unit__r.Name
 						$("#futureevents").append('<li onclick="window.location.href=\'/apex/saleshd_encounter?id=' + event.Id + '\'">' +
 							'<img src="' + event.CreatedBy.SmallPhotoUrl + '" class="event-userimage"/><b>' + event.CreatedBy.Name + '</b> - ' + event.ActivityDate + '<br/><b>'
-									+event.SalesHD_Call_Objective__c+': '+eventRelation.Relation.Name+' at '+account+' - '+unit+'</b></li>');
+							+ event.SalesHD_Call_Objective__c + ': ' + eventRelation.Relation.Name + ' at ' + account + ' - ' + unit + '</b></li>');
 					}
 				}, { escape: false });
 
