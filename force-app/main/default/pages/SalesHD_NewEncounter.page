@@ -849,7 +849,7 @@
 
 								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results" />
 
-								<label style="width: 100%;">Summary and Results Continuned
+								<label style="width: 100%;">Summary and Results Continued
 
 									<span class="educationtip" id="results">
 										<i class="fas fa-question-circle blue pointer"></i>

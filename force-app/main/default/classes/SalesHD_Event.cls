@@ -613,6 +613,7 @@ public Boolean isInvitee;
 }
 
 @RemoteAction global static String getCalendar(Integer monthOffset, Integer weekOffset, Boolean isWeekly, Id userId){
+	User usr = [select Id, Name from user where Id=:userId];
 	Datetime firstDay;
 	Integer numberOfDays;
 	if(isWeekly) {
@@ -630,12 +631,12 @@ public Boolean isInvitee;
 
 	List<Event> eventList = [select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
 	                         who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId, CreatedById from event where
-	                         ownerId=:userId and startDateTime>=:lowDate and endDateTime<=:highDate];
+	                         ownerId=:usr.Id and startDateTime>=:lowDate and endDateTime<=:highDate];
 
 	List<EventRelation> eventRelationList = [select eventId, event.subject, event.StartDateTime, event.EndDateTime,
 	                                         event.SalesHD_Complete__c, event.description, event.who.name, event.SalesHD_Call_Objective__c,
 	                                         event.SalesHD_Open_Ended_Questions__c, event.OwnerId, event.CreatedById from EventRelation where
-	                                         RelationId=:userId and event.startDateTime>=:lowDate and event.endDateTime<=:highDate];
+	                                         RelationId=:usr.Id and event.startDateTime>=:lowDate and event.endDateTime<=:highDate];
 
 	List<Id> whoIds = new List<Id>();
 	for(Event e : eventList) {
@@ -664,20 +665,11 @@ public Boolean isInvitee;
 			calendarEvents.put(e.startDateTime.day(), new List<calendarEvent> {temp});
 		}
 	}
-
-	// for(Account_Strategy__c aStrat : [select Due_Date__c, Account_Sales_Plan__r.Parent_Sales_Plan__c from Account_Strategy__c
-	// where Due_Date__c>=:lowDate and Due_Date__c<=:highDate and Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId=:currentUser]){
-	// 	calendarEvent temp = new calendarEvent();
-	// 	temp.strategyId=aStrat.Account_Sales_Plan__r.Parent_Sales_Plan__c;
-	// 	temp.eventSubject='Account Plan Strategy Due';
-	// 	if(calendarEvents.containsKey(aStrat.Due_Date__c.day())) {
-	// 		calendarEvents.get(aStrat.Due_Date__c.day()).add(temp);
-	// 	} else{
-	// 		calendarEvents.put(aStrat.Due_Date__c.day(), new List<calendarEvent> {temp});
-	// 	}
-	// }
-
-	return '{"startDay": "'+startDay+'", "startDayNumber": '+firstDay.day()+', "numberOfDays": '+numberOfDays+', "events":'+JSON.serialize(calendarEvents)+',"lowDate": "'+lowDate.format()+'","highDate": "'+highDate.format()+'"}';
+	String userName = null;
+	if(UserInfo.getUserId()!=usr.Id) userName = '"'+usr.Name+'"';
+	return '{"startDay": "'+startDay+'", "startDayNumber": '+firstDay.day()+
+	', "numberOfDays": '+numberOfDays+', "events":'+JSON.serialize(calendarEvents)+
+	',"lowDate": "'+lowDate.format()+'","highDate": "'+highDate.format()+'", "userName": '+userName+'}';
 }
 
 @RemoteAction global static List<User> getUsersUnderRoleId(Id roleId) {

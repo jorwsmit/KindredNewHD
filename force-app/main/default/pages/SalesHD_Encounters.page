@@ -684,7 +684,7 @@
         font-size: 13px !important;
         cursor: pointer;
         text-decoration: none;
-        color: rgb(8,7,7);
+        color: rgb(8, 7, 7);
         border: 1px solid #d8dde6;
         background-color: #efefef;
         margin: 0px 2px 1px 2px;
@@ -770,9 +770,12 @@
             <button data-weekly="true" class="btn btn-primary rounded weekly-monthly weekly-monthly-selected" style="padding-top:5px!important; padding-bottom:5px!important; margin-bottom:10px;">Weekly</button>
             <button id="monthly" data-weekly="false" class="btn btn-primary rounded weekly-monthly" style="padding-top:5px!important; padding-bottom:5px!important; margin-bottom:10px;">Monthly</button>
 
-            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, false)}" style="display:inline-block;">
-              <button class="btn btn-secondary rounded" id="cl-button" style="padding: 5px !important; width:150px; margin-top:-10px; margin-left:5px;"
+            <apex:outputPanel rendered="{!IF(OR(CONTAINS($Profile.Name, 'Manager'), CONTAINS($Profile.Name, 'Admin')), true, false)}">
+              <button class="btn btn-secondary rounded" id="cl-button" style="padding: 5px !important; width:150px; margin-top:-10px;"
                 data-toggle="modal" data-target="#clModal">Select CL</button>
+              <div>
+                <span id="clName"></span>
+              </div>
             </apex:outputPanel>
 
             <div class="shadow white-bg rounded">
@@ -920,11 +923,14 @@
       var roleNav = [];
       var currentRole = '{!$UserRole.Id}';
       var userId = '{!$User.Id}';
+
+      if (sessionStorage.sfClId) userId = sessionStorage.sfClId;
+
       $(document).ready(function () {
 
         sessionStorage.removeItem("hdBreadcrumb");
 
-        if ({!IF(CONTAINS($Profile.Name, 'Manager'), true, false)
+        if ({!IF(OR(CONTAINS($Profile.Name, 'Manager'), CONTAINS($Profile.Name, 'Admin')), true, false)
       }){
         SalesHD_Event.getUsersUnderRoleId('{!$UserRole.Id}', function (users, event) {
           for (user of users) {
@@ -933,6 +939,7 @@
 
           $("#usersUnderRole a").click(function () {
             userId = $(this).data('userid');
+            sessionStorage.sfClId = userId;
             getCalendar();
           });
 
@@ -1025,6 +1032,12 @@
         SalesHD_Event.getCalendar(monthOffset, weekOffset, isWeekly, userId, function (calendarJson, event) {
           // console.log(calendarJson);
           var data = JSON.parse(calendarJson);
+
+          if (data.userName != null) $("#clName").html('<b>Selected CL: </b>' + data.userName +
+            '<a onclick="revertCL();"><span style="padding-left:10px;" class="lnr lnr-arrow-left"></span>' +
+            ' Back to Your Calendar</a>').show();
+          else $("#clName").hide();
+
           dayNumber = new Date(data.lowDate);
           var dayOfWeekIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
           var html = '';
@@ -1057,6 +1070,12 @@
 
           $("#spinner").hide();
         }, { escape: false });
+      }
+
+      function revertCL() {
+        userId = '{!$User.Id}';
+        sessionStorage.sfClId = userId;
+        getCalendar();
       }
 
       function calendarHtml(data) {
@@ -1122,6 +1141,7 @@
           }
           $("#userDrillList a").click(function () {
             userId = $(this).data('userid');
+            sessionStorage.sfClId = userId;
             getCalendar();
           });
 
