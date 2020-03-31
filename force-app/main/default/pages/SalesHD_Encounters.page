@@ -1069,6 +1069,7 @@
           }).find('.event').click(function (e) { e.stopPropagation(); });
 
           $("#spinner").hide();
+          $("#clModal").modal('hide');
         }, { escape: false });
       }
 
