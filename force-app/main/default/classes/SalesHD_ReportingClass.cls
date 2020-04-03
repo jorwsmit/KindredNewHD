@@ -121,9 +121,26 @@ public Integer encounterTotal;
 public Integer encounterTarget;
 }
 
+public String district = '%%';
+public String area = '%%';
+
+public List<User> users {get; set;}
+
 private static Set<Id> allSubRoleIds = getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()});
 
+public User usr {get; set;}
+
 public SalesHD_ReportingClass() {
+
+	users = new List<User>();
+	
+	usr = new User();
+	usr.Region__c='HD';
+	if(ApexPages.currentPage().getParameters().get('district')!=null) usr.District__c=ApexPages.currentPage().getParameters().get('district');
+	if(ApexPages.currentPage().getParameters().get('area')!=null) usr.Area__c=ApexPages.currentPage().getParameters().get('area');
+	if(usr.District__c!=null) district = '%'+usr.District__c+'%';
+	if(usr.Area__c!=null) area = '%'+usr.Area__c+'%';
+
 	setWeeks();
 	dateRange = lowDate.format() + ' - ' + highDate.format();
 
@@ -133,12 +150,20 @@ public SalesHD_ReportingClass() {
 
 	if(ApexPages.currentPage().getParameters().get('cl')!=null) {
 
-		for(User u : [select id, name, userRoleId from User where id=:ApexPages.currentPage().getParameters().get('cl')]) {
+		for(User u : [select id, name, userRoleId, Region__c, Area__c, District__c from User where id=:ApexPages.currentPage().getParameters().get('cl')]) {
 			if(allSubRoleIds.contains(u.userRoleId) || u.Id==UserInfo.getUserId()) {
 				selectedCL = u.id;
 				clName = u.Name;
+				if(u.Region__c!=null) usr.Region__c = u.Region__c;
+				if(u.District__c!=null) usr.District__c = u.District__c;
+				if(u.Area__c!=null) usr.Area__c = u.Area__c;
 			}
 		}
+	} else{
+		allSubRoleIds.add(UserInfo.getUserRoleId());
+		users = [select id from user where (userRoleId in :allSubRoleIds or Id=:UserInfo.getUserId()) 
+		and Area__c like :area and
+		District__c like :district];
 	}
 
 	if(selectedCL!=null) getKpi(selectedCL);
@@ -213,7 +238,8 @@ public List<Selectoption> getCLPicklist(){
 
 	List<Selectoption> picklist = new List<selectoption>();
 	picklist.add(new selectOption('', '- Select an Employee -'));
-	for(User u : [select id, name from user where userRoleId in :allSubRoleIds order by name]) {
+	for(User u : [select id, name from user where userRoleId in :allSubRoleIds and
+	District__c like :district and Area__c like :area order by name]) {
 		picklist.add(new selectOption(u.id, u.name));
 	}
 	return picklist;
@@ -240,7 +266,8 @@ public List<Selectoption> getAccountPicklist(){
 	}
 
 	for(AccountTeamMember atm : [select accountId, account.name from AccountTeamMember where
-	                             user.userRoleId in :allSubRoleIds and accountId not in:atms order by account.name limit 999]) {
+								 user.userRoleId in :allSubRoleIds and userId in :users
+								 and accountId not in:atms order by account.name limit 999]) {
 		if(!atms.contains(atm.accountId) && picklist.size()<999)
 			picklist.add(new selectOption(atm.accountId, atm.account.name));
 		atms.add(atm.accountId);
@@ -259,38 +286,38 @@ public static void setWeeks(){
 }
 
 public void eLastWeek(){
-	encountersLastWeek = JSON.serializePretty(getEncountersWeek(UserInfo.getUserRoleId()));
+	encountersLastWeek = JSON.serializePretty(getEncountersWeek(UserInfo.getUserRoleId(), selectedCL, users));
 }
 
 public void eLastWeekContact(){
-	encountersByContact = JSON.serializePretty(getEncountersContact(UserInfo.getUserRoleId(), selectedCL, selectedAccount));
+	encountersByContact = JSON.serializePretty(getEncountersContact(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
 }
 
 public void eLastWeekMedium(){
-	encountersByMedium = JSON.serializePretty(getEncountersMedium(UserInfo.getUserRoleId(), selectedCL, selectedAccount));
+	encountersByMedium = JSON.serializePretty(getEncountersMedium(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
 }
 
 public void eLastWeekObjective(){
-	encountersByObjective = JSON.serializePretty(getEncountersObjective(UserInfo.getUserRoleId(), selectedCL, selectedAccount));
+	encountersByObjective = JSON.serializePretty(getEncountersObjective(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
 }
 
 public void eLastWeekAccounts(){
-	encountersByAccount = JSON.serializePretty(getEncountersAccount(UserInfo.getUserRoleId(), selectedCL, selectedAccount));
+	encountersByAccount = JSON.serializePretty(getEncountersAccount(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
 }
 
 public void eUpcoming(){
-	upcomingEncounters = JSON.serializePretty(getUpcomingEncounters(UserInfo.getUserRoleId(), selectedCL));
+	upcomingEncounters = JSON.serializePretty(getUpcomingEncounters(UserInfo.getUserRoleId(), selectedCL, users));
 }
 
 public void eLastWeekUnit(){
-	encountersByUnit = JSON.serializePretty(getEncountersUnit(UserInfo.getUserRoleId(), selectedCL, selectedAccount));
+	encountersByUnit = JSON.serializePretty(getEncountersUnit(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
 }
 
 public void spTrend(){
 	if(admitsRevenue!=null) clPerformanceTrend = getPerformanceTrend(UserInfo.getUserRoleId(), admitsRevenue, selectedCL);
 }
 
-public static String getEncountersContact(Id rId, Id cl, Id accountId){
+public static String getEncountersContact(Id rId, Id cl, Id accountId, List<User> usrs){
 
 	Map<String, String> contacts = new Map<String, String>();
 
@@ -314,18 +341,21 @@ public static String getEncountersContact(Id rId, Id cl, Id accountId){
 	setWeeks();
 
 	List<AggregateResult> ars = new List<AggregateResult>();
+	
 	if(cl!=null) {
 		ars = [select count(id) totalByContact, whoId
 		       from event where ownerId=:cl
 		                                 and startDateTime>=:lowDate and startDateTime<=:highDate group by whoId];
 	} else if(accountId!=null) {
 		ars = [select count(id) totalByContact, whoId
-		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+			   from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+			   and ownerId in :usrs
 		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId group by whoId];
 	} else{
 		ars = [select count(id) totalByContact, whoId
 		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
-		       and startDateTime>=:lowDate and startDateTime<=:highDate group by whoId];
+			   and ownerId in :usrs  
+			   and startDateTime>=:lowDate and startDateTime<=:highDate group by whoId];
 	}
 
 
@@ -359,7 +389,7 @@ public static String getEncountersContact(Id rId, Id cl, Id accountId){
 	return res;
 }
 
-public static String getEncountersWeek(Id rId){
+public static String getEncountersWeek(Id rId, Id cl, List<User> usrs){
 
 	allSubRoleIds.add(rId);
 
@@ -372,7 +402,8 @@ public static String getEncountersWeek(Id rId){
 	//Maps userIds to a list containing complete encounter totals at index 0 and incomplete at index 1
 	Map<Id, List<Integer> > usersEncounters = new Map<Id, List<Integer> >();
 	Map<Id, String> usernames = new Map<Id, String>();
-	for(User u : [select Id, Name from user where UserRoleId in :allSubRoleIds or Id=:UserInfo.getUserId() order by Name]) {
+	for(User u : [select Id, Name from user where (UserRoleId in :allSubRoleIds or Id=:UserInfo.getUserId())
+	and (Id=:cl or Id in :usrs) order by Name]) {
 		usersEncounters.put(u.Id, new List<Integer> {0,0});
 		usernames.put(u.Id, u.Name);
 	}
@@ -397,7 +428,7 @@ public static String getEncountersWeek(Id rId){
 	return res;
 }
 
-public static String getEncountersMedium(Id rId, Id cl, Id accountId){
+public static String getEncountersMedium(Id rId, Id cl, Id accountId, List<User> usrs){
 
 	String res = '{ "cols" : [{"id":"","label":"Contact Title","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
@@ -413,11 +444,13 @@ public static String getEncountersMedium(Id rId, Id cl, Id accountId){
 	} else if(accountId!=null) {
 		ars = [select count(id) totalByMedium, SalesHD_Contact_Method__c
 		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
-		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId group by SalesHD_Contact_Method__c];
+				and ownerId in :usrs  
+			   and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId group by SalesHD_Contact_Method__c];
 	} else{
 		ars = [select count(id) totalByMedium, SalesHD_Contact_Method__c
 		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
-		       and startDateTime>=:lowDate and startDateTime<=:highDate group by SalesHD_Contact_Method__c];
+			   and ownerId in :usrs    
+			   and startDateTime>=:lowDate and startDateTime<=:highDate group by SalesHD_Contact_Method__c];
 	}
 
 	for(AggregateResult ar : ars) {
@@ -431,7 +464,7 @@ public static String getEncountersMedium(Id rId, Id cl, Id accountId){
 	return res;
 }
 
-public static String getEncountersObjective(Id rId, Id cl, Id accountId){
+public static String getEncountersObjective(Id rId, Id cl, Id accountId, List<User> usrs){
 
 	String res = '{ "cols" : [{"id":"","label":"Objective","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
@@ -446,11 +479,14 @@ public static String getEncountersObjective(Id rId, Id cl, Id accountId){
 	} else if(accountId!=null) {
 		ars = [select count(id) totalByObjective, SalesHD_Call_Objective__c
 		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
-		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
+			 	and ownerId in :usrs  
+			   and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
 		                                                                               group by SalesHD_Call_Objective__c];
 	} else{
 		ars = [select count(id) totalByObjective, SalesHD_Call_Objective__c
-		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId()) and startDateTime>=:lowDate and startDateTime<=:highDate
+			   from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+			   and ownerId in :usrs    
+			   and startDateTime>=:lowDate and startDateTime<=:highDate
 		       group by SalesHD_Call_Objective__c];
 	}
 
@@ -504,7 +540,7 @@ public static String getPerformanceTrend(Id rId, String admitsRevenue, Id cl){
 	return res;
 }
 
-public static String getEncountersAccount(Id rId, Id cl, Id accountId){
+public static String getEncountersAccount(Id rId, Id cl, Id accountId, List<User> usrs){
 	String res = '{ "cols" : [{"id":"","label":"Account","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
 	             '"rows": [';
@@ -518,11 +554,14 @@ public static String getEncountersAccount(Id rId, Id cl, Id accountId){
 	} else if(accountId!=null) {
 		ars = [select count(id) totalEncounters, Account.Name accountName
 		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
-		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
+			   and ownerId in :usrs    
+			   and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
 		                                                                               group by Account.Name];
 	} else{
 		ars = [select count(id) totalEncounters, Account.Name accountName
-		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId()) and startDateTime>=:lowDate and startDateTime<=:highDate
+			   from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+			   and ownerId in :usrs    
+			   and startDateTime>=:lowDate and startDateTime<=:highDate
 		       group by Account.Name];
 	}
 
@@ -537,7 +576,7 @@ public static String getEncountersAccount(Id rId, Id cl, Id accountId){
 	return res;
 }
 
-public static String getUpcomingEncounters(Id rId, Id cl){
+public static String getUpcomingEncounters(Id rId, Id cl, List<User> usrs){
 
 	String res = '{ "cols" : [{"id":"","label":"CL","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
@@ -553,7 +592,9 @@ public static String getUpcomingEncounters(Id rId, Id cl){
 		                                 group by Owner.Name];
 	} else{
 		ars = [select count(id) totalEncounters, Owner.Name ownerName
-		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId()) and startDateTime>=:lowDate and startDateTime<=:highDate
+			   from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+			   and ownerId in :usrs    
+			   and startDateTime>=:lowDate and startDateTime<=:highDate
 		       group by Owner.Name];
 	}
 
@@ -569,7 +610,7 @@ public static String getUpcomingEncounters(Id rId, Id cl){
 }
 
 
-public static String getEncountersUnit(Id rId, Id cl, Id accountId){
+public static String getEncountersUnit(Id rId, Id cl, Id accountId, List<User> usrs){
 
 	String res = '{ "cols" : [{"id":"","label":"Unit","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
@@ -586,11 +627,14 @@ public static String getEncountersUnit(Id rId, Id cl, Id accountId){
 	} else if(accountId!=null) {
 		ars = [select count(id) totalByUnit, SalesHD_Account_Unit__r.Unit__r.Name unit
 		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
-		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
+			   and ownerId in :usrs    
+			   and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
 		                                                                               group by SalesHD_Account_Unit__r.Unit__r.Name];
 	} else{
 		ars = [select count(id) totalByUnit, SalesHD_Account_Unit__r.Unit__r.Name unit
-		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId()) and startDateTime>=:lowDate and startDateTime<=:highDate
+			   from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+			   and ownerId in :usrs    
+			   and startDateTime>=:lowDate and startDateTime<=:highDate
 		       group by SalesHD_Account_Unit__r.Unit__r.Name];
 	}
 
@@ -645,6 +689,22 @@ public PageReference selectAccount(){
 	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
 	page.getParameters().remove('cl');
 	page.getParameters().put('account', String.valueOf(selectedAccount));
+	page.setRedirect(true);
+	return page;
+}
+
+public PageReference selectDistrict(){
+	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
+	page.getParameters().remove('cl');
+	page.getParameters().put('district', String.valueOf(usr.District__c));
+	page.setRedirect(true);
+	return page;
+}
+
+public PageReference selectArea(){
+	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
+	page.getParameters().remove('cl');
+	page.getParameters().put('area', String.valueOf(usr.Area__c));
 	page.setRedirect(true);
 	return page;
 }

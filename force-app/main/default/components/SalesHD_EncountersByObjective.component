@@ -37,16 +37,16 @@
             $(document).ready(function () {
                 encountersByObjective();
             });
+
+
         </script>
         <apex:outputPanel id="dataFunction">
             <script>
-                function loadData() {
-
-                    google.load('visualization', '1', { packages: ['corechart'] });
-                    google.setOnLoadCallback(drawChart);
+                function loadObjective() {
+                    google.load('visualization', '1', { packages: ['corechart'], callback: drawObjectiveChart });
                 }
 
-                function drawChart() {
+                function drawObjectiveChart() {
 
                     var data = new google.visualization.DataTable({!encountersByObjective});
 
@@ -54,24 +54,20 @@
                     height: 500,
                     title: 'Encounters by Objective',
                     pieSliceText: 'label',
-                    backgroundColor: { fill:'transparent' }
+                    backgroundColor: { fill: 'transparent' }
                 };
 
                 var chart = new google.visualization.PieChart(document.getElementById("encountersByObjective"));
                 chart.draw(data, options);
 
-                }
-
+}
 
             </script>
         </apex:outputPanel>
     </body>
 
     </html>
-
     <apex:form>
-        <apex:actionFunction name="encountersByObjective" action="{!eLastWeekObjective}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
+        <apex:actionFunction name="encountersByObjective" action="{!eLastWeekObjective}" rerender="dataFunction" oncomplete="loadObjective();"></apex:actionFunction>
     </apex:form>
-
-
 </apex:component>

@@ -27,11 +27,11 @@
         </div>
         <!-- Lightning Wrapper -->
 
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        <!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-        <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+        <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script> -->
         <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
         <script>
             $(document).ready(function () {
@@ -40,37 +40,31 @@
         </script>
         <apex:outputPanel id="dataFunction">
             <script>
-                function loadData() {
-
-                    google.load('visualization', '1', { packages: ['corechart'] });
-                    google.setOnLoadCallback(drawChart);
+                function loadUpcoming() {
+                    google.load('visualization', '1', { packages: ['corechart'], callback: drawUpcomingChart });
                 }
 
-                function drawChart() {
+                function drawUpcomingChart() {
 
                     var data = new google.visualization.DataTable({!upcomingEncounters});
 
                 var options = {
                     height: 500,
                     title: 'Upcoming Encounters (Next 30 days)',
-                    backgroundColor: { fill:'transparent' }
+                    backgroundColor: { fill: 'transparent' }
                 };
 
                 var chart = new google.visualization.BarChart(document.getElementById("upcomingEncounters"));
                 chart.draw(data, options);
 
-                }
-
-
+}
             </script>
         </apex:outputPanel>
+
     </body>
 
     </html>
-
     <apex:form>
-        <apex:actionFunction name="upcomingEncounters" action="{!eUpcoming}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
+        <apex:actionFunction name="upcomingEncounters" action="{!eUpcoming}" rerender="dataFunction" oncomplete="loadUpcoming();"></apex:actionFunction>
     </apex:form>
-
-
 </apex:component>

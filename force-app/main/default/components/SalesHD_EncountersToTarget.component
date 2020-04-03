@@ -36,33 +36,25 @@
             $(document).ready(function () {
                 encountersToTarget();
             });
+
+
         </script>
         <apex:outputPanel id="dataFunction">
-            <script>    
-                function loadData() {
-
-                    google.load('visualization', '1', { packages: ['corechart'] });
-                    google.setOnLoadCallback(drawChart);
+            <script>
+                function loadTarget() {
+                    google.load('visualization', '1', { packages: ['corechart'], callback: drawTargetChart });
                 }
 
-                function drawChart() {
+                function drawTargetChart() {
 
                     var data = new google.visualization.DataTable({!encountersLastWeek});
 
                 var view = new google.visualization.DataView(data);
-                // view.setColumns([0, 1,
-                //     {
-                //         calc: "stringify",
-                //         sourceColumn: 1,
-                //         type: "string",
-                //         role: "annotation"
-                //     },
-                //     2]);
 
                 view.setColumns([0, 1, 2]);
 
                 var chartHeight = data.getNumberOfRows() * 25;
-                if(chartHeight<500) chartHeight=500;
+                if (chartHeight < 500) chartHeight = 500;
                 var options = {
                     height: chartHeight,
                     title: 'Planned vs. Unplanned Encounters to Target',
@@ -84,7 +76,7 @@
                 var chart = new google.visualization.BarChart(document.getElementById("encountersToTarget"));
                 chart.draw(view, options);
                 drawVAxisLine(chart, 10);  //set x value where line shoud be located
-                                        }
+                    }
 
                 function drawVAxisLine(chart, value) {
                     var layout = chart.getChartLayoutInterface();
@@ -105,8 +97,6 @@
                     line.setAttribute('stroke-width', w);
                     return line;
                 }
-
-
             </script>
         </apex:outputPanel>
     </body>
@@ -114,8 +104,7 @@
     </html>
 
     <apex:form>
-        <apex:actionFunction name="encountersToTarget" action="{!eLastWeek}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
+        <apex:actionFunction name="encountersToTarget" action="{!eLastWeek}" rerender="dataFunction" oncomplete="loadTarget();"></apex:actionFunction>
     </apex:form>
-
 
 </apex:component>

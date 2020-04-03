@@ -29,6 +29,11 @@
                 margin: 10px 0px !important;
             }
 
+            select {
+                color: #000 !important;
+                width: 100% !important;
+            }
+
             body input[type="submit"] {
                 color: #fff;
                 background-color: #6c757d;
@@ -46,33 +51,55 @@
     <apex:outputPanel id="dashboard-output">
 
         <body id="dashboard-body">
+
             <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+                crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+            <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+            <script>
+                google.load('visualization', '1', { packages: ['corechart'] });
+            </script>
+
             <div class="slds-scope">
-                <apex:form>
-                    <div class="row" style="background-color:#007bff; color:#fff;">
-                        <div class="col-md-12">
-                            <h2 class="text-center ">{!dateRange}</h2>
+                <div>
+                    <apex:form>
+                        <div class="row" style="background-color:#007bff; color:#fff;">
+                            <div class="col-md-12">
+                                <h2 class="text-center ">{!dateRange}</h2>
+                            </div>
+                            <div class="col-md-3 offset-md-3">
+                                <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!previousWeek}" value="Previous Week"></apex:commandButton>
+                            </div>
+                            <div class="col-md-3">
+                                <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!nextWeek}" value="Next Week"></apex:commandButton>
+                            </div>
+                            <!-- <c:SalesHD_MarketDashboardDrilldown/> -->
+                            <div class="col-md-6 offset-md-3">
+                                <apex:inputField style="display:none;" value="{!usr.Region__c}" />
+                                <apex:inputField value="{!usr.District__c}">
+                                    <apex:actionsupport event="onchange" action="{!selectDistrict}" />
+                                </apex:inputField>
+                                <apex:inputField value="{!usr.Area__c}">
+                                    <apex:actionsupport event="onchange" action="{!selectArea}" />
+                                </apex:inputField>
+                            </div>
+                            <div class="col-md-6 offset-md-3">
+                                <apex:selectList size="1" value="{!selectedCL}">
+                                    <apex:selectOptions value="{!CLPicklist}" />
+                                    <apex:actionsupport event="onchange" action="{!selectCL}" />
+                                </apex:selectList>
+                            </div>
+                            <div class="col-md-6 offset-md-3">
+                                <apex:selectList size="1" value="{!selectedAccount}">
+                                    <apex:selectOptions value="{!AccountPicklist}" />
+                                    <apex:actionsupport event="onchange" action="{!selectAccount}" />
+                                </apex:selectList>
+                            </div>
                         </div>
-                        <div class="col-md-3 offset-md-3">
-                            <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!previousWeek}" value="Previous Week"></apex:commandButton>
-                        </div>
-                        <div class="col-md-3">
-                            <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!nextWeek}" value="Next Week"></apex:commandButton>
-                        </div>
-                        <div class="col-md-6 offset-md-3">
-                            <apex:selectList size="1" value="{!selectedCL}" style="width:100%;color:black;">
-                                <apex:selectOptions value="{!CLPicklist}" />
-                                <apex:actionsupport event="onchange" action="{!selectCL}"/>
-                            </apex:selectList>
-                        </div>
-                        <div class="col-md-6 offset-md-3">
-                            <apex:selectList size="1" value="{!selectedAccount}" style="width:100%;color:black;">
-                                <apex:selectOptions value="{!AccountPicklist}" />
-                                <apex:actionsupport event="onchange" action="{!selectAccount}"/>
-                            </apex:selectList>
-                        </div>
-                    </div>
-                </apex:form>
+                    </apex:form>
+                </div>
 
 
 

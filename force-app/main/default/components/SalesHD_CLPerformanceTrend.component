@@ -25,9 +25,9 @@
                         <div>Select Admissions or Revenue</div>
                     </apex:outputPanel>
 
-                    <apex:selectList size="1" value="{!admitsRevenue}">
+                    <apex:selectList size="1" value="{!admitsRevenue}" style="width:180px!important;">
                         <apex:selectOptions value="{!admitsRevenuePicklist}" />
-                        <apex:actionsupport event="onchange" action="{!spTrend}" rerender="admitRevenueSelection,dataFunction" oncomplete="loadData();"
+                        <apex:actionsupport event="onchange" action="{!spTrend}" rerender="admitRevenueSelection,dataFunction" oncomplete="loadPerformance();"
                         />
                     </apex:selectList>
                 </apex:form>
@@ -36,12 +36,6 @@
         </div>
         <!-- Lightning Wrapper -->
 
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-            crossorigin="anonymous"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
-        <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
-        <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
         <script>
             $(document).ready(function () {
                 clPerformanceTrend();
@@ -49,46 +43,32 @@
         </script>
         <apex:outputPanel id="dataFunction">
             <script>    
-                function loadData() {
-                    google.load('visualization', '1', { packages: ['corechart'] });
-                    google.setOnLoadCallback(drawChart);
+                function loadPerformance() {
+                    google.load('visualization', '1', { packages: ['corechart'], callback: drawPerformanceChart });
                 }
 
-                function drawChart() {
-
+                function drawPerformanceChart() {
                     var data = new google.visualization.DataTable({!clPerformanceTrend});
+                    var view = new google.visualization.DataView(data);
+                    view.setColumns([0, 1, 2]);
+                    var options = {
+                        height: 500,
+                        chartArea: {
+                            height: 375,
+                            bottom: 100
+                        },
+                        backgroundColor: { fill: 'transparent' },
+                        vAxis: { minValue: 0, textStyle: { fontSize: 11 } },
+                        hAxis: { slantedText: true, slantedTextAngle: 60, textStyle: { fontSize: 11 } },
+                        titleTextStyle: {
+                            fontSize: 12,
+                        },
+                        trendlines: { 0: { type: 'exponential', color: '#22c970', } },
+                    };
 
-                var view = new google.visualization.DataView(data);
-
-
-                view.setColumns([0, 1, 2]);
-
-                // var chartHeight = data.getNumberOfRows() * 25;
-
-                var options = {
-                    // height: chartHeight,
-                    height: 500,
-                    // title: 'CL Performance Trend',
-                    chartArea: {
-                        height: 375,
-                        bottom: 100
-                    },
-                    backgroundColor: { fill: 'transparent' },
-                    vAxis: { minValue: 0, textStyle: { fontSize: 11 } },
-                    hAxis: { slantedText: true, slantedTextAngle: 60, textStyle: { fontSize: 11 } },
-                    titleTextStyle: {
-                        fontSize: 12,
-                    },
-                    trendlines: { 0: { type: 'exponential', color: '#22c970', } },
-                };
-
-                var chart = new google.visualization.LineChart(document.getElementById("clPerformanceTrend"));
-                chart.draw(view, options);
+                    var chart = new google.visualization.LineChart(document.getElementById("clPerformanceTrend"));
+                    chart.draw(view, options);
                                         }
-
-
-
-
             </script>
         </apex:outputPanel>
     </body>
@@ -96,7 +76,7 @@
     </html>
 
     <apex:form>
-        <apex:actionFunction name="clPerformanceTrend" action="{!spTrend}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
+        <apex:actionFunction name="clPerformanceTrend" action="{!spTrend}" rerender="dataFunction" oncomplete="loadPerformance();"></apex:actionFunction>
     </apex:form>
 
 

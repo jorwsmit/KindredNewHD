@@ -3,7 +3,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        
+
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
             crossorigin="anonymous" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
@@ -27,11 +27,11 @@
         </div>
         <!-- Lightning Wrapper -->
 
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        <!-- <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-        <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+        <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script> -->
         <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
         <script>
             $(document).ready(function () {
@@ -40,22 +40,18 @@
         </script>
         <apex:outputPanel id="dataFunction">
             <script>
-
-                function loadData() {
-
-                    google.load('visualization', '1', { packages: ['corechart'] });
-                    google.setOnLoadCallback(drawChart);
+                function loadContact() {
+                    google.load('visualization', '1', { packages: ['corechart'], callback: drawContactChart });
                 }
 
-                function drawChart() {
-
+                function drawContactChart() {
                     var data = new google.visualization.DataTable({!encountersByContact});
 
                 var options = {
                     height: 500,
                     title: 'Encounters by Contact Title Category',
                     pieSliceText: 'label',
-                    backgroundColor: { fill:'transparent' }
+                    backgroundColor: { fill: 'transparent' }
                 };
 
                 var chart = new google.visualization.PieChart(document.getElementById("encountersByContact"));
@@ -63,16 +59,12 @@
 
                 }
 
-
             </script>
         </apex:outputPanel>
     </body>
 
     </html>
-
     <apex:form>
-        <apex:actionFunction name="encountersByContact" action="{!eLastWeekContact}" rerender="dataFunction" oncomplete="loadData();"></apex:actionFunction>
+        <apex:actionFunction name="encountersByContact" action="{!eLastWeekContact}" rerender="dataFunction" oncomplete="loadContact();"></apex:actionFunction>
     </apex:form>
-
-
 </apex:component>
