@@ -696,6 +696,8 @@ public PageReference selectAccount(){
 public PageReference selectDistrict(){
 	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
 	page.getParameters().remove('cl');
+	page.getParameters().remove('account');
+	page.getParameters().remove('area');
 	page.getParameters().put('district', String.valueOf(usr.District__c));
 	page.setRedirect(true);
 	return page;
@@ -704,6 +706,7 @@ public PageReference selectDistrict(){
 public PageReference selectArea(){
 	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
 	page.getParameters().remove('cl');
+	page.getParameters().remove('account');
 	page.getParameters().put('area', String.valueOf(usr.Area__c));
 	page.setRedirect(true);
 	return page;
