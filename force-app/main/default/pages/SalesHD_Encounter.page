@@ -722,14 +722,14 @@
 								</div>
 							</apex:outputPanel>
 
-							<!-- <apex:outputPanel rendered="{!IF(event.SalesHD_Account_Strategy__c!=null, true, false)}">
+							<apex:outputPanel rendered="{!IF(event.SalesHD_Account_Strategy__c!=null, true, false)}">
 								<div>
 									<label style="display:inline-block;">Related Sales Plan Strategy:</label>
 									<a href="apex/SalesHD_SalesPlan?id={!event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__c}" style="display:inline-block;"><b>Sales Plan</b> - {!CASE(MONTH(event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c), 1, "January", 2, "February", 
 										3, "March",  4, "April",  5, "May",  6, "June", 7, "July", 8, "August", 9, "September", 10, "October", 11,
 										"November", 12, "December", "None")&" "&TEXT(YEAR(event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c))}</a>
 								</div>
-							</apex:outputPanel> -->
+							</apex:outputPanel>
 
 							<div id="additionalTeam" style="display:none;">
 								<label style="display:inline-block;">Additional Kindred Team Members:</label>

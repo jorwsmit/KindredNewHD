@@ -126,8 +126,16 @@
                             <i class="fas fa-phone"></i> Encounters</a>
                         <a class="nav-item nav-link" href="/apex/saleshd_collaterals">
                             <i class="fas fa-mail-bulk"></i> Collaterals</a>
-                        <!-- <a class="nav-item nav-link" href="/apex/saleshd_salesplans">
-                            <i class="fas fa-notes-medical"></i> Sales Plans</a> -->
+                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                            <a class="nav-item nav-link" href="/apex/saleshd_salesplansmanager">
+                                <i class="fas fa-notes-medical"></i> Sales Plans</a>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
+                            <a class="nav-item nav-link" href="/apex/saleshd_salesplans">
+                                <i class="fas fa-notes-medical"></i> Sales Plans</a>
+                        </apex:outputPanel>
+
+
                     </div>
                 </div>
             </nav>
