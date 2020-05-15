@@ -5,7 +5,6 @@
     <head>
         <title>Sales Plan</title>
 
-        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/> -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
             crossorigin="anonymous" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
@@ -728,22 +727,16 @@
                         </tr>
                         <tr>
                             <th>Favorited Account</th>
-                            <th>{!planDateLastYear}</th>
-                            <th>{!planDateLastMonth}</th>
+                            <th>{!IF(planDateLastYear!=null, planDateLastYear, "")}</th>
+                            <th>{!IF(planDateLastMonth!=null, planDateLastMonth, "")}</th>
                             <th>Variance</th>
-                            <th>{!planDateLastYear}</th>
-                            <th>{!planDateLastMonth}</th>
+                            <th>{!IF(planDateLastYear!=null, planDateLastYear, "")}</th>
+                            <th>{!IF(planDateLastMonth!=null, planDateLastMonth, "")}</th>
                             <th>Variance</th>
                         </tr>
                     </thead>
                     <tbody id="planTable">
-                        <!-- <apex:repeat value="{!accountMetrics}" var="accountMetric">
-                            <tr>
-                                <td>{!accountMetric.accountName}</td>
-                                <td>{!accountMetric.cyMtdAdmit}</td>
-                                <td>{!accountMetric.pyMtdAdmit}</td>
-                            </tr>
-                        </apex:repeat> -->
+
                     </tbody>
                 </table>
             </div>
@@ -758,15 +751,11 @@
                             <tr>
                                 <th>Referrals</th>
                                 <td>
-                                    <!-- <apex:input value="{!referrals}" html-placeholder="Referrals">
-                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:input> -->
                                     <apex:inputField value="{!Sales_Plans__c.SalesHD_Referrals__c}" html-placeholder="Referrals">
                                         <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
                                 </td>
                                 <th>Non-Converted</th>
                                 <td>
-                                    <!-- <apex:input value="{!nonconverted}" html-placeholder="Non-Converted">
-                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:input> -->
                                     <apex:inputField value="{!Sales_Plans__c.SalesHD_Non_Converted__c}" html-placeholder="Non-Converted">
                                         <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
                                 </td>
@@ -774,23 +763,18 @@
                             <tr>
                                 <th>Admits</th>
                                 <td>
-                                    <!-- <apex:input value="{!admits}" html-placeholder="Admits">
-                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:input> -->
                                     <apex:inputField value="{!Sales_Plans__c.SalesHD_Admits__c}" html-placeholder="Admits">
                                         <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
                                 </td>
                                 <th>Pending</th>
                                 <td>
-                                    <!-- <apex:input value="{!pending}" html-placeholder="Pending">
-                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:input> -->
                                     <apex:inputField value="{!Sales_Plans__c.SalesHD_Pending__c}" html-placeholder="Pending">
                                         <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
                                 </td>
                             </tr>
                             <tr>
                                 <th>Conversion %</th>
-                                <td>{!IF(Sales_Plans__c.SalesHD_Admits__c!=null, IF(admits!=0, TEXT(ROUND((Sales_Plans__c.SalesHD_Admits__c/Sales_Plans__c.SalesHD_Referrals__c)*100,
-                                    2)) & "%", ""), "")}</td>
+                                <td>{!IF(Sales_Plans__c.SalesHD_Admits__c!=null, TEXT(ROUND((Sales_Plans__c.SalesHD_Admits__c/Sales_Plans__c.SalesHD_Referrals__c)*100, 2)) & "%", "")}</td>
                                 <th>True Non-Converted</th>
                                 <td>{!Sales_Plans__c.SalesHD_Non_Converted__c - Sales_Plans__c.SalesHD_Pending__c}</td>
                             </tr>
@@ -799,32 +783,29 @@
                     <h3 style="margin-top:10px;">Non-Conversion Reasons
                         <i onclick="getEducationTip('conversion');" class="text-primary fas fa-question-circle cursor-pointer"></i>
                     </h3>
-                    <!-- <apex:form> -->
                     <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c}" html-placeholder="Non-Conversion Reasons"
                     />
-                    <!-- </apex:form> -->
                 </div>
 
                 <apex:pageMessages />
 
                 <apex:outputPanel id="accountPlans">
-                    <!-- <apex:form> -->
                     <div class="container no-padding">
-                        <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save Plan"
-                            rerender="accountPlans" style="vertical-align:bottom; margin-top:10px!important;">
-                        </apex:commandButton>
+                        <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
+                            <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save Plan"
+                                rerender="accountPlans" style="vertical-align:bottom; margin-top:10px!important;">
+                            </apex:commandButton>
+                        </apex:outputPanel>
                     </div>
                     <apex:repeat value="{!aPlans}" var="accountPlan">
                         <div class="container white-bg shadow">
-                            <!-- <apex:form> -->
                             <div>
                                 <h3>{!accountPlan.aPlan.Account__r.Name}
-                                    <!-- <a onclick="editAccountPlan($('.ap-challenge').closest().val());">
-                                        <i style="margin-left:20px;" class="far fa-edit"></i>
-                                    </a> -->
+                                    <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
                                     <a class="text-danger" style="float:right;" onclick="deleteAccountPlan('{!accountPlan.aPlan.Id}');">
                                         <i style="margin-left:20px;" class="far fa-trash-alt"></i> Delete {!accountPlan.aPlan.Account__r.Name} Plan
                                     </a>
+                                </apex:outputPanel>
                                 </h3>
                                 <label>{!$ObjectType.Account_Sales_Plan__c.fields.Challenges_Critical_Issues__c.Label}
                                     <i onclick="getEducationTip('challenges');" class="text-primary fas fa-question-circle cursor-pointer"></i>
@@ -836,9 +817,6 @@
                                 </label>
                                 <apex:inputField styleClass="form-control" value="{!accountPlan.aPlan.Goal__c}" html-placeholder="{!$ObjectType.Account_Sales_Plan__c.fields.Goal__c.Label}"
                                 />
-                                <!-- <label>{!$ObjectType.Account_Sales_Plan__c.fields.Strategy__c.Label}</label>
-                                <apex:inputField styleClass="form-control" value="{!accountPlan.aPlan.Strategy__c}" html-placeholder="{!$ObjectType.Account_Sales_Plan__c.fields.Strategy__c.Label}"
-                                /> -->
 
                                 <apex:variable value="1" var="stratNumber" />
                                 <apex:repeat value="{!accountPlan.strats}" var="strats">
@@ -847,9 +825,11 @@
                                         <label>Strategy {!stratNumber}
                                             <i onclick="getEducationTip('strategy');" class="text-primary fas fa-question-circle cursor-pointer"></i>
                                         </label>
+                                        <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
                                         <a class="text-danger" style="float:right;" onclick="deleteStrategy('{!strats.strat.Id}');">
                                             <i style="margin-top:15px;margin-left:20px;" class="far fa-trash-alt"></i> Delete Strategy {!stratNumber}
                                         </a>
+                                    </apex:outputPanel>
                                     </div>
                                     <div style="margin-top:15px; padding:10px; border:1px solid #ddd; border-radius:7px;">
                                         <div>
@@ -865,18 +845,20 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <h5>{!$ObjectType.Account_Strategy__c.fields.Complete__c.Label}</h5>
-                                                <apex:inputField style="margin-left:26px; margin-top:12px;" styleClass="form-control" value="{!strats.strat.Complete__c}"
-                                                />
+                                                <apex:inputField style="margin-left:26px; margin-top:12px;" value="{!strats.strat.Complete__c}" />
                                             </div>
                                         </div>
                                         <div style="margin-top:10px;">
 
                                             <div>
                                                 <h5>Related Encounters</h5>
-                                                <a href="/apex/saleshd_newencounter" class="btn btn-primary btn-sm" style="text-decoration:none!important;padding:1px 10px;font-size:18px!important;margin-top:-28px; float:right;"
-                                                    onclick="">
-                                                    <i class="fas fa-phone"></i> New Encounter
-                                                </a>
+                                                <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
+                                                    <a href="/apex/saleshd_newencounter?accountid={!accountPlan.aPlan.Account__c}&strategyId={!strats.strat.Id}" class="btn btn-primary btn-sm"
+                                                        style="text-decoration:none!important;padding:1px 10px;font-size:18px!important;margin-top:-28px; float:right;"
+                                                        onclick="">
+                                                        <i class="fas fa-phone"></i> New Encounter
+                                                    </a>
+                                                </apex:outputPanel>
                                             </div>
                                             <apex:repeat value="{!strats.stratEncounters}" var="e">
                                                 <div>
@@ -893,45 +875,23 @@
                                     <apex:variable var="stratNumber" value="{!VALUE(stratNumber) + 1}" />
                                 </apex:repeat>
 
-                                <!-- <apex:pageMessages id="planMessages" /> -->
-
-                                <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!addStrategy}" value="Add Strategy"
-                                    rerender="planForm" style="vertical-align:bottom; margin-top:10px!important;">
-                                    <apex:param name="accountPlanId" value="{!accountPlan.aPlan.Id}" assignTo="{!accountPlanId}" />
-                                </apex:commandButton>
-
-
-                                <!-- <label>{!$ObjectType.Account_Sales_Plan__c.fields.Due_Date__c.Label}</label>
-                                <apex:inputField type="date" styleClass="form-control" value="{!accountPlan.aPlan.Due_Date__c}" html-placeholder="{!$ObjectType.Account_Sales_Plan__c.fields.Due_Date__c.Label}"
-                                /> -->
+                                <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
+                                    <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!addStrategy}" value="Add Strategy"
+                                        rerender="planForm" style="vertical-align:bottom; margin-top:10px!important;">
+                                        <apex:param name="accountPlanId" value="{!accountPlan.aPlan.Id}" assignTo="{!accountPlanId}" />
+                                    </apex:commandButton>
+                                </apex:outputPanel>
                             </div>
                             <div>
-                                <!-- <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save" rerender="accountPlans"
-                                    id="saveNew" style="vertical-align:bottom; margin-top:10px!important;">
-                                    <apex:param value="{!accountPlan.Goal__c}" assignTo="{!challenge}" />
-                                    </apex:commandButton> -->
                             </div>
-                            <!-- </apex:form> -->
-
-                            <!-- <div>
-                                <label>Related Encounters</label>
-                                <div class="form-control">
-                                    <apex:repeat value="{!accountPlan.aEvents}" var="e">
-                                        <div>
-                                            <a href="/apex/saleshd_encounter?id={!e.id}">
-                                                <i class="{!IF(e.SalesHD_Complete__c=true, " fas fa-check-circle text-success ", "fas fa-times-circle text-danger ")}"></i>
-                                                {!e.SalesHD_Call_Objective__c} with {!e.Who.Name} at {!e.StartDateTime}
-                                            </a>
-                                        </div>
-                                    </apex:repeat>
-                                </div>
-                            </div> -->
                         </div>
                     </apex:repeat>
                     <div class="container no-padding">
-                        <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save Plan"
-                            rerender="accountPlans" style="vertical-align:bottom; margin-top:10px!important;">
-                        </apex:commandButton>
+                        <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
+                            <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save Plan"
+                                rerender="accountPlans" style="vertical-align:bottom; margin-top:10px!important;">
+                            </apex:commandButton>
+                        </apex:outputPanel>
                     </div>
                     <div class="container no-padding">
                         <apex:actionStatus id="statusSpinner">
@@ -949,16 +909,17 @@
 
 
                     </div>
-                    <!-- </apex:form> -->
                 </apex:outputPanel>
             </apex:form>
 
             <div class="container no-padding">
+                <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
                 <button class="btn btn-block btn-primary" data-toggle="modal" data-target="#addAccountPlanModal">
                     <i class="fas fa-plus"></i> Add Account Plan</button>
+                </apex:outputPanel>
             </div>
 
-            <apex:form id="deleteAccountPlanForm">
+            <apex:form id="deleteAccountPlanForm" rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
                 <div id="deleteAccountPlanModal" class="modal" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -978,12 +939,10 @@
                                     rerender="accountPlans" style="vertical-align:bottom; margin-top:0px!important; padding:8px 12px!important"
                                     oncomplete="$('#deleteAccountPlanModal').modal('hide');">
                                 </apex:commandButton>
-                                <!-- <button type="button" class="btn btn-danger">Delete Account Plan</button> -->
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                             </div>
 
                             <apex:pageMessages />
-                            <!-- </apex:form> -->
                         </div>
                     </div>
                 </div>
@@ -1001,7 +960,7 @@
                 </apex:actionStatus>
             </apex:form>
 
-            <apex:form id="deleteStrategyForm">
+            <apex:form id="deleteStrategyForm" rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
                 <div id="deleteStrategyModal" class="modal" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -1041,7 +1000,7 @@
                 </apex:actionStatus>
             </apex:form>
 
-            <apex:form id="addAccountPlanForm">
+            <apex:form id="addAccountPlanForm" rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
                 <div id="addAccountPlanModal" class="modal" tabindex="-1" role="dialog">
                     <div class="modal-dialog" role="document">
                         <div class="modal-content">
@@ -1054,7 +1013,6 @@
                                 <p>Select one of your available favorited accounts.</p>
                                 <apex:selectList size="1" value="{!selectedAccount}" style="width:100%;color:black;">
                                     <apex:selectOptions value="{!AccountPicklist}" />
-                                    <!-- <apex:actionsupport event="onchange" action="{!selectAccount}"/> -->
                                 </apex:selectList>
                             </div>
 
@@ -1064,12 +1022,10 @@
                                     rerender="accountPlans" style="vertical-align:bottom; margin-top:0px!important; padding:8px 12px!important"
                                     oncomplete="$('#addAccountPlanModal').modal('hide');">
                                 </apex:commandButton>
-                                <!-- <button type="button" class="btn btn-danger">Delete Account Plan</button> -->
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                             </div>
 
                             <apex:pageMessages />
-                            <!-- </apex:form> -->
                         </div>
                     </div>
                 </div>
@@ -1092,7 +1048,8 @@
                     <div class="modal-content">
                         <div class="modal-header bg-primary">
                             <h3 class="modal-title" style="color:#fff!important;">
-                                <i style="margin-top:5px;margin-right:10px;" class="fas fa-question-circle"></i> <span></span>
+                                <i style="margin-top:5px;margin-right:10px;" class="fas fa-question-circle"></i>
+                                <span></span>
                             </h3>
                         </div>
                         <div class="modal-body">
@@ -1126,7 +1083,24 @@
                     if (am.mtdVariance > 0) mtdVarColor = 'text-success';
                     else if (am.mtdVariance < 0) mtdVarColor = 'text-danger';
                 }
-                var html = '<tr><td>' + am.accountName + '</td><td>' + am.pyMtdAdmit + '</td><td>' + am.cyMtdAdmit + '</td><td class="' + mtdVarColor + '">' + am.mtdVariance + '</td><td></td><td></td><td></td></tr>';
+
+                var ytdVarColor = '';
+                if (am.ytdVariance) {
+                    if (am.ytdVariance > 0) ytdVarColor = 'text-success';
+                    else if (am.ytdVariance < 0) ytdVarColor = 'text-danger';
+                }
+
+                var pyMtdAdmit='', cyMtdAdmit='', mtdVariance='',
+                pyYtdAdmit='', cyYtdAdmit='', ytdVariance='';
+                if(am.pyMtdAdmit) pyMtdAdmit=am.pyMtdAdmit;
+                if(am.cyMtdAdmit) cyMtdAdmit=am.cyMtdAdmit;
+                if(am.mtdVariance) mtdVariance=am.mtdVariance;
+                if(am.pyYtdAdmit) pyYtdAdmit=am.pyYtdAdmit;
+                if(am.cyYtdAdmit) cyYtdAdmit=am.cyYtdAdmit;
+                if(am.ytdVariance) ytdVariance=am.ytdVariance;
+                var html = '<tr><td>' + am.accountName + '</td><td>' + 
+                pyMtdAdmit + '</td><td>' + cyMtdAdmit + '</td><td class="' + mtdVarColor + '">' + mtdVariance + '</td>'+
+                '<td>' + pyYtdAdmit + '</td><td>' + cyYtdAdmit + '</td><td class="' + ytdVarColor + '">' + ytdVariance + '</td></tr>';
                 $("#planTable").append(html);
             }
             });
@@ -1141,43 +1115,43 @@
             }
 
             var educationTips = {
-                "goal": {                    
-"title": 'Goal', "body": '<b>Explanation:</b> Goals describe something specific you ' +
+                "goal": {
+                    "title": 'Goal', "body": '<b>Explanation:</b> Goals describe something specific you ' +
                         'want to achieve this month. Goals should be ‘SMART’ – Specific, Measurable, ' +
                         'Achievable, Relevant, Timebound.  Goals should work towards addressing the Challenges/Critical ' +
                         'Issues you outlined, but it should take multiple steps to get to the goal over the course of a month. ' +
                         'If a goal cannot be achieved this month, if it is still a viable goal, it can be moved ' +
                         'over to the following month depending on progress.</br></br><b>Example:</b> Get first referral from ' +
                         'this Account.</br></br><b>Example:</b> Get 1 referral from the MICU.</br></br><b>Example:</b> Increase ICU ' +
-                        'admissions by 2.</br></br><b>Example:</b> Get Physician Group aligned with Kindred Central.'            
-},
-            "conversion":{
-                "title":'Non-Conversion Reasons', "body":'Describe main issues that affect the conversion of your referrals. '+
-                'Be specific regarding individual physicians, key accounts/units, and any other factors.'
-            }, 
-            "challenges":{
-                "title":'Challeneges / Critical Issues', "body":'<b>Explanation:</b> Describe the main challenges you '+
-                'experienced last month and what you believe is causing it. Is it a volume issue or conversion '+
-                'problem? Specify which unit(s) presents the main challenges. Do not include any plans to '+
-                'address the issues. </br></br><b>Example:</b> No referrals in Dec or Jan from MICU. '+
-                'High RTAs to MICU (Main referring unit) in Oct & Nov 2019.  Champion ID Physician Group '+
-                'will no longer refer.  ICU CM no longer advocates for KND. </br></br><b>Example:</b> Volume down '+
-                'from all units. Account was without permanent coverage all of Q4 2019. '+
-                'Competitor CL took market share during this time.'
-            },
-            "strategy":{
-                "title":"Strategy", "body":'<b>Explanation:</b> Multiple individual strategies (aka action items) '+
-                'should be created to get you to your SMART goal(s) listed above. These should be items '+
-                'that the CL can complete themselves, not something that requires Kindred executive leadership. '+
-                'For each of the strategies you list, you will schedule 1 or more Encounters to help you '+
-                'achieve these.  Many of these will be bigger than one Encounter. For example, holding an '+
-                'in-service with a key physician group may require several other initial meetings with '+
-                'key contacts before you gain commitment for an in-service. </br></br><b>Example:</b> Secure 1:1 '+
-                'meeting with MD Group Director Dr. Wells by 2/15/20 to present clinical outcomes. </br></br>'+
-                '<b>Example:</b> Hold immediate flash calls with MICU team and Kindred when a patient RTA’s.</br></br>'+
-                '<b>Example:</b> Hold weekly touchbase with CM team to share success stories and discharge '+
-                'disposition data. </br></br><b>Example:</b> Lead in-service with Physician Group.'
-            }
+                        'admissions by 2.</br></br><b>Example:</b> Get Physician Group aligned with Kindred Central.'
+                },
+                "conversion": {
+                    "title": 'Non-Conversion Reasons', "body": 'Describe main issues that affect the conversion of your referrals. ' +
+                        'Be specific regarding individual physicians, key accounts/units, and any other factors.'
+                },
+                "challenges": {
+                    "title": 'Challeneges / Critical Issues', "body": '<b>Explanation:</b> Describe the main challenges you ' +
+                        'experienced last month and what you believe is causing it. Is it a volume issue or conversion ' +
+                        'problem? Specify which unit(s) presents the main challenges. Do not include any plans to ' +
+                        'address the issues. </br></br><b>Example:</b> No referrals in Dec or Jan from MICU. ' +
+                        'High RTAs to MICU (Main referring unit) in Oct & Nov 2019.  Champion ID Physician Group ' +
+                        'will no longer refer.  ICU CM no longer advocates for KND. </br></br><b>Example:</b> Volume down ' +
+                        'from all units. Account was without permanent coverage all of Q4 2019. ' +
+                        'Competitor CL took market share during this time.'
+                },
+                "strategy": {
+                    "title": "Strategy", "body": '<b>Explanation:</b> Multiple individual strategies (aka action items) ' +
+                        'should be created to get you to your SMART goal(s) listed above. These should be items ' +
+                        'that the CL can complete themselves, not something that requires Kindred executive leadership. ' +
+                        'For each of the strategies you list, you will schedule 1 or more Encounters to help you ' +
+                        'achieve these.  Many of these will be bigger than one Encounter. For example, holding an ' +
+                        'in-service with a key physician group may require several other initial meetings with ' +
+                        'key contacts before you gain commitment for an in-service. </br></br><b>Example:</b> Secure 1:1 ' +
+                        'meeting with MD Group Director Dr. Wells by 2/15/20 to present clinical outcomes. </br></br>' +
+                        '<b>Example:</b> Hold immediate flash calls with MICU team and Kindred when a patient RTA’s.</br></br>' +
+                        '<b>Example:</b> Hold weekly touchbase with CM team to share success stories and discharge ' +
+                        'disposition data. </br></br><b>Example:</b> Lead in-service with Physician Group.'
+                }
             }
 
             function getEducationTip(clickedTip) {

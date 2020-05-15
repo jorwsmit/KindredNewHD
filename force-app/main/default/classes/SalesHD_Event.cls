@@ -32,6 +32,7 @@ public String additionalTeamString {get; set;}
 public Id accountId {get; set;}
 public Id unitId {get; set;}
 
+public Id accountStrategyId {get; set;}
 
 
 public String selectedRecurrenceType {get; set;}
@@ -66,6 +67,7 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 		}
 	}
 
+	accountStrategyId = null;
 
 	startDate = Date.valueOf(System.now());
 	startTime = Time.newInstance(System.now().hour(), System.now().minute()-(math.mod(System.now().minute(), 15)),0,0);
@@ -78,7 +80,8 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 	thisEvent = (Event)stdController.getRecord();
 
 	for(Event e : [select Id, OwnerId, CreatedById, StartDatetime, EndDatetime, WhoId, Who.Name,
-	               WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
+				   WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name,
+				   SalesHD_Account_Strategy__c from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
 		if(e.StartDatetime!=null) {
 			startDateFormated = e.StartDatetime.format();
 			startDate = e.StartDatetime.date();
@@ -108,6 +111,7 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 			if(e.SalesHD_Account_Unit__r.Unit__r.Name=='Administrative') unitName = 'Global / Director';
 			else unitName = e.SalesHD_Account_Unit__r.Unit__r.Name;
 		}
+		if(e.SalesHD_Account_Strategy__c!=null) accountStrategyId=e.SalesHD_Account_Strategy__c;
 	}
 
 	additionalContacts = new Map<Id, String>();
@@ -150,6 +154,13 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 	for(Contact c : [select Id, Name from Contact where Id=:ApexPages.CurrentPage().getparameters().get('contactId') limit 1]) {
 		contactId = c.Id;
 		contactName = c.Name;
+	}
+
+
+	if(ApexPages.CurrentPage().getparameters().containsKey('strategyId')){
+		for(Account_Strategy__c s : [select Id from Account_Strategy__c where Id=:ApexPages.CurrentPage().getparameters().get('strategyId') limit 1]) {
+			accountStrategyId = s.Id;
+		}
 	}
 
 
@@ -275,8 +286,12 @@ public PageReference saveEvent(){
 
 	thisEvent.WhoId = contactId;
 	thisEvent.WhatId = accountId;
+
+	thisEvent.SalesHD_Account_Strategy__c = accountStrategyId;
+
 	thisEvent.SalesHD_Account_Unit__c = unitId;
 	thisEvent.Subject = thisEvent.Type;
+
 
 	thisEvent.StartDateTime = Datetime.newInstance(startDate, startTime);
 	thisEvent.EndDateTime = thisEvent.StartDateTime.addMinutes(duration);
@@ -502,6 +517,9 @@ public PageReference saveAndNext() {
 
 	thisEvent.WhoId = contactId;
 	thisEvent.WhatId = accountId;
+
+	thisEvent.SalesHD_Account_Strategy__c = accountStrategyId;
+
 	thisEvent.SalesHD_Account_Unit__c = unitId;
 	thisEvent.Subject = thisEvent.Type;
 
@@ -630,7 +648,8 @@ public Boolean isInvitee;
 	Date highDate = lowDate.addDays(numberOfDays);
 
 	List<Event> eventList = [select id, subject, StartDateTime, EndDateTime, SalesHD_Complete__c, description,
-	                         who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId, CreatedById from event where
+							 who.name, SalesHD_Call_Objective__c, SalesHD_Open_Ended_Questions__c, OwnerId,
+							 CreatedById, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__c from event where
 	                         ownerId=:usr.Id and startDateTime>=:lowDate and endDateTime<=:highDate];
 
 	List<EventRelation> eventRelationList = [select eventId, event.subject, event.StartDateTime, event.EndDateTime,
@@ -659,12 +678,27 @@ public Boolean isInvitee;
 		calendarEvent temp = new calendarEvent();
 		temp.eventId=e.Id; temp.eventSubject=eventSubject; temp.eventDatetime=e.startDateTime;
 		temp.complete=e.SalesHD_Complete__c;
+		temp.strategyId = e.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__c;
 		if(calendarEvents.containsKey(e.startDateTime.day())) {
 			calendarEvents.get(e.startDateTime.day()).add(temp);
 		} else{
 			calendarEvents.put(e.startDateTime.day(), new List<calendarEvent> {temp});
 		}
 	}
+
+	for(Account_Strategy__c aStrat : [select Due_Date__c, Account_Sales_Plan__r.Parent_Sales_Plan__c from Account_Strategy__c
+	where Due_Date__c>=:lowDate and Due_Date__c<=:highDate and Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId=:currentUser]){
+		calendarEvent temp = new calendarEvent();
+		temp.strategyId=aStrat.Account_Sales_Plan__r.Parent_Sales_Plan__c;
+		temp.eventSubject='Account Plan Strategy Due';
+		if(calendarEvents.containsKey(aStrat.Due_Date__c.day())) {
+			calendarEvents.get(aStrat.Due_Date__c.day()).add(temp);
+		} else{
+			calendarEvents.put(aStrat.Due_Date__c.day(), new List<calendarEvent> {temp});
+		}
+	}
+
+
 	String userName = null;
 	if(UserInfo.getUserId()!=usr.Id) userName = '"'+usr.Name+'"';
 	return '{"startDay": "'+startDay+'", "startDayNumber": '+firstDay.day()+

@@ -747,6 +747,9 @@
         background-color: #E55442;
         color: #fff;
       }
+      .strategy-outline {
+        border: 2px solid #E55442;
+      }
     </style>
   </head>
 
@@ -1092,10 +1095,12 @@
             html += '<td data-date="' + dataDate + '" ' + today + '><div class="day">' + dayNumber.getDate() + '</div>';
             for (var event of data.events[dayNumber.getDate()]) {
               if (event.eventId) {
-                if (event.complete) html += '<a style="text-decoration:none !important;" href="/apex/saleshd_encounter?id=' + event.eventId + '"><div class="event complete" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
-                else html += '<a style="text-decoration:none !important;" href="/apex/saleshd_encounter?id=' + event.eventId + '"><div class="event" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
+                var strat = '';
+                if(event.strategyId) strat = 'strategy-outline'
+                if (event.complete) html += '<a style="text-decoration:none !important;" href="/apex/saleshd_encounter?id=' + event.eventId + '"><div class="event complete '+strat+'" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
+                else html += '<a style="text-decoration:none !important;" href="/apex/saleshd_encounter?id=' + event.eventId + '"><div class="event '+strat+'" id="' + event.eventId + '"><b>' + event.eventSubject + '</b> ' + moment(event.eventDatetime).format('LT') + '</div></a>';
               } else {
-                // html += '<div class="event strategy" id="' + event.strategyId + '"><b>' + event.eventSubject + '</b></div>';
+                html += '<a style="text-decoration:none !important;" class="strategy" href="/apex/saleshd_salesplan?id=' + event.strategyId + '"><div class="event strategy" id="' + event.strategyId + '"><b>' + event.eventSubject + '</b></div></a>';
               }
 
             }
