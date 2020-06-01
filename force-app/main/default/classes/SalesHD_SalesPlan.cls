@@ -24,7 +24,7 @@ public list<accountsPlans> aPlans {get; set;}
 public class accountMetric {
 String accountName;
 Integer cyMtdAdmit, pyMtdAdmit, mtdVariance;
-Integer cyYtdAdmit, pyYtdAdmit, YtdVariance;
+Integer cyYtdAdmit, pyYtdAdmit, ytdVariance;
 }
 
 public class accountsPlans
@@ -241,8 +241,9 @@ public void getAccountPlansEvents(){
 
 public String getAccountMetrics(){
 	Date spDate = spDate;
-	Date lowDate = Date.newInstance(spDate.Year(), spDate.Month(), 1);
-	Date highDate = Date.newInstance(spDate.Year(), spDate.Month(), Date.daysInMonth(spDate.year(), spDate.month()));
+	Date lowDate = Date.newInstance(spDate.Year(), spDate.Month(), 1).addMonths(-1);
+	Date highDate = Date.newInstance(spDate.Year(), spDate.Month(), Date.daysInMonth(spDate.year(), spDate.month())).addMonths(-1);
+	
 	Map<Id, accountMetric> metrics = new Map<Id, accountMetric>();
 
 	for(AccountTeamMember atm : [select AccountId, Account.Name from AccountTeamMember where userId=:spOwner]) {
@@ -265,8 +266,9 @@ public String getAccountMetrics(){
 	}
 
 
-	lowDate = Date.newInstance(spDate.Year(), 1, 1);
-	highDate = Date.newInstance(spDate.Year(), spDate.Month(), Date.daysInMonth(spDate.year(), spDate.month()));
+	Date previousMonth = spDate.addMonths(-1);
+	lowDate = Date.newInstance(previousMonth.Year(), 1, 1);
+	highDate = Date.newInstance(previousMonth.Year(), previousMonth.Month(), Date.daysInMonth(previousMonth.year(), previousMonth.month()));
 
 	for(Sales_Account_Metrics__c am : [select Account__r.Name, Account__c, Sales_HD_Admits__c,
 	                                   SalesHD_Referrals__c, Month__c from Sales_Account_Metrics__c

@@ -1092,12 +1092,12 @@
 
                 var pyMtdAdmit='', cyMtdAdmit='', mtdVariance='',
                 pyYtdAdmit='', cyYtdAdmit='', ytdVariance='';
-                if(am.pyMtdAdmit) pyMtdAdmit=am.pyMtdAdmit;
-                if(am.cyMtdAdmit) cyMtdAdmit=am.cyMtdAdmit;
-                if(am.mtdVariance) mtdVariance=am.mtdVariance;
-                if(am.pyYtdAdmit) pyYtdAdmit=am.pyYtdAdmit;
-                if(am.cyYtdAdmit) cyYtdAdmit=am.cyYtdAdmit;
-                if(am.ytdVariance) ytdVariance=am.ytdVariance;
+                if(am.pyMtdAdmit!=null) pyMtdAdmit=am.pyMtdAdmit;
+                if(am.cyMtdAdmit!=null) cyMtdAdmit=am.cyMtdAdmit;
+                if(am.mtdVariance!=null) mtdVariance=am.mtdVariance;
+                if(am.pyYtdAdmit!=null) pyYtdAdmit=am.pyYtdAdmit;
+                if(am.cyYtdAdmit!=null) cyYtdAdmit=am.cyYtdAdmit;
+                if(am.ytdVariance!=null) ytdVariance=am.ytdVariance;
                 var html = '<tr><td>' + am.accountName + '</td><td>' + 
                 pyMtdAdmit + '</td><td>' + cyMtdAdmit + '</td><td class="' + mtdVarColor + '">' + mtdVariance + '</td>'+
                 '<td>' + pyYtdAdmit + '</td><td>' + cyYtdAdmit + '</td><td class="' + ytdVarColor + '">' + ytdVariance + '</td></tr>';
@@ -1116,41 +1116,31 @@
 
             var educationTips = {
                 "goal": {
-                    "title": 'Goal', "body": '<b>Explanation:</b> Goals describe something specific you ' +
-                        'want to achieve this month. Goals should be ‘SMART’ – Specific, Measurable, ' +
-                        'Achievable, Relevant, Timebound.  Goals should work towards addressing the Challenges/Critical ' +
-                        'Issues you outlined, but it should take multiple steps to get to the goal over the course of a month. ' +
-                        'If a goal cannot be achieved this month, if it is still a viable goal, it can be moved ' +
-                        'over to the following month depending on progress.</br></br><b>Example:</b> Get first referral from ' +
-                        'this Account.</br></br><b>Example:</b> Get 1 referral from the MICU.</br></br><b>Example:</b> Increase ICU ' +
-                        'admissions by 2.</br></br><b>Example:</b> Get Physician Group aligned with Kindred Central.'
+                    "title": 'Goal', "body": 'What do you want to achieve in this account this month to address the needs or strengths identified above?'+
+                    'These will often be quantitative, but not always.'+
+                    '</br></br> <b>Example 1)</b> Establish myself as new Kindred CL and gain trust and rapport of CM Dept.'+
+                    '</br></br> <b>Example 2)</b> Regain clinical confidence on MICU and admit 3 patients from this unit this month.'
                 },
                 "conversion": {
-                    "title": 'Non-Conversion Reasons', "body": 'Describe main issues that affect the conversion of your referrals. ' +
-                        'Be specific regarding individual physicians, key accounts/units, and any other factors.'
+                    "title": 'Non-Conversion Reasons', "body": 'Analyze the data provided  in your Non-Conversion Report from the previous month. </br>'+
+                    'Describe your findings and be specific regarding competitors, physicians, key accounts/units, payors or any other factors that contributed to last month’s lost admissions.'
+
                 },
                 "challenges": {
-                    "title": 'Challeneges / Critical Issues', "body": '<b>Explanation:</b> Describe the main challenges you ' +
-                        'experienced last month and what you believe is causing it. Is it a volume issue or conversion ' +
-                        'problem? Specify which unit(s) presents the main challenges. Do not include any plans to ' +
-                        'address the issues. </br></br><b>Example:</b> No referrals in Dec or Jan from MICU. ' +
-                        'High RTAs to MICU (Main referring unit) in Oct & Nov 2019.  Champion ID Physician Group ' +
-                        'will no longer refer.  ICU CM no longer advocates for KND. </br></br><b>Example:</b> Volume down ' +
-                        'from all units. Account was without permanent coverage all of Q4 2019. ' +
-                        'Competitor CL took market share during this time.'
+                    "title": 'Challeneges / Critical Issues', "body": 'Use the metrics above to analyze your account. </br>1) Do you see a positive or negative variance of admissions? '+
+                    '</br>2) Is this due to volume or conversion? </br>3) What is the specific driving force? </br>Describe your findings. Do not include any plans to address the barrier or strength.'+
+                    '</br></br> <b>Example 1)</b>  Volume down from all units. Account was without permanent coverage for past 6 months. No strong Kindred relationship with referral sources. Competitor CL took market share during this time.'+
+                    '</br></br> <b>Example 2)</b>  -12 YTD YOY admissions. No referrals in March or April from MICU. High RTAs to MICU (Main referring unit) in Jan and Feb 2020. Champion physician, Dr. Nhaker, and Lead ICU CM, Barb, no longer advocates for Kindred.'
+
                 },
                 "strategy": {
-                    "title": "Strategy", "body": '<b>Explanation:</b> Multiple individual strategies (aka action items) ' +
-                        'should be created to get you to your SMART goal(s) listed above. These should be items ' +
-                        'that the CL can complete themselves, not something that requires Kindred executive leadership. ' +
-                        'For each of the strategies you list, you will schedule 1 or more Encounters to help you ' +
-                        'achieve these.  Many of these will be bigger than one Encounter. For example, holding an ' +
-                        'in-service with a key physician group may require several other initial meetings with ' +
-                        'key contacts before you gain commitment for an in-service. </br></br><b>Example:</b> Secure 1:1 ' +
-                        'meeting with MD Group Director Dr. Wells by 2/15/20 to present clinical outcomes. </br></br>' +
-                        '<b>Example:</b> Hold immediate flash calls with MICU team and Kindred when a patient RTA’s.</br></br>' +
-                        '<b>Example:</b> Hold weekly touchbase with CM team to share success stories and discharge ' +
-                        'disposition data. </br></br><b>Example:</b> Lead in-service with Physician Group.'
+                    "title": "Strategy", "body": 'What action items will need to be executed to achieve the goal in this account this month?'+
+                    'Think of these strategies as a monthly "To Do List".'+
+                    '</br> <mark>Strategies should be written in ‘SMART’ format– Specific, Measurable, Achievable, Relevant, Timebound.</mark>'+
+                    '</br> Strategies will most likely require multiple sequential Encounters to complete. For example, holding an in-service with a key '+
+                    'physician group may require several other initial meetings with key contacts before commitment is gained, in-service date secured and meeting is held.'+
+                    '</br></br> <b>Example 1)</b> Meet all 15 ICU and PCU CMs in person and share business card to establish new relationships by 5/30/20.'+
+                    '</br></br> <b>Example 2)</b> Deliver 4 Video Success Stories on pulmonary patients (1 per week) to Dr. Nhaker and Barb this month.'
                 }
             }
 
