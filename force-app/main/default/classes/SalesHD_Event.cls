@@ -1,6 +1,8 @@
 global with sharing class SalesHD_Event {
 
 
+public Boolean isManager {get; set;}
+
 public Event thisEvent {get; set;}
 public Date startDate {get; set;}
 public String startDateFormated {get; set;}
@@ -54,7 +56,7 @@ public String ownerPhotoUrl {get; set;}
 private static Id currentUser = UserInfo.getUserId();
 
 public SalesHD_Event(ApexPages.StandardController stdController) {
-
+	isManager = false;
 
 	if(ApexPages.CurrentPage().getparameters().get('id')!=null) {
 		List<Id> fileIds = new List<Id>();
@@ -79,7 +81,7 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 
 	thisEvent = (Event)stdController.getRecord();
 
-	for(Event e : [select Id, OwnerId, CreatedById, StartDatetime, EndDatetime, WhoId, Who.Name,
+	for(Event e : [select Id, OwnerId, Owner.UserRoleId, CreatedById, StartDatetime, EndDatetime, WhoId, Who.Name,
 				   WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name,
 				   SalesHD_Account_Strategy__c from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
 		if(e.StartDatetime!=null) {
@@ -112,6 +114,10 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 			else unitName = e.SalesHD_Account_Unit__r.Unit__r.Name;
 		}
 		if(e.SalesHD_Account_Strategy__c!=null) accountStrategyId=e.SalesHD_Account_Strategy__c;
+
+		if(e.ownerId != UserInfo.getUserId() && getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()}).contains(e.owner.UserRoleId)){
+			isManager = true;
+		}
 	}
 
 	additionalContacts = new Map<Id, String>();
@@ -829,6 +835,30 @@ private static Blob invite(Event e, String location) {
 	                    'SEQUENCE:0' + '\n' + 'STATUS:CONFIRMED' + '\n' + 'SUMMARY:'+ e.SalesHD_Call_Objective__c +'\n' + 'TRANSP:OPAQUE' + '\n' +
 	                    'END:VEVENT'+ '\n' + 'END:VCALENDAR';
 	return Blob.valueof(attachment);
+}
+
+public PageReference auditApproved(){
+	thisEvent.SalesHD_Encounter_Audit__c = 'Approved';
+	return managersCanAudit(thisEvent);
+}
+
+public PageReference auditReview(){
+	thisEvent.SalesHD_Encounter_Audit__c = 'Needs Review';
+	return managersCanAudit(thisEvent);
+}
+
+public PageReference auditRejected(){
+	thisEvent.SalesHD_Encounter_Audit__c = 'Rejected';
+	return managersCanAudit(thisEvent);
+}
+
+private PageReference managersCanAudit(Event e){
+	Pagereference page = null;
+	if(isManager){
+		update e;
+		page = new PageReference('/apex/SalesHD_AuditEncounters');
+	}
+	return page;
 }
 
 }

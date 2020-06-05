@@ -886,6 +886,14 @@
 								 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
 							</div>
 						</apex:outputPanel>
+						<apex:outputPanel rendered="{!isManager}">
+							<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Approved"
+								 rerender="containerBlock" action="{!auditApproved}"/>
+							<apex:commandButton styleClass="btn btn-warning" style="margin-left:10px!important; margin-top:-7px!important;" value="Needs Review"
+								 rerender="containerBlock" action="{!auditReview}"/>
+							<apex:commandButton styleClass="btn btn-danger" style="margin-left:10px!important; margin-top:-7px!important;" value="Rejected"
+								 rerender="containerBlock" action="{!auditRejected}"/>
+						</apex:outputPanel>
 						</apex:form>
 
 						<apex:pageMessages />
