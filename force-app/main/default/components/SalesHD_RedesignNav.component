@@ -1,4 +1,4 @@
-<apex:component>
+<apex:component controller="SalesHD_RedesignNavController">
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
@@ -126,12 +126,17 @@
                             <i class="fas fa-phone"></i> Encounters</a>
                         <a class="nav-item nav-link" href="/apex/saleshd_collaterals">
                             <i class="fas fa-mail-bulk"></i> Collaterals</a>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                        <!-- <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
                             <a class="nav-item nav-link" href="/apex/saleshd_salesplansmanager">
                                 <i class="fas fa-notes-medical"></i> Sales Plans</a>
                         </apex:outputPanel>
                         <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
                             <a class="nav-item nav-link" href="/apex/saleshd_salesplans">
+                                <i class="fas fa-notes-medical"></i> Sales Plans</a>
+                        </apex:outputPanel> -->
+
+                        <apex:outputPanel rendered="{!hasSalesPlanAccess}">
+                            <a class="nav-item nav-link" href="{!salesPlanView}">
                                 <i class="fas fa-notes-medical"></i> Sales Plans</a>
                         </apex:outputPanel>
 

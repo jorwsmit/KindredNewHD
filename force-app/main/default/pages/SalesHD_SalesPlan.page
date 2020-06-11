@@ -126,6 +126,10 @@
                 vertical-align: middle !important;
             }
 
+            .non-conversion-table tbody td {
+                text-align: left !important;
+            }
+
             .userList {
                 border: 1px solid #ced4da !important;
                 border-radius: 7px;
@@ -702,6 +706,12 @@
             #educationTip .modal-body {
                 font-size: 14px;
             }
+            .copy-strategies{
+                font-size: 14px;
+                margin-top: 0px !important;
+                margin-bottom: 0px !important;
+                padding-bottom: 0px!important;
+            }
         </style>
     </head>
 
@@ -714,8 +724,17 @@
             <div class="header">
                 <span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
                 <h1>Sales Plan</h1>
-                <h2>{!planDate}</h2>
+                <h2>
+                    <b>{!spOwnerName}</b> {!planDate}</h2>
             </div>
+
+            <apex:outputPanel rendered="{!canCopyStrategies && canDelete}">
+                <div class="container copy-strategies">
+                    <a href="/apex/SalesHD_CopyStrategies?id={!previousPlanId}&newId={!salesPlan.Id}">
+                        <i class="far fa-clone"></i> Copy incomplete strategies from previous sales plan.
+                    </a>
+                </div>
+            </apex:outputPanel>
 
             <div class="container white-bg shadow">
                 <table>
@@ -742,50 +761,105 @@
             </div>
 
             <apex:form id="planForm">
-                <div class="container white-bg shadow">
-                    <table id="nonconversionTable">
-                        <thead>
-                            <th colspan="4">Non-Conversion Summary</th>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th>Referrals</th>
-                                <td>
-                                    <apex:inputField value="{!Sales_Plans__c.SalesHD_Referrals__c}" html-placeholder="Referrals">
-                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
-                                </td>
-                                <th>Non-Converted</th>
-                                <td>
-                                    <apex:inputField value="{!Sales_Plans__c.SalesHD_Non_Converted__c}" html-placeholder="Non-Converted">
-                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Admits</th>
-                                <td>
-                                    <apex:inputField value="{!Sales_Plans__c.SalesHD_Admits__c}" html-placeholder="Admits">
-                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
-                                </td>
-                                <th>Pending</th>
-                                <td>
-                                    <apex:inputField value="{!Sales_Plans__c.SalesHD_Pending__c}" html-placeholder="Pending">
-                                        <apex:actionSupport event="onchange" rerender="planForm" /></apex:inputField>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Conversion %</th>
-                                <td>{!IF(Sales_Plans__c.SalesHD_Admits__c!=null, TEXT(ROUND((Sales_Plans__c.SalesHD_Admits__c/Sales_Plans__c.SalesHD_Referrals__c)*100, 2)) & "%", "")}</td>
-                                <th>True Non-Converted</th>
-                                <td>{!Sales_Plans__c.SalesHD_Non_Converted__c - Sales_Plans__c.SalesHD_Pending__c}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <h3 style="margin-top:10px;">Non-Conversion Reasons
-                        <i onclick="getEducationTip('conversion');" class="text-primary fas fa-question-circle cursor-pointer"></i>
-                    </h3>
-                    <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c}" html-placeholder="Non-Conversion Reasons"
-                    />
-                </div>
+                <apex:outputPanel rendered="{!nonConversion.size<=0}">
+                    <div class="container white-bg shadow text-primary">
+                        <i class="fas fa-info-circle"></i> There is no non-conversion data available for {!IF(planDateLastMonth!=null, planDateLastMonth, "the previous month")}.
+                    </div>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!nonConversion.size>0}">
+                    <div class="container white-bg shadow">
+
+                        <table class="non-conversion-table">
+                            <thead>
+                                <th colspan="5">Non-Conversion Summary</th>
+
+                            </thead>
+
+                            <tbody>
+
+                                <tr>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Total_Referrals__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Total_Admits__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Conversion_Rate__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Non_Converted_Referrals__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Percent_Non_Converted__c.Label}</th>
+                                </tr>
+                                <tr>
+                                    <td>{!nonConversion[0].Total_Referrals__c}</td>
+                                    <td>{!nonConversion[0].Total_Admits__c}</td>
+                                    <td>{!nonConversion[0].Conversion_Rate__c}%</td>
+                                    <td>{!nonConversion[0].Non_Converted_Referrals__c}</td>
+                                    <td>{!nonConversion[0].Percent_Non_Converted__c}%</td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="5">
+                                        <br/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Insurance_Denials__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Lower_Level_of_Care__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Med_Necessity__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Financial_Denial__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Competitor__c.Label}</th>
+                                </tr>
+                                <tr>
+                                    <td>{!nonConversion[0].Insurance_Denials__c}</td>
+                                    <td>{!nonConversion[0].Lost_to_Lower_Level_of_Care__c}</td>
+                                    <td>{!nonConversion[0].Med_Necessity__c}</td>
+                                    <td>{!nonConversion[0].Financial_Denial__c}</td>
+                                    <td>{!nonConversion[0].Lost_to_Competitor__c}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>{!nonConversion[0].Percent_Insurance_Denials__c}%</td>
+                                    <td>{!nonConversion[0].Percent_Lost_to_Lower_Level_of_Care__c}%</td>
+                                    <td>{!nonConversion[0].Percent_Med_Necessity__c}%</td>
+                                    <td>{!nonConversion[0].Percent_Financial_Denial__c}%</td>
+                                    <td>{!nonConversion[0].Percent_Lost_to_Competitor__c}%</td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="4">
+                                        <br/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Kindred_LTAC__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Family_Decision__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Expired__c.Label}</th>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Pending__c.Label}</th>
+                                </tr>
+                                <tr>
+                                    <td>{!nonConversion[0].Lost_to_Kindred_LTAC__c}</td>
+                                    <td>{!nonConversion[0].Family_Decision__c}</td>
+                                    <td>{!nonConversion[0].Expired__c}</td>
+                                    <td>{!nonConversion[0].Pending__c}</td>
+                                </tr>
+                                <tr>
+                                    <td>{!nonConversion[0].Percent_Lost_to_Kindred_LTAC__c}%</td>
+                                    <td>{!nonConversion[0].Percent_Family_Decision__c}%</td>
+                                    <td>{!nonConversion[0].Percent_Expired__c}%</td>
+                                    <td>{!nonConversion[0].Percent_Pending__c}%</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+
+
+
+                        <h3 style="margin-top:10px;">Non-Conversion Reasons
+                            <i onclick="getEducationTip('conversion');" class="text-primary fas fa-question-circle cursor-pointer"></i>
+                        </h3>
+                        <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c}" html-placeholder="Non-Conversion Reasons"
+                        />
+
+                    </div>
+
+                </apex:outputPanel>
 
                 <apex:pageMessages />
 
@@ -802,10 +876,10 @@
                             <div>
                                 <h3>{!accountPlan.aPlan.Account__r.Name}
                                     <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
-                                    <a class="text-danger" style="float:right;" onclick="deleteAccountPlan('{!accountPlan.aPlan.Id}');">
-                                        <i style="margin-left:20px;" class="far fa-trash-alt"></i> Delete {!accountPlan.aPlan.Account__r.Name} Plan
-                                    </a>
-                                </apex:outputPanel>
+                                        <a class="text-danger" style="float:right;" onclick="deleteAccountPlan('{!accountPlan.aPlan.Id}');">
+                                            <i style="margin-left:20px;" class="far fa-trash-alt"></i> Delete {!accountPlan.aPlan.Account__r.Name} Plan
+                                        </a>
+                                    </apex:outputPanel>
                                 </h3>
                                 <label>{!$ObjectType.Account_Sales_Plan__c.fields.Challenges_Critical_Issues__c.Label}
                                     <i onclick="getEducationTip('challenges');" class="text-primary fas fa-question-circle cursor-pointer"></i>
@@ -826,10 +900,10 @@
                                             <i onclick="getEducationTip('strategy');" class="text-primary fas fa-question-circle cursor-pointer"></i>
                                         </label>
                                         <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
-                                        <a class="text-danger" style="float:right;" onclick="deleteStrategy('{!strats.strat.Id}');">
-                                            <i style="margin-top:15px;margin-left:20px;" class="far fa-trash-alt"></i> Delete Strategy {!stratNumber}
-                                        </a>
-                                    </apex:outputPanel>
+                                            <a class="text-danger" style="float:right;" onclick="deleteStrategy('{!strats.strat.Id}');">
+                                                <i style="margin-top:15px;margin-left:20px;" class="far fa-trash-alt"></i> Delete Strategy {!stratNumber}
+                                            </a>
+                                        </apex:outputPanel>
                                     </div>
                                     <div style="margin-top:15px; padding:10px; border:1px solid #ddd; border-radius:7px;">
                                         <div>
@@ -914,8 +988,8 @@
 
             <div class="container no-padding">
                 <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
-                <button class="btn btn-block btn-primary" data-toggle="modal" data-target="#addAccountPlanModal">
-                    <i class="fas fa-plus"></i> Add Account Plan</button>
+                    <button class="btn btn-block btn-primary" data-toggle="modal" data-target="#addAccountPlanModal">
+                        <i class="fas fa-plus"></i> Add Account Plan</button>
                 </apex:outputPanel>
             </div>
 
@@ -1090,17 +1164,17 @@
                     else if (am.ytdVariance < 0) ytdVarColor = 'text-danger';
                 }
 
-                var pyMtdAdmit='', cyMtdAdmit='', mtdVariance='',
-                pyYtdAdmit='', cyYtdAdmit='', ytdVariance='';
-                if(am.pyMtdAdmit!=null) pyMtdAdmit=am.pyMtdAdmit;
-                if(am.cyMtdAdmit!=null) cyMtdAdmit=am.cyMtdAdmit;
-                if(am.mtdVariance!=null) mtdVariance=am.mtdVariance;
-                if(am.pyYtdAdmit!=null) pyYtdAdmit=am.pyYtdAdmit;
-                if(am.cyYtdAdmit!=null) cyYtdAdmit=am.cyYtdAdmit;
-                if(am.ytdVariance!=null) ytdVariance=am.ytdVariance;
-                var html = '<tr><td>' + am.accountName + '</td><td>' + 
-                pyMtdAdmit + '</td><td>' + cyMtdAdmit + '</td><td class="' + mtdVarColor + '">' + mtdVariance + '</td>'+
-                '<td>' + pyYtdAdmit + '</td><td>' + cyYtdAdmit + '</td><td class="' + ytdVarColor + '">' + ytdVariance + '</td></tr>';
+                var pyMtdAdmit = '', cyMtdAdmit = '', mtdVariance = '',
+                    pyYtdAdmit = '', cyYtdAdmit = '', ytdVariance = '';
+                if (am.pyMtdAdmit != null) pyMtdAdmit = am.pyMtdAdmit;
+                if (am.cyMtdAdmit != null) cyMtdAdmit = am.cyMtdAdmit;
+                if (am.mtdVariance != null) mtdVariance = am.mtdVariance;
+                if (am.pyYtdAdmit != null) pyYtdAdmit = am.pyYtdAdmit;
+                if (am.cyYtdAdmit != null) cyYtdAdmit = am.cyYtdAdmit;
+                if (am.ytdVariance != null) ytdVariance = am.ytdVariance;
+                var html = '<tr><td>' + am.accountName + '</td><td>' +
+                    pyMtdAdmit + '</td><td>' + cyMtdAdmit + '</td><td class="' + mtdVarColor + '">' + mtdVariance + '</td>' +
+                    '<td>' + pyYtdAdmit + '</td><td>' + cyYtdAdmit + '</td><td class="' + ytdVarColor + '">' + ytdVariance + '</td></tr>';
                 $("#planTable").append(html);
             }
             });
@@ -1116,31 +1190,31 @@
 
             var educationTips = {
                 "goal": {
-                    "title": 'Goal', "body": 'What do you want to achieve in this account this month to address the needs or strengths identified above?'+
-                    'These will often be quantitative, but not always.'+
-                    '</br></br> <b>Example 1)</b> Establish myself as new Kindred CL and gain trust and rapport of CM Dept.'+
-                    '</br></br> <b>Example 2)</b> Regain clinical confidence on MICU and admit 3 patients from this unit this month.'
+                    "title": 'Goal', "body": 'What do you want to achieve in this account this month to address the needs or strengths identified above?' +
+                        'These will often be quantitative, but not always.' +
+                        '</br></br> <b>Example 1)</b> Establish myself as new Kindred CL and gain trust and rapport of CM Dept.' +
+                        '</br></br> <b>Example 2)</b> Regain clinical confidence on MICU and admit 3 patients from this unit this month.'
                 },
                 "conversion": {
-                    "title": 'Non-Conversion Reasons', "body": 'Analyze the data provided  in your Non-Conversion Report from the previous month. </br>'+
-                    'Describe your findings and be specific regarding competitors, physicians, key accounts/units, payors or any other factors that contributed to last month’s lost admissions.'
+                    "title": 'Non-Conversion Reasons', "body": 'Analyze the data provided  in your Non-Conversion Report from the previous month. </br>' +
+                        'Describe your findings and be specific regarding competitors, physicians, key accounts/units, payors or any other factors that contributed to last month’s lost admissions.'
 
                 },
                 "challenges": {
-                    "title": 'Challeneges / Critical Issues', "body": 'Use the metrics above to analyze your account. </br>1) Do you see a positive or negative variance of admissions? '+
-                    '</br>2) Is this due to volume or conversion? </br>3) What is the specific driving force? </br>Describe your findings. Do not include any plans to address the barrier or strength.'+
-                    '</br></br> <b>Example 1)</b>  Volume down from all units. Account was without permanent coverage for past 6 months. No strong Kindred relationship with referral sources. Competitor CL took market share during this time.'+
-                    '</br></br> <b>Example 2)</b>  -12 YTD YOY admissions. No referrals in March or April from MICU. High RTAs to MICU (Main referring unit) in Jan and Feb 2020. Champion physician, Dr. Nhaker, and Lead ICU CM, Barb, no longer advocates for Kindred.'
+                    "title": 'Challenges / Opportunities', "body": 'Use the metrics above to analyze your account. </br>1) Do you see a positive or negative variance of admissions? ' +
+                        '</br>2) Is this due to volume or conversion? </br>3) What is the specific driving force? </br>Describe your findings. Do not include any plans to address the barrier or strength.' +
+                        '</br></br> <b>Example 1)</b>  Volume down from all units. Account was without permanent coverage for past 6 months. No strong Kindred relationship with referral sources. Competitor CL took market share during this time.' +
+                        '</br></br> <b>Example 2)</b>  -12 YTD YOY admissions. No referrals in March or April from MICU. High RTAs to MICU (Main referring unit) in Jan and Feb 2020. Champion physician, Dr. Nhaker, and Lead ICU CM, Barb, no longer advocates for Kindred.'
 
                 },
                 "strategy": {
-                    "title": "Strategy", "body": 'What action items will need to be executed to achieve the goal in this account this month?'+
-                    'Think of these strategies as a monthly "To Do List".'+
-                    '</br> <mark>Strategies should be written in ‘SMART’ format– Specific, Measurable, Achievable, Relevant, Timebound.</mark>'+
-                    '</br> Strategies will most likely require multiple sequential Encounters to complete. For example, holding an in-service with a key '+
-                    'physician group may require several other initial meetings with key contacts before commitment is gained, in-service date secured and meeting is held.'+
-                    '</br></br> <b>Example 1)</b> Meet all 15 ICU and PCU CMs in person and share business card to establish new relationships by 5/30/20.'+
-                    '</br></br> <b>Example 2)</b> Deliver 4 Video Success Stories on pulmonary patients (1 per week) to Dr. Nhaker and Barb this month.'
+                    "title": "Strategy", "body": 'What action items will need to be executed to achieve the goal in this account this month?' +
+                        'Think of these strategies as a monthly "To Do List".' +
+                        '</br> <mark>Strategies should be written in ‘SMART’ format– Specific, Measurable, Achievable, Relevant, Timebound.</mark>' +
+                        '</br> Strategies will most likely require multiple sequential Encounters to complete. For example, holding an in-service with a key ' +
+                        'physician group may require several other initial meetings with key contacts before commitment is gained, in-service date secured and meeting is held.' +
+                        '</br></br> <b>Example 1)</b> Meet all 15 ICU and PCU CMs in person and share business card to establish new relationships by 5/30/20.' +
+                        '</br></br> <b>Example 2)</b> Deliver 4 Video Success Stories on pulmonary patients (1 per week) to Dr. Nhaker and Barb this month.'
                 }
             }
 

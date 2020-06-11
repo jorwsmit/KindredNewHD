@@ -134,6 +134,46 @@ public class SalesHD_TestSalesPlan {
 	Test.stopTest();
 }
 
+@isTest static void SalesPlanReports() {
+
+	PageReference pageRef = Page.SalesHD_SalesPlans;
+	Test.setCurrentPage(pageRef);
+	Sales_Plans__c sp = new Sales_Plans__c();
+	SalesHD_SalesPlan controller =
+		new SalesHD_SalesPlan(new ApexPages.StandardController(sp));
+	controller.newPlanYear=System.now().year();
+	controller.newPlanMonth=System.now().month();
+	//save for current month
+	Test.setCurrentPage(controller.saveNewPlan());
+	Account acct = [select id from account where name='Test Account'];
+	controller.selectedAccount = acct.Id;
+	controller.addAccountPlan();
+	Account_Sales_Plan__c asp = [select id from Account_Sales_Plan__c where Account__c=:acct.Id];
+	controller.accountPlanId = asp.id;
+	controller.addStrategy();
+	Account_Strategy__c aStrat = [select id from Account_Strategy__c where Account_Sales_Plan__c=:asp.Id];
+
+	Contact con = new Contact(FirstName='Test', LastName = 'Contact', Status__c='Active', Title__c='ICU Director');
+	insert con;
+	Event e = new Event(ownerId=UserInfo.getUserId(), ActivityDateTime=System.now(),
+	                    EndDateTime=system.now()+5, Type='Follow-up', whoId=con.Id, SalesHD_Account_Strategy__c=aStrat.Id);
+	insert e;
+	e = new Event(ownerId=UserInfo.getUserId(), ActivityDateTime=System.now(), SalesHD_Complete__c=true, 
+	                    EndDateTime=system.now()+5, Type='Follow-up', whoId=con.Id, SalesHD_Account_Strategy__c=aStrat.Id);
+	insert e;
+
+	pageRef = Page.SalesHD_SalesPlanReports;
+	Test.setCurrentPage(pageRef);
+
+	controller.selectedMonth=String.valueOf(System.now().month());
+	
+	Test.startTest();
+
+	controller.getMonthlySalesPlanReport();
+
+	Test.stopTest();
+}
+
 @isTest static void PicklistPopulationAndSelections() {
 	PageReference pageRef = Page.SalesHD_SalesPlansManager;
 	Sales_Plans__c sp = new Sales_Plans__c();

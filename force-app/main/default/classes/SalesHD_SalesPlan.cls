@@ -5,9 +5,13 @@ public Integer newPlanYear {get; set;}
 
 public Boolean canDelete {get; set;}
 
+public Boolean canCopyStrategies {get; set;}
+public Id previousPlanId {get; set;}
+
 public Sales_Plans__c salesPlan {get; set;}
 public Date spDate {get; set;}
 public Id spOwner {get; set;}
+public String spOwnerName {get; set;}
 
 public String planDate {get; set;}
 public String planDateLastMonth {get; set;}
@@ -20,6 +24,8 @@ public Id selectedAccount {get; set;}
 
 public String accountMetrics {get; set;}
 public list<accountsPlans> aPlans {get; set;}
+
+public List<Non_Conversion__c> nonConversion {get; set;}
 
 public class accountMetric {
 String accountName;
@@ -59,11 +65,11 @@ private static Set<Id> allSubRoleIds = getSubRoleIds(new set<ID> {UserInfo.getUs
 
 public List<Selectoption> getCLPicklist(){
 
-	allSubRoleIds.add(UserInfo.getUserRoleId());
+	// allSubRoleIds.add(UserInfo.getUserRoleId());
 
 	List<Selectoption> picklist = new List<selectoption>();
 	picklist.add(new selectOption('', '- Select an Employee -'));
-	for(User u : [select id, name from user where userRoleId in :allSubRoleIds order by name]) {
+	for(User u : [select id, name from user where userRoleId in :allSubRoleIds or Id=:UserInfo.getUserId() order by name]) {
 		picklist.add(new selectOption(u.id, u.name));
 	}
 	return picklist;
@@ -115,16 +121,22 @@ public SalesHD_SalesPlan(ApexPages.StandardController stdController) {
 	}
 	if(selectedMonth==null && ApexPages.currentPage().getParameters().get('m')!=null) {
 		selectedMonth=ApexPages.currentPage().getParameters().get('m');
+	} else if(selectedMonth==null && Apexpages.currentPage().getUrl()!=null && Apexpages.currentPage().getUrl().toLowerCase().contains('/apex/saleshd_salesplanreports')) {
+		selectedMonth=String.valueOf(Date.valueOf(system.now()).month());
 	}
+
+	
+
 	if(selectedCL==null && ApexPages.currentPage().getParameters().get('cl')!=null) {
 		selectedCL=ApexPages.currentPage().getParameters().get('cl');
 	}
 	salesPlan = (Sales_Plans__c)stdController.getRecord();
 	planDate = '';  planDateLastYear = '';
-	for(Sales_Plans__c sp : [select Id, SalesHD_Plan_date__c, OwnerId from Sales_Plans__c where Id=
+	for(Sales_Plans__c sp : [select Id, SalesHD_Plan_date__c, OwnerId, Owner.Name from Sales_Plans__c where Id=
 					 :ApexPages.currentPage().getParameters().get('id')]) {
 		spDate = sp.SalesHD_Plan_Date__c;
 		spOwner = sp.OwnerId;
+		spOwnerName = sp.Owner.Name;
 		planDate = months[sp.SalesHD_Plan_Date__c.month()-1] + ' ' + sp.SalesHD_Plan_Date__c.year();
 		planDateLastMonth = months[sp.SalesHD_Plan_Date__c.addMonths(-1).month()-1] + ' ' + sp.SalesHD_Plan_Date__c.addMonths(-1).year();
 		planDateLastYear = months[sp.SalesHD_Plan_Date__c.addMonths(-1).month()-1] + ' ' + (sp.SalesHD_Plan_Date__c.addMonths(-1).year()-1);
@@ -132,6 +144,21 @@ public SalesHD_SalesPlan(ApexPages.StandardController stdController) {
 		if(spDate.toStartOfMonth().addMonths(1).addDays(7)<=System.now()) {
 			canDelete = false;
 		}
+	}
+
+	canCopyStrategies = false;
+	previousPlanId = null;
+	if(spOwner!=null && spOwner==UserInfo.getUserId() && spDate!=null) {
+		List<Sales_Plans__c> previousPlan = [select Id from Sales_Plans__c where OwnerId=:UserInfo.getUserId()
+		                                                                                  and SalesHD_Plan_date__c<:spDate
+		                                                                                  order by SalesHD_Plan_date__c desc limit 1];
+		if(!previousPlan.isEmpty() &&
+		   ![select Id from Account_Strategy__c where
+		     Account_Sales_Plan__r.Parent_Sales_Plan__c=: previousPlan[0].Id and Complete__c=false].isEmpty()) {
+			canCopyStrategies = true;
+			previousPlanId = previousPlan[0].Id;
+		}
+
 	}
 
 	accountPlans = new List<Account_Sales_Plan__c>();
@@ -144,7 +171,11 @@ public SalesHD_SalesPlan(ApexPages.StandardController stdController) {
 
 	getAccountPlansEvents();
 
-	if(ApexPages.currentPage().getParameters().get('id')!=null) accountMetrics = getAccountMetrics();
+	nonConversion = new List<Non_Conversion__c>();
+	if(ApexPages.currentPage().getParameters().get('id')!=null) {
+		accountMetrics = getAccountMetrics();
+		nonConversion = getNonConversion();
+	}
 
 	newPlanMonth = System.now().month();
 	newPlanYear = System.now().year();
@@ -163,7 +194,7 @@ public List<Sales_Plans__c> getMyTeamsPlans(){
 		highDate=lowDate.addDays(numberOfDays-1);
 	}
 
-	allSubRoleIds.add(UserInfo.getUserRoleId());
+	// allSubRoleIds.add(UserInfo.getUserRoleId());
 	if(selectedCL!=null) {
 		return [select Id, SalesHD_Plan_Date__c, Owner.Name from Sales_Plans__c where
 		        Owner.UserRoleId in : allSubRoleIds and OwnerId=: selectedCL and
@@ -171,10 +202,207 @@ public List<Sales_Plans__c> getMyTeamsPlans(){
 		                                                         order by SalesHD_Plan_Date__c desc];
 	} else {
 		return [select Id, SalesHD_Plan_Date__c, Owner.Name from Sales_Plans__c where
-		        Owner.UserRoleId in : allSubRoleIds and
+		        (Owner.UserRoleId in : allSubRoleIds or OwnerId=:UserInfo.getUserId()) and
 		        SalesHD_Plan_Date__c>=: lowDate and SalesHD_Plan_Date__c<=: highDate
 		        order by SalesHD_Plan_Date__c desc];
 	}
+
+}
+
+
+
+public List<monthlyReportMarket> monthlyReport {get; set;}
+public class monthlyReportMarket
+{
+public String market {get; set;}
+public list<monthlyReportCL> monthlyCL {get; set;}
+
+public monthlyReportMarket(String m)
+{
+	market = m;
+	monthlyCL = new list<monthlyReportCL>();
+}
+
+}
+
+public class monthlyReportCL
+{
+public String cl {get; set;}
+public list<monthlyReportAccount> monthlyAccount {get; set;}
+
+public monthlyReportCL(String clName)
+{
+	cl = clName;
+	monthlyAccount = new list<monthlyReportAccount>();
+}
+
+}
+
+public class monthlyReportAccount
+{
+public String accountName {get; set;}
+public List<Integer> stratEncounterTotals {get; set;}
+
+public monthlyReportAccount(String aName)
+{
+	accountName = aName;
+	stratEncounterTotals = new List<Integer>();
+}
+}
+
+
+public List<monthlyReportMarket> getMonthlySalesPlanReport(){
+	Date lowDate = Date.newInstance(Integer.valueOf(selectedYear), 1, 1);
+	Date highDate = Date.newInstance(Integer.valueOf(selectedYear), 12, 31);
+	if(selectedMonth!=null) {
+		lowDate=Date.newInstance(Integer.valueOf(selectedYear), Integer.valueOf(selectedMonth), 1);
+		Integer numberOfDays = Date.daysInMonth(lowDate.year(), lowDate.month());
+		highDate=lowDate.addDays(numberOfDays-1);
+	}
+
+	Map<Id, User> clMarket = new Map<Id, User>();
+
+	for(User u : [select id, area__c, Name from user where UserRoleId in : allSubRoleIds or Id = :UserInfo.getUserId()]) {
+		clMarket.put(u.Id, u);
+	}
+
+
+	Map<Id, monthlyReportCL> dataByCl = new Map<Id, monthlyReportCL>();
+
+	Map<Id, String> accountNames = new Map<Id, String>();
+	for(AggregateResult ar : [select Account__c accountId, Account__r.Name accountName from Account_Sales_Plan__c
+	                          where Parent_Sales_Plan__r.OwnerId in :clMarket.keySet() and
+	                          Parent_Sales_Plan__r.SalesHD_Plan_Date__c>=: lowDate and
+	                          Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate group by
+	                          Account__c, Account__r.Name]) {
+		Id accountId = String.valueOf(ar.get('accountId'));
+		if(!accountNames.containsKey(accountId)) accountNames.put(
+				String.valueOf(ar.get('accountId')), String.valueOf(ar.get('accountName')));
+
+	}
+
+	Map<Id, Map<Id, List<Integer> > > clToAccountData = new Map<Id, Map<Id, List<Integer> > >();
+
+	Map<String, List<Integer> > clAccountData = new Map<String, List<Integer> >();
+
+	for(AggregateResult ar : [select count(id) totalStrategies,
+	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId clId, Account_Sales_Plan__r.Account__c accountId from Account_Strategy__c
+	                          where Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId in :clMarket.keySet() and
+	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c>=: lowDate and
+	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate group by
+	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId, Account_Sales_Plan__r.Account__c]) {
+		String clId = String.valueOf(ar.get('clId'));
+		String accountId = String.valueOf(ar.get('accountId'));
+		String clAccountId = clId + accountId;
+		Integer totalStrategies = Integer.valueOf(ar.get('totalStrategies'));
+
+		if(clAccountData.containsKey(clAccountId)) {
+			clAccountData.get(clAccountId)[0] = totalStrategies;
+		} else {
+			clAccountData.put(clAccountId, new List<Integer> {totalStrategies, 0, 0, 0});
+		}
+	}
+
+	for(AggregateResult ar : [select count(id) totalIncompleteStrategies,
+	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId clId, Account_Sales_Plan__r.Account__c accountId from Account_Strategy__c
+	                          where Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId in :clMarket.keySet() and
+	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c>=: lowDate and
+	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate and Complete__c=false group by
+	                                                                                                                       Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId, Account_Sales_Plan__r.Account__c]) {
+		String clId = String.valueOf(ar.get('clId'));
+		String accountId = String.valueOf(ar.get('accountId'));
+		String clAccountId = clId + accountId;
+		Integer totalIncompleteStrategies = Integer.valueOf(ar.get('totalIncompleteStrategies'));
+		if(clAccountData.containsKey(clAccountId)) {
+			clAccountData.get(clAccountId)[1] = totalIncompleteStrategies;
+		} else {
+			clAccountData.put(clAccountId, new List<Integer> {0, totalIncompleteStrategies, 0, 0});
+		}
+
+
+	}
+
+	for(AggregateResult ar : [select count(id) totalAssociatedEncounters, OwnerId clId, WhatId accountId
+	                          from event where SalesHD_Account_Strategy__c in (select id from Account_Strategy__c
+	                                                                           where Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId in :clMarket.keySet() and
+	                                                                           Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c>=: lowDate and
+	                                                                           Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate) group by OwnerId, WhatId]) {
+		String clId = String.valueOf(ar.get('clId'));
+		String accountId = String.valueOf(ar.get('accountId'));
+		String clAccountId = clId + accountId;
+		Integer totalAssociatedEncounters = Integer.valueOf(ar.get('totalAssociatedEncounters'));
+		if(clAccountData.containsKey(clAccountId)) {
+			clAccountData.get(clAccountId)[2] = totalAssociatedEncounters;
+		} else {
+			clAccountData.put(clAccountId, new List<Integer> {0, 0, totalAssociatedEncounters, 0});
+		}
+	}
+
+	for(AggregateResult ar : [select count(id) totalAssociatedEncountersIncomplete, OwnerId clId, WhatId accountId
+	                          from event where SalesHD_Complete__c=false and SalesHD_Account_Strategy__c in (select id from Account_Strategy__c
+	                                                                                                         where Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId in :clMarket.keySet() and
+	                                                                                                         Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c>=: lowDate and
+	                                                                                                         Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate) group by OwnerId, WhatId]) {
+		String clId = String.valueOf(ar.get('clId'));
+		String accountId = String.valueOf(ar.get('accountId'));
+		String clAccountId = clId + accountId;
+		Integer totalAssociatedEncountersIncomplete = Integer.valueOf(ar.get('totalAssociatedEncountersIncomplete'));
+		if(clAccountData.containsKey(clAccountId)) {
+			clAccountData.get(clAccountId)[3] = totalAssociatedEncountersIncomplete;
+		} else {
+			clAccountData.put(clAccountId, new List<Integer> {0, 0, 0, totalAssociatedEncountersIncomplete});
+		}
+	}
+
+
+	for(AggregateResult ar : [select
+	                          Parent_Sales_Plan__r.OwnerId clId, Account__c accountId from Account_Sales_Plan__c
+	                          where Parent_Sales_Plan__r.OwnerId in :clMarket.keySet() and
+	                          Parent_Sales_Plan__r.SalesHD_Plan_Date__c>=: lowDate and
+	                          Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate group by
+	                          Parent_Sales_Plan__r.OwnerId, Account__c]) {
+
+		String clId = String.valueOf(ar.get('clId'));
+		String accountId = String.valueOf(ar.get('accountId'));
+		String clAccountId = clId + accountId;
+
+
+		monthlyReportAccount mAccount = new monthlyReportAccount(accountNames.get(accountId));
+
+		if(clAccountData.containsKey(clAccountId)) {
+			mAccount.stratEncounterTotals = clAccountData.get(clAccountId);
+		} else{
+			mAccount.stratEncounterTotals = new List<Integer> {0,0,0,0};
+		}
+
+		monthlyReportCL mCl = new monthlyReportCL(clMarket.get(clId).Name);
+		mCl.monthlyAccount.add(mAccount);
+
+		if(dataByCl.containsKey(clId)) {
+			dataByCl.get(clId).monthlyAccount.add(mAccount);
+		} else {
+			dataByCl.put(clId, mCl);
+		}
+
+	}
+
+	Map<String, monthlyReportMarket> reportData = new Map<String, monthlyReportMarket>();
+	for(Id clId : dataByCl.keySet()) {
+		String market = '-';
+		if(clMarket.get(clId).area__c!=null) market = clMarket.get(clId).area__c;
+		if(reportData.containsKey(market)) {
+			reportData.get(market).monthlyCL.add(dataByCl.get(clId));
+		} else{
+			monthlyReportMarket mrm = new monthlyReportMarket(market);
+			mrm.monthlyCL.add(dataByCl.get(clId));
+			reportData.put(market, mrm);
+		}
+
+	}
+
+	return reportData.values();
+
+
 
 }
 
@@ -239,11 +467,23 @@ public void getAccountPlansEvents(){
 
 }
 
+public List<Non_Conversion__c> getNonConversion(){
+	Date spDate = spDate;
+	Date lowDate = Date.newInstance(spDate.Year(), spDate.Month(), 1).addMonths(-1);
+	Date highDate = Date.newInstance(spDate.Year(), spDate.Month(), Date.daysInMonth(spDate.year(), spDate.month())).addMonths(-1);
+	return [select Total_Referrals__c, Total_Admits__c, Non_Converted_Referrals__c, Conversion_Rate__c, Percent_Non_Converted__c,
+	        Insurance_Denials__c, Lost_to_Lower_Level_of_Care__c, Med_Necessity__c, Financial_Denial__c, Lost_to_Competitor__c,
+	        Lost_to_Kindred_LTAC__c, Family_Decision__c, Expired__c, Pending__c,
+	        Percent_Insurance_Denials__c, Percent_Lost_to_Lower_Level_of_Care__c, Percent_Med_Necessity__c, Percent_Financial_Denial__c,
+	        Percent_Lost_to_Competitor__c, Percent_Lost_to_Kindred_LTAC__c, Percent_Family_Decision__c, Percent_Expired__c, Percent_Pending__c
+	        from Non_Conversion__c where (Date__c>=: lowDate and Date__c<=: highDate) and CL__c=: spOwner order by lastModifiedDate limit 1];
+}
+
 public String getAccountMetrics(){
 	Date spDate = spDate;
 	Date lowDate = Date.newInstance(spDate.Year(), spDate.Month(), 1).addMonths(-1);
 	Date highDate = Date.newInstance(spDate.Year(), spDate.Month(), Date.daysInMonth(spDate.year(), spDate.month())).addMonths(-1);
-	
+
 	Map<Id, accountMetric> metrics = new Map<Id, accountMetric>();
 
 	for(AccountTeamMember atm : [select AccountId, Account.Name from AccountTeamMember where userId=:spOwner]) {
@@ -277,7 +517,7 @@ public String getAccountMetrics(){
 		if(metrics.containsKey(am.Account__c)) {
 			accountMetric nam = metrics.get(am.Account__c);
 			nam.accountName = am.Account__r.Name;
-			if(am.Month__c < lowDate){
+			if(am.Month__c < lowDate) {
 				if(nam.pyYtdAdmit==null) nam.pyYtdAdmit = Integer.valueOf(am.Sales_HD_Admits__c);
 				else nam.pyYtdAdmit += Integer.valueOf(am.Sales_HD_Admits__c);
 			}
@@ -431,6 +671,7 @@ public List<Selectoption> getYearPicklist(){
 	List<Selectoption> picklist = new List<selectoption>();
 	Integer currentYear = System.now().year();
 	picklist.add(new selectOption('', '- Select a Year -'));
+	picklist.add(new selectOption(String.valueOf(currentYear-1), String.valueOf(currentYear-1)));
 	picklist.add(new selectOption(String.valueOf(currentYear), String.valueOf(currentYear)));
 	picklist.add(new selectOption(String.valueOf(currentYear+1), String.valueOf(currentYear+1)));
 	return picklist;
