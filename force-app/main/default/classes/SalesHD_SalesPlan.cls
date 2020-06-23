@@ -303,20 +303,20 @@ public List<monthlyReportMarket> getMonthlySalesPlanReport(){
 		}
 	}
 
-	for(AggregateResult ar : [select count(id) totalIncompleteStrategies,
+	for(AggregateResult ar : [select count(id) totalCompleteStrategies,
 	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId clId, Account_Sales_Plan__r.Account__c accountId from Account_Strategy__c
 	                          where Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId in :clMarket.keySet() and
 	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c>=: lowDate and
-	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate and Complete__c=false group by
+	                          Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate and Complete__c=true group by
 	                                                                                                                       Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId, Account_Sales_Plan__r.Account__c]) {
 		String clId = String.valueOf(ar.get('clId'));
 		String accountId = String.valueOf(ar.get('accountId'));
 		String clAccountId = clId + accountId;
-		Integer totalIncompleteStrategies = Integer.valueOf(ar.get('totalIncompleteStrategies'));
+		Integer totalCompleteStrategies = Integer.valueOf(ar.get('totalCompleteStrategies'));
 		if(clAccountData.containsKey(clAccountId)) {
-			clAccountData.get(clAccountId)[1] = totalIncompleteStrategies;
+			clAccountData.get(clAccountId)[1] = totalCompleteStrategies;
 		} else {
-			clAccountData.put(clAccountId, new List<Integer> {0, totalIncompleteStrategies, 0, 0});
+			clAccountData.put(clAccountId, new List<Integer> {0, totalCompleteStrategies, 0, 0});
 		}
 
 
@@ -338,19 +338,19 @@ public List<monthlyReportMarket> getMonthlySalesPlanReport(){
 		}
 	}
 
-	for(AggregateResult ar : [select count(id) totalAssociatedEncountersIncomplete, OwnerId clId, WhatId accountId
-	                          from event where SalesHD_Complete__c=false and SalesHD_Account_Strategy__c in (select id from Account_Strategy__c
+	for(AggregateResult ar : [select count(id) totalAssociatedEncountersComplete, OwnerId clId, WhatId accountId
+	                          from event where SalesHD_Complete__c=true and SalesHD_Account_Strategy__c in (select id from Account_Strategy__c
 	                                                                                                         where Account_Sales_Plan__r.Parent_Sales_Plan__r.OwnerId in :clMarket.keySet() and
 	                                                                                                         Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c>=: lowDate and
 	                                                                                                         Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c<=: highDate) group by OwnerId, WhatId]) {
 		String clId = String.valueOf(ar.get('clId'));
 		String accountId = String.valueOf(ar.get('accountId'));
 		String clAccountId = clId + accountId;
-		Integer totalAssociatedEncountersIncomplete = Integer.valueOf(ar.get('totalAssociatedEncountersIncomplete'));
+		Integer totalAssociatedEncountersComplete = Integer.valueOf(ar.get('totalAssociatedEncountersComplete'));
 		if(clAccountData.containsKey(clAccountId)) {
-			clAccountData.get(clAccountId)[3] = totalAssociatedEncountersIncomplete;
+			clAccountData.get(clAccountId)[3] = totalAssociatedEncountersComplete;
 		} else {
-			clAccountData.put(clAccountId, new List<Integer> {0, 0, 0, totalAssociatedEncountersIncomplete});
+			clAccountData.put(clAccountId, new List<Integer> {0, 0, 0, totalAssociatedEncountersComplete});
 		}
 	}
 
