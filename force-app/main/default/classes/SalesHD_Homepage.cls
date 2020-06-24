@@ -277,6 +277,24 @@ private static String getMessages() {
 	// 	notifications.add(temp);
 	// }
 
+	List<event> unauditedEncounters = [select id from event where startdatetime=last_week and SalesHD_Encounter_Audit__c=null and ownerId=:currentUser];
+	if(unauditedEncounters.isEmpty()){
+		notification temp = new notification();
+		temp.icon = '<i class="fas fa-thumbs-up green round-icon-green"></i>';
+		temp.body = 'All of your encounters last week have been audited.';
+		notifications.add(temp);
+	}
+
+	for(Event e : [select id from event where startdatetime=last_n_days:30 and (SalesHD_Encounter_Audit__c='Rejected' or SalesHD_Encounter_Audit__c='Needs Review') and ownerId=:currentUser]){
+		notification temp = new notification();
+		temp.n_id = e.Id;
+		temp.n_type = 'event';
+		temp.icon = '<i class="fas fa-glasses blue round-icon-blue"></i>';
+		temp.body = 'You need to leave a comment for your audited encounter.';
+		notifications.add(temp);
+	}
+	
+
 	for(Contact pr : [select FirstName, LastName, Id, HD_Physician_Request_Completed_Date__c from Contact
 	                  where (HD_Physician_Request_Completed_Date__c=null or HD_Physician_Request_Completed_Date__c>=last_n_weeks:2
 	                                                                 or HD_Physician_Request_Completed_Date__c=today or HD_Physician_Request_Completed_Date__c<=next_n_weeks:2)
@@ -306,6 +324,8 @@ private static String getMessages() {
 
 		notifications.add(temp);
 	}
+
+	
 	return JSON.serializePretty(notifications);
 }
 

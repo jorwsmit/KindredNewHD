@@ -670,6 +670,13 @@
 				display: none;
 			}
 
+			.audit{
+				border-radius: 25px;
+				margin: 5px 2px;
+				padding: 5px 10px;
+				display: inline-block;
+				color: #ffffff;
+			}
 		</style>
 	</head>
 
@@ -725,9 +732,10 @@
 							<apex:outputPanel rendered="{!IF(event.SalesHD_Account_Strategy__c!=null, true, false)}">
 								<div>
 									<label style="display:inline-block;">Related Sales Plan Strategy:</label>
-									<a href="apex/SalesHD_SalesPlan?id={!event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__c}" style="display:inline-block;"><b>Sales Plan</b> - {!CASE(MONTH(event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c), 1, "January", 2, "February", 
-										3, "March",  4, "April",  5, "May",  6, "June", 7, "July", 8, "August", 9, "September", 10, "October", 11,
-										"November", 12, "December", "None")&" "&TEXT(YEAR(event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c))}</a>
+									<a href="apex/SalesHD_SalesPlan?id={!event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__c}" style="display:inline-block;">
+										<b>Sales Plan</b> - {!CASE(MONTH(event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c),
+										1, "January", 2, "February", 3, "March", 4, "April", 5, "May", 6, "June", 7, "July", 8, "August", 9, "September",
+										10, "October", 11, "November", 12, "December", "None")&" "&TEXT(YEAR(event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c))}</a>
 								</div>
 							</apex:outputPanel>
 
@@ -767,12 +775,12 @@
 								<label style="display:inline-block;">Encounter Type:</label>
 								<p style="display:inline-block;">{!event.Type}</p>
 							</div> -->
-							
+
 							<div>
 								<label style="display:inline-block;">Contact Method:</label>
 								<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
 							</div>
-							
+
 							<div>
 								<label style="display:inline-block;">Objective:</label>
 								<p style="display:inline-block;">{!event.SalesHD_Call_Objective__c}</p>
@@ -838,7 +846,7 @@
 							</div>
 
 							<label style="width:100%; border-top:1px solid #ddd;">POST CALL</label>
-							
+
 							<div>
 								<label style="display:inline-block;">Close / Customer Commitment: </label>
 								<p style="display:inline-block;">{!event.SalesHD_Close_Customer_Commitment__c}</p>
@@ -857,7 +865,7 @@
 								<label style="display:inline-block;">Next Encounter / Follow-up Actions:</label>
 								<p style="display:inline-block;">{!event.SalesHD_Next_Encounter__c}</p>
 							</div>
-							
+
 							<div>
 								<label style="display:inline-block;">Complete:</label>
 								<p style="display:inline-block;">
@@ -871,29 +879,64 @@
 								</div>
 							</div>
 
-						<apex:outputPanel rendered="{!IF(event.OwnerId=$User.Id, true, false)}">
-							<div style="margin-top:20px;">
-								<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}';"
-								 style="margin-top:-7px!important" />
-								<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
-								 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}&duplicate=true';"
-								/>
-								<div class="btn btn-danger" style="margin-left:5px!important; margin-top:-7px!important; padding-top:3px!important;  padding-bottom:3px!important;"
-								 data-toggle="modal" data-target="#deleteModal">Delete</div>
-								<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete"
-								 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';" />
-								<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
-								 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
+							<apex:outputPanel rendered="{!isManager=false || event.SalesHD_Encounter_Audit__c!=null}">
+								<div>
+								<apex:outputPanel rendered="{!IF(event.SalesHD_Encounter_Audit__c='Approved', true, false)}">
+									<b>Manager Audit: </b> <div class="bg-success audit">
+										<i class="fas fa-check-circle"></i> Approved</div>
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!IF(event.SalesHD_Encounter_Audit__c='Needs Review', true, false)}">
+									<b>Manager Audit: </b> <div class="bg-warning audit">
+										<i class="fas fa-minus-circle"></i> Needs Review</div>
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!IF(event.SalesHD_Encounter_Audit__c='Rejected', true, false)}">
+									<b>Manager Audit: </b> <div class="bg-danger audit">
+										<i class="fas fa-times-circle"></i> Rejected</div>
+								</apex:outputPanel>
+							</div>
+							<apex:outputPanel rendered="{!isManager=false}">
+							<div style="margin-top:10px;">
+								<b style="vertical-align:top;">CL Audit Comments: </b><apex:inputTextarea></apex:inputTextarea>
 							</div>
 						</apex:outputPanel>
-						<apex:outputPanel rendered="{!isManager}">
-							<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Approved"
-								 rerender="containerBlock" action="{!auditApproved}"/>
-							<apex:commandButton styleClass="btn btn-warning" style="margin-left:10px!important; margin-top:-7px!important;" value="Needs Review"
-								 rerender="containerBlock" action="{!auditReview}"/>
-							<apex:commandButton styleClass="btn btn-danger" style="margin-left:10px!important; margin-top:-7px!important;" value="Rejected"
-								 rerender="containerBlock" action="{!auditRejected}"/>
-						</apex:outputPanel>
+							</apex:outputPanel>
+
+							<apex:outputPanel rendered="{!IF(event.OwnerId=$User.Id, true, false)}">
+								<div style="margin-top:20px;">
+									<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}';"
+									 style="margin-top:-7px!important" />
+									<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
+									 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}&duplicate=true';"
+									/>
+									<div class="btn btn-danger" style="margin-left:5px!important; margin-top:-7px!important; padding-top:3px!important;  padding-bottom:3px!important;"
+									 data-toggle="modal" data-target="#deleteModal">Delete</div>
+									<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete"
+									 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';" />
+									<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
+									 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
+								</div>
+							</apex:outputPanel>
+
+							<apex:outputPanel rendered="{!isManager && event.SalesHD_Encounter_Audit__c==null}">
+								<div>
+									<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Approved"
+									 rerender="containerBlock" action="{!auditApproved}" />
+									<apex:commandButton styleClass="btn btn-warning" style="margin-left:10px!important; margin-top:-7px!important;" value="Needs Review"
+									 rerender="containerBlock" action="{!auditReview}" />
+									<apex:commandButton styleClass="btn btn-danger" style="margin-left:10px!important; margin-top:-7px!important;" value="Rejected"
+									 rerender="containerBlock" action="{!auditRejected}" />
+								</div>
+
+								<apex:selectList multiselect="false" size="1" style="margin:10px;">
+									<apex:selectOption itemValue="" itemLabel="" />
+									<apex:selectOption itemValue="Asking for business" itemLabel="Asking for business" />
+									<apex:selectOption itemValue="Referral managing" itemLabel="Referral managing" />
+									<apex:selectOption itemValue="No strategy" itemLabel="No strategy" />
+									<apex:selectOption itemValue="No next steps" itemLabel="No next steps" />
+									<apex:selectOption itemValue="Did not use all fields" itemLabel="Did not use all fields" />
+								</apex:selectList>
+
+							</apex:outputPanel>
 						</apex:form>
 
 						<apex:pageMessages />
