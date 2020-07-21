@@ -625,15 +625,17 @@
 
 			<c:SalesHD_RedesignNav />
 
+			<apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
 			<div class="container">
 				<div class="row inner-container">
 					<div class="col-md-12 no-pad">
-						<div class="alert alert-danger" role="alert" onclick="window.location.href=''">
+						<div class="alert alert-danger" role="alert" onclick="window.location.href='apex/SalesHD_AuditEncounters'">
 							You have 2 encounters that need to be audited!
 						  </div>
 					</div>
 				</div>
 			</div>
+		</apex:outputPanel>
 
 			<div class="container white-bg shadow">
 				<div class="row inner-container">
@@ -736,6 +738,11 @@
 								<i class="fas fa-phone"></i> New Encounter</button>
 						</div>
 
+						<div style="padding:10px 0px 0px 0px!important;">
+							<button class="btn btn-primary btn-block rounded" onclick="window.location.href='/apex/SalesHD_AuditEncounters'">
+								<i class="fas fa-list"></i> Audit Encounters</button>
+						</div>
+
 						<div style="padding:10px 0px 10px 0px!important;">
 							<button class="btn btn-primary btn-block rounded" onclick="window.location='{!IF (NOT(ISBLANK($User.State)), " /apex/SalesHD_Medpar?state="+$User.State, "
 							/apex/SalesHD_Medpar ")}'">
@@ -751,7 +758,7 @@
 							<!-- <div style="padding:0px 0px 10px 0px!important;">
                                 <button class="btn btn-primary btn-block rounded" onclick="window.location='/apex/SalesHD_AssessmentAudit';">
                                     <i class="fas fa-list-alt"></i> Assessment Audit</button>
-                            </div> -->
+							</div> -->
 						</apex:outputPanel>
 
 						<div style="padding:0px 0px 10px 0px!important;">

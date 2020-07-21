@@ -725,7 +725,7 @@
                                     <!-- <button type="button" class="btn btn-primary" id="saveNote">Send</button> -->
                                     <apex:commandButton styleClass="btn btn-primary" action="{!sendEmail}" value="Send" status="statusSpinner" rerender="emailBlock"
                                         style="font-size:20px !important; vertical-align:bottom; margin-top:0px!important; width:100px; padding:11.5px 15px;"
-                                    oncomplete="$('#emailCollateral').modal('hide'); replaceBreaksLines();" onclick="replaceLinesBreaks();"/>
+                                    oncomplete="if({!emailSent})$('#emailCollateral').modal('hide'); replaceBreaksLines();" onclick="replaceLinesBreaks();"/>
                                 </div>
 
                                 <apex:actionStatus id="statusSpinner">

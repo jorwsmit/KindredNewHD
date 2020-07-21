@@ -1,6 +1,8 @@
 global with sharing class SalesHD_Event {
 
 
+public Event relatedAudit {get; set;}
+
 public Boolean isManager {get; set;}
 
 public Event thisEvent {get; set;}
@@ -81,9 +83,14 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 
 	thisEvent = (Event)stdController.getRecord();
 
+	relatedAudit = null;
+
 	for(Event e : [select Id, OwnerId, Owner.UserRoleId, CreatedById, StartDatetime, EndDatetime, WhoId, Who.Name,
 				   WhatId, What.Name, SalesHD_Account_Unit__c, SalesHD_Account_Unit__r.Unit__r.Name,
-				   SalesHD_Account_Strategy__c from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
+				   SalesHD_Account_Strategy__c,
+				   Encounter_Audit__c, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c, Encounter_Audit__r.Manager_Comment__c,
+				   Encounter_Audit__r.Owner.Name
+				   from Event where Id=:ApexPages.CurrentPage().getparameters().get('id')]) {
 		if(e.StartDatetime!=null) {
 			startDateFormated = e.StartDatetime.format();
 			startDate = e.StartDatetime.date();
@@ -118,6 +125,8 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 		if(e.ownerId != UserInfo.getUserId() && getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()}).contains(e.owner.UserRoleId)){
 			isManager = true;
 		}
+
+		relatedAudit = e;
 	}
 
 	additionalContacts = new Map<Id, String>();
@@ -837,28 +846,28 @@ private static Blob invite(Event e, String location) {
 	return Blob.valueof(attachment);
 }
 
-public PageReference auditApproved(){
-	thisEvent.SalesHD_Encounter_Audit__c = 'Approved';
-	return managersCanAudit(thisEvent);
-}
+// public PageReference auditApproved(){
+// 	thisEvent.SalesHD_Encounter_Audit__c = 'Approved';
+// 	return managersCanAudit(thisEvent);
+// }
 
-public PageReference auditReview(){
-	thisEvent.SalesHD_Encounter_Audit__c = 'Needs Review';
-	return managersCanAudit(thisEvent);
-}
+// public PageReference auditReview(){
+// 	thisEvent.SalesHD_Encounter_Audit__c = 'Needs Review';
+// 	return managersCanAudit(thisEvent);
+// }
 
-public PageReference auditRejected(){
-	thisEvent.SalesHD_Encounter_Audit__c = 'Rejected';
-	return managersCanAudit(thisEvent);
-}
+// public PageReference auditRejected(){
+// 	thisEvent.SalesHD_Encounter_Audit__c = 'Rejected';
+// 	return managersCanAudit(thisEvent);
+// }
 
-private PageReference managersCanAudit(Event e){
-	Pagereference page = null;
-	if(isManager){
-		update e;
-		page = new PageReference('/apex/SalesHD_AuditEncounters');
-	}
-	return page;
-}
+// private PageReference managersCanAudit(Event e){
+// 	Pagereference page = null;
+// 	if(isManager){
+// 		update e;
+// 		page = new PageReference('/apex/SalesHD_AuditEncounters');
+// 	}
+// 	return page;
+// }
 
 }

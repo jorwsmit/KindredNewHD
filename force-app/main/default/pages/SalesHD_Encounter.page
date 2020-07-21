@@ -713,8 +713,8 @@
 
 			<div class="container shadow white-bg">
 				<div class="row">
-					<apex:outputPanel id="containerBlock" styleClass="width:100%;">
-						<apex:form id="encounterForm" styleClass="width:100%;">
+					<apex:outputPanel id="containerBlock" style="width:100%;">
+						<apex:form id="encounterForm" style="width:100%;">
 							<label>INFORMATION</label>
 
 							<div>
@@ -873,13 +873,48 @@
 								</p>
 							</div>
 
+							<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__c!=null}">
+								<label style="width:100%; border-top:1px solid #ddd;">MANAGER AUDIT</label>
+								<div>
+									<label style="display:inline-block;">Audited By:</label>
+									<p style="display:inline-block;">
+										{!relatedAudit.Encounter_Audit__r.Owner.Name}
+									</p>
+								</div>
+								<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__r.Audit_Result__c!=null}">
+									<div>
+										<label style="display:inline-block;">Audit Result:</label>
+										<p style="display:inline-block;">
+											{!relatedAudit.Encounter_Audit__r.Audit_Result__c}
+										</p>
+									</div>
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__r.Rating__c!=null}">
+									<div>
+										<label style="display:inline-block;">Audit Rating:</label>
+										<p style="display:inline-block;">
+											{!relatedAudit.Encounter_Audit__r.Rating__c}
+										</p>
+									</div>
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__r.Manager_Comment__c!=null}">
+									<div>
+										<label style="display:inline-block;">Manager Audit Comment:</label>
+										<p style="display:inline-block;">
+											{!relatedAudit.Encounter_Audit__r.Manager_Comment__c}
+										</p>
+									</div>
+								</apex:outputPanel>
+							</apex:outputPanel>
+							
+
 							<div style="margin-top:20px;">
 								<div class="alert alert-primary" role="alert" id="emailSent">
 									An invite has been sent to your Outlook Calendar.
 								</div>
 							</div>
 
-							<apex:outputPanel rendered="{!isManager=false || event.SalesHD_Encounter_Audit__c!=null}">
+							<!-- <apex:outputPanel rendered="{!isManager=false || event.SalesHD_Encounter_Audit__c!=null}">
 								<div>
 								<apex:outputPanel rendered="{!IF(event.SalesHD_Encounter_Audit__c='Approved', true, false)}">
 									<b>Manager Audit: </b> <div class="bg-success audit">
@@ -899,7 +934,9 @@
 								<b style="vertical-align:top;">CL Audit Comments: </b><apex:inputTextarea></apex:inputTextarea>
 							</div>
 						</apex:outputPanel>
-							</apex:outputPanel>
+							</apex:outputPanel> -->
+
+
 
 							<apex:outputPanel rendered="{!IF(event.OwnerId=$User.Id, true, false)}">
 								<div style="margin-top:20px;">
@@ -917,7 +954,17 @@
 								</div>
 							</apex:outputPanel>
 
-							<apex:outputPanel rendered="{!isManager && event.SalesHD_Encounter_Audit__c==null}">
+							<!-- <apex:outputPanel rendered="{!isManager && event.Encounter_Audit__r.Audit_Result__c==null}">
+
+								<div>
+									<label style="display:inline-block;">Manager Audit: </label>
+									<p style="display:inline-block;">{!event.Encounter_Audit__r.Rating__c}</p>
+									<apex:inputField style="display: inline-block;" styleClass="form-control" value="{!event.Encounter_Audit__r.Audit_Result__c}" html-placeholder="Audit Result"/>
+								</div>
+
+								
+							</apex:outputPanel> -->
+							<!-- <apex:outputPanel rendered="{!isManager && event.SalesHD_Encounter_Audit__c==null}">
 								<div>
 									<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Approved"
 									 rerender="containerBlock" action="{!auditApproved}" />
@@ -936,7 +983,7 @@
 									<apex:selectOption itemValue="Did not use all fields" itemLabel="Did not use all fields" />
 								</apex:selectList>
 
-							</apex:outputPanel>
+							</apex:outputPanel> -->
 						</apex:form>
 
 						<apex:pageMessages />

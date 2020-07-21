@@ -277,20 +277,12 @@ private static String getMessages() {
 	// 	notifications.add(temp);
 	// }
 
-	List<event> unauditedEncounters = [select id from event where startdatetime=last_week and SalesHD_Encounter_Audit__c=null and ownerId=:currentUser];
-	if(unauditedEncounters.isEmpty()){
+	List<event> totalEncountersLastWeek = [select id from event where startdatetime=last_week and ownerId=:currentUser];
+	List<event> unauditedEncountersLastWeek = [select id from event where startdatetime=last_week and Encounter_Audit__r.Audit_Result__c=null and ownerId=:currentUser];
+	if(unauditedEncountersLastWeek.isEmpty() && totalEncountersLastWeek.size()>0){
 		notification temp = new notification();
-		temp.icon = '<i class="fas fa-thumbs-up green round-icon-green"></i>';
+		temp.icon = '<i class="fas fa-info-circle blue round-icon-blue"></i>';
 		temp.body = 'All of your encounters last week have been audited.';
-		notifications.add(temp);
-	}
-
-	for(Event e : [select id from event where startdatetime=last_n_days:30 and (SalesHD_Encounter_Audit__c='Rejected' or SalesHD_Encounter_Audit__c='Needs Review') and ownerId=:currentUser]){
-		notification temp = new notification();
-		temp.n_id = e.Id;
-		temp.n_type = 'event';
-		temp.icon = '<i class="fas fa-glasses blue round-icon-blue"></i>';
-		temp.body = 'You need to leave a comment for your audited encounter.';
 		notifications.add(temp);
 	}
 	
