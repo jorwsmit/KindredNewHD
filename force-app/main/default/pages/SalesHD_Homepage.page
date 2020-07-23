@@ -616,6 +616,20 @@
 			#notifications li {
 				cursor: default;
 			}
+			.alert{
+				border: none !important;
+				color: #ffffff !important;
+				border-radius: 7px !important;
+			}
+			.alert-success{
+				background-color: #20c240 !important;
+			}
+			.alert-warning{
+				background-color: #f6be07 !important;
+			}
+			.alert-danger{
+				background-color: #e42c12 !important;
+			}
 		</style>
 	</head>
 
@@ -626,12 +640,26 @@
 			<c:SalesHD_RedesignNav />
 
 			<apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
-			<div class="container">
+			<div class="container" style="padding:0px!important;">
 				<div class="row inner-container">
 					<div class="col-md-12 no-pad">
-						<div class="alert alert-danger" role="alert" onclick="window.location.href='apex/SalesHD_AuditEncounters'">
-							You have 2 encounters that need to be audited!
-						  </div>
+						<apex:outputPanel rendered="{!numberToAudit>=50}">
+							<div class="alert alert-danger" role="alert" onclick="window.location.href='apex/SalesHD_AuditEncounters'" style="margin-bottom:0px;">
+								You have {!numberToAudit} encounters that need to be audited!
+							  </div>
+						</apex:outputPanel>
+						<apex:outputPanel rendered="{!numberToAudit<50 && numberToAudit>=25}">
+							<div class="alert alert-warning" role="alert" onclick="window.location.href='apex/SalesHD_AuditEncounters'" style="margin-bottom:0px;">
+								You have {!numberToAudit} encounters that need to be audited!
+							  </div>
+						</apex:outputPanel>
+
+						<apex:outputPanel rendered="{!numberToAudit<25 && numberToAudit>0}">
+							<div class="alert alert-success" role="alert" onclick="window.location.href='apex/SalesHD_AuditEncounters'" style="margin-bottom:0px;">
+								You have {!numberToAudit} encounters that need to be audited!
+							  </div>
+						</apex:outputPanel>
+						
 					</div>
 				</div>
 			</div>

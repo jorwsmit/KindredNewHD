@@ -212,6 +212,16 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	return JSON.serializePretty([select AccountId, Account.Name, Account.ShippingAddress__c from AccountTeamMember where Account.Status__c='Active' and UserId =: currentUser and Account.RecordType.Name='HD Accounts']);
 }
 
+public Integer getNumberToAudit(){
+	Set<Id> roleIds  = getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()});
+	Date auditStartDate = Date.newInstance(2020, 6, 1);
+	List<AggregateResult> ar = [select Count(id) total from event where owner.userRoleId in :roleIds
+	and startDateTime>=:auditStartDate and startDateTime<=last_week and Encounter_Audit__r.Audit_Result__c=null];
+	Integer num = 0;
+	if(ar.size()>0 && Integer.valueOf(ar[0].get('total'))>0) num = Integer.valueOf(ar[0].get('total'));
+	return num;
+}
+
 // @RemoteAction global static String getMessages() {
 // 	Set<Id> parentUserIds = getParentRoleId(new Set<ID> {UserInfo.getUserRoleId()});
 // 	parentUserIds.add(UserInfo.getUserRoleId());
