@@ -703,7 +703,7 @@
 									<apex:selectList size="1" value="{!selectedNDays}">
 										<apex:selectOptions value="{!daysPicklist}" />
 										<apex:actionsupport event="onchange" action="{!toggleDays}" />
-									</apex:selectList> 
+									</apex:selectList>
 									Days
 
 									<apex:outputPanel rendered="{!NOT(CONTAINS($Profile.Name, 'Associate') || CONTAINS($Profile.Name, 'PAC'))}">
@@ -712,7 +712,9 @@
 												<apex:actionSupport event="onclick" rerender="filterList" action="{!toggleAudited}" />
 											</apex:inputcheckbox> Show Audited Encounters
 										</span>
-										<span style="float:right;"><a href="/apex/SalesHD_AuditReport">Audited Encounters Report</a></span>
+										<span style="float:right;">
+											<a href="/apex/SalesHD_AuditReport">Audited Encounters Report</a>
+										</span>
 
 										<div style="padding-top:5px; padding-bottom:5px;">
 											<span style="margin-right:65px;">
@@ -791,8 +793,14 @@
 															</td>
 														</apex:outputText>
 														<td style="min-width:170px; table-layout:fixed;">
-															<apex:inputField style="border:none;" styleClass="form-control" value="{!e.Encounter_Audit__r.Audit_Result__c}" onchange="saveAudit('{!e.Id}', this.value)"
-															 rendered="{!NOT(CONTAINS($Profile.Name, 'Associate') || CONTAINS($Profile.Name, 'PAC'))}" />
+															<apex:inputField style="border:none;" styleClass="form-control audit-picklist" value="{!e.Encounter_Audit__r.Audit_Result__c}"
+															 onchange="saveAudit('{!e.Id}', this.value)" rendered="{!NOT(CONTAINS($Profile.Name, 'Associate') || CONTAINS($Profile.Name, 'PAC'))}"
+															/>
+
+															<!-- <apex:selectList style="border:none;" styleClass="form-control" size="1" value="{!e.Encounter_Audit__r.Audit_Result__c}"
+															 onchange="saveAudit('{!e.Id}', this.value)">
+																<apex:selectOptions value="{!auditPicklist}" />
+															</apex:selectList> -->
 
 															<apex:outputText rendered="{!CONTAINS($Profile.Name, 'Associate') || CONTAINS($Profile.Name, 'PAC')}">
 																{!e.Encounter_Audit__r.Audit_Result__c}
@@ -886,6 +894,37 @@
 				document.getElementById('{!$Component.filterList.managerEncounterId}').value = encounterId;
 				document.getElementById('{!$Component.filterList.managerComment}').value = managerComment;
 			}
+
+			var green = 'text-success', yellow = 'text-warning', red = 'text-danger';
+			var auditResultColorMap = {
+				'Approved' : green,
+				'Asking for business only' : red,
+				'Duplicate encounter' : red,
+				'Improper use of field' : yellow,
+				'Info in summary or agenda does not match objective' : yellow,
+				'Lacking detail' : yellow,
+				'Lacking strategy' : yellow,
+				'Missing agenda' : yellow,
+				'Missing next steps' : yellow,
+				'Missing summary' : yellow,
+				'No data/metrics/collateral used when needed' : yellow,
+				'Not a sales call' : red,
+				'Referral managing' : red
+			};
+
+			$(".audit-picklist").on('click', function () {
+				$(this).find("option").each(function (index, value) {
+					var color = auditResultColorMap[$(value).val()];
+					if(color) $(value).addClass(color);
+				});
+			});
+
+			// var entries = document.getElementByClassName('{!$Component.picklist}');
+			// for (var i = entries.length - 1; i >= 0; i--) {
+			// 	if (entries.options[i].text == '') {
+			// 		entries.remove(i);
+			// 	}
+			// }
 
 		</script>
 

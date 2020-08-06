@@ -21,6 +21,7 @@ private Integer days = minDays;
 
 public class auditReport {
 public String cl {get; set;}
+public String clId {get; set;}
 public Integer totalEncounters {get; set;}
 public Integer totalAudited {get; set;}
 public Integer totalApproved {get; set;}
@@ -33,6 +34,7 @@ public Decimal percentAudited {get; set;}
 
 public auditReport(){
 	cl = '';
+	clId = '';
 	totalEncounters = 0;
 	totalAudited= 0;
 	totalApproved = 0;
@@ -45,9 +47,31 @@ public auditReport(){
 }
 }
 
+public chartData cd {get; set;}
+
+public class chartData {
+public Integer totalEncounters {get; set;}
+public Integer totalAudited {get; set;}
+public Integer totalApproved {get; set;}
+public Integer totalNeedsReview {get; set;}
+public Integer totalRejected {get; set;}
+
+public chartData(){
+	totalEncounters = 0;
+	totalAudited= 0;
+	totalApproved = 0;
+	totalNeedsReview = 0;
+	totalRejected = 0;
+}
+}
+
+public User usr {get; set;}
+
 
 public SalesHD_AuditEncounters() {
 
+	usr = new User();
+	usr.Region__c='HD';
 
 
 	weekly = true;
@@ -77,6 +101,12 @@ public SalesHD_AuditEncounters() {
 		days = Integer.valueOf(selectedNDays);
 	}
 
+	if(ApexPages.currentPage().getParameters().get('district')!=null)
+		usr.District__c=String.valueOf(ApexPages.currentPage().getParameters().get('district'));
+
+	if(ApexPages.currentPage().getParameters().get('market')!=null)
+		usr.Area__c=String.valueOf(ApexPages.currentPage().getParameters().get('market'));
+
 
 
 	if(weekly) {
@@ -102,47 +132,16 @@ public SalesHD_AuditEncounters() {
 		encounters = getEncounters();
 	}
 
+	for(User currentUser : [select Region__c, District__c, Area__c from user where Id=:UserInfo.getUserId()]) {
+		if(currentUser.Region__c!=null) usr.Region__c = currentUser.Region__c;
+		if(currentUser.District__c!=null) usr.District__c = currentUser.District__c;
+		if(currentUser.Area__c!=null) usr.Area__c = currentUser.Area__c;
+	}
 
 
+	cd = new chartData();
 
 }
-
-// public List<Event> getEncountersCL(){
-// 	if(audited) {
-// 		if(weekly) {
-// 			return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-// 			        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-// 			        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-// 			        Owner.Name
-// 			        from event where owner.userRoleId in : allSubRoleIds
-// 			        and startDateTime=Last_Week and OwnerId =: selectedCL];
-// 		} if(monthly) {
-// 			return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-// 			        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-// 			        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-// 			        Owner.Name
-// 			        from event where owner.userRoleId in : allSubRoleIds
-// 			        and startDateTime=Last_n_days :30 and OwnerId =: selectedCL];
-// 		}
-// 	} else{
-// 		if(weekly) {
-// 			return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-// 			        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-// 			        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-// 			        Owner.Name
-// 			        from event where owner.userRoleId in : allSubRoleIds and Encounter_Audit__r.Audit_Result__c=null
-// 			                                                                                                     and startDateTime=Last_Week and OwnerId =: selectedCL];
-// 		} if(monthly) {
-// 			return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-// 			        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-// 			        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-// 			        Owner.Name
-// 			        from event where owner.userRoleId in : allSubRoleIds and Encounter_Audit__r.Audit_Result__c=null
-// 			                                                                                                     and startDateTime=Last_n_days :30  and OwnerId =: selectedCL];
-// 		}
-// 	}
-// 	return null;
-// }
 
 public List<Event> getEncounters(){
 
@@ -176,10 +175,15 @@ public List<auditReport> getReport(){
 
 	String userQuery = 'select Id, Name from user where UserRoleId in :allSubRoleIds';
 	if(selectedCL!=null) userQuery += ' and Id=:selectedCL';
-	// userQuery += ' order by name';
+	if(usr.District__c!=null && usr.Area__c==null) userQuery += ' and District__c=\''+usr.District__c+'\'';
+	else if(usr.Area__c!=null && usr.District__c==null) userQuery += ' and Area__c=\''+usr.Area__c+'\'';
+	else if(usr.Area__c!=null && usr.District__c!=null) userQuery += ' and District__c=\''+usr.District__c+'\' and Area__c=\''+usr.Area__c+'\'';
+
+
 	for(User u : database.query(userQuery)) {
 		auditReport ar = new auditReport();
 		ar.cl = u.Name;
+		ar.clId = u.Id;
 		userData.put(u.Id, ar);
 	}
 
@@ -192,6 +196,10 @@ public List<auditReport> getReport(){
 	else if(mtd) query += ' and startDateTime>=this_month and startDateTime<=today';
 
 	if(selectedCL!=null) query += ' and ownerId=:selectedCL';
+
+	if(usr.District__c!=null && usr.Area__c==null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\')';
+	else if(usr.Area__c!=null && usr.District__c==null) query += ' and ownerId in (select Id from user where Area__c=\''+usr.Area__c+'\')';
+	else if(usr.Area__c!=null && usr.District__c!=null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\' and Area__c=\''+usr.Area__c+'\')';
 
 	// query += ' and startDateTime=Last_n_days:'+60;
 
@@ -215,20 +223,53 @@ public List<auditReport> getReport(){
 
 	}
 
+	List<auditReport> emptyData = new List<auditReport>();
 	for(String userId : userData.keySet()) {
 		auditReport aReport = userData.remove(userId);
 		if(aReport.totalEncounters!=0) {
+			cd.totalEncounters += aReport.totalEncounters;
+			cd.totalAudited += aReport.totalAudited;
+			cd.totalApproved += aReport.totalApproved;
+			cd.totalNeedsReview += aReport.totalNeedsReview;
+			cd.totalRejected += aReport.totalRejected;
+
 			aReport.percentAudited = Decimal.valueOf(aReport.totalAudited)/Decimal.valueOf(aReport.totalEncounters);
 			aReport.percentApproved = Decimal.valueOf(aReport.totalApproved)/Decimal.valueOf(aReport.totalEncounters);
 			aReport.percentNeedsReview = Decimal.valueOf(aReport.totalNeedsReview)/Decimal.valueOf(aReport.totalEncounters);
 			aReport.percentRejected = Decimal.valueOf(aReport.totalRejected)/Decimal.valueOf(aReport.totalEncounters);
+			userData.put(userId, aReport);
+		} else {
+			emptyData.add(aReport);
 		}
 
-		userData.put(userId, aReport);
+
+	}
+	for(auditReport ar : emptyData) {
+		userData.put(ar.clId, ar);
 	}
 
 	return userData.values();
 
+}
+
+public Boolean getShowChart(){
+	String query = 'select Count(Id) total from event where '+
+	               'owner.userRoleId in : allSubRoleIds';
+
+	if(weekly) query += ' and startDateTime=Last_Week';
+	else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
+	else if(mtd) query += ' and startDateTime>=this_month and startDateTime<=today';
+
+	if(selectedCL!=null) query += ' and ownerId=:selectedCL';
+
+	if(usr.District__c!=null && usr.Area__c==null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\')';
+	else if(usr.Area__c!=null && usr.District__c==null) query += ' and ownerId in (select Id from user where Area__c=\''+usr.Area__c+'\')';
+	else if(usr.Area__c!=null && usr.District__c!=null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\' and Area__c=\''+usr.Area__c+'\')';
+
+	for(AggregateResult ar : database.query(query)) {
+		if(Integer.valueOf(ar.get('total'))>0) return true;
+	}
+	return false;
 }
 
 public List<Event> getMyEncounters(){
@@ -254,7 +295,12 @@ public List<Event> getMyEncounters(){
 public List<Selectoption> getCLPicklist(){
 	List<Selectoption> picklist = new List<selectoption>();
 	picklist.add(new selectOption('', '- Select an Employee -'));
-	for(User u : [select id, name from user where userRoleId in :allSubRoleIds order by name]) {
+	String query = 'select id, name from user where userRoleId in :allSubRoleIds ';
+	if(usr.District__c != null) System.debug('has district');
+	if(usr.District__c != null) query += 'and District__c=\''+usr.District__c+'\' ';
+	if(usr.Area__c != null) query += 'and Area__c=\''+usr.Area__c+'\' ';
+	query += 'order by name';
+	for(User u : database.query(query)) {
 		picklist.add(new selectOption(u.id, u.name));
 	}
 	return picklist;
@@ -277,6 +323,11 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	}
 	if (!returnRoleIds.isEmpty()) returnRoleIds.addAll(getSubRoleIds(returnRoleIds));
 	return returnRoleIds;
+}
+
+public PageReference changeMarket(){
+	selectedCL = null;
+	return toggleFilters();
 }
 
 public Pagereference toggleWeekly(){
@@ -330,6 +381,8 @@ public Pagereference toggleFilters(){
 	page.getParameters().put('audited', String.valueOf(audited));
 	page.getParameters().put('cl', String.valueOf(selectedCL));
 	page.getParameters().put('days', String.valueOf(selectedNDays));
+	page.getParameters().put('district', String.valueOf(usr.District__c));
+	page.getParameters().put('market', String.valueOf(usr.Area__c));
 	page.setRedirect(true);
 	return page;
 }
@@ -355,6 +408,7 @@ public Pagereference saveAudit(){
 
 	return toggleFilters();
 }
+
 
 
 
