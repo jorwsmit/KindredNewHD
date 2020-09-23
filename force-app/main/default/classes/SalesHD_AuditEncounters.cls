@@ -145,10 +145,10 @@ public SalesHD_AuditEncounters() {
 
 public List<Event> getEncounters(){
 
-	String query = 'select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,'+
+	String query = 'select SalesHD_Call_Objective__c, Who.Name, Who.Title, What.Name, SalesHD_Account_Unit__r.Unit__r.Name, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,'+
 	               'SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,'+
 	               'SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,'+
-	               'Owner.Name from event where owner.userRoleId in : allSubRoleIds';
+	               'Owner.Name, event.SalesHD_Account_Strategy__c, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c from event where owner.userRoleId in : allSubRoleIds';
 
 	if(!audited) query += ' and Encounter_Audit__r.Audit_Result__c=null';
 
@@ -156,8 +156,11 @@ public List<Event> getEncounters(){
 	else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
 
 	if(selectedCL!=null) query += ' and ownerId=:selectedCL';
-
-	return database.query(query);
+	List<Event> events = database.query(query);
+	// for(Integer i=0; i<30; i++){
+	// 	events.add(events[0]);
+	// }
+	return events;
 
 }
 

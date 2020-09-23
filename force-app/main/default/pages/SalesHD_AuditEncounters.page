@@ -11,6 +11,11 @@
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
 		 crossorigin="anonymous" />
 		<link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+		<link rel="stylesheet" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" />
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.1.2/css/fixedHeader.dataTables.min.css"
+		/>
+		<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css" />
+		<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.1.7/css/fixedHeader.dataTables.min.css" />
 		<meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
 		<apex:slds />
 		<style>
@@ -114,12 +119,13 @@
 
 			table td,
 			table th {
-				border: 1px solid #ddd;
+				border: 1px solid #ddd !important;
 				padding-left: 2px !important;
 				padding-right: 2px !important;
 			}
 
 			table thead th {
+				z-index: 1000;
 				text-align: center !important;
 			}
 
@@ -675,6 +681,15 @@
 				padding-left: 5px !important;
 				padding-right: 5px !important;
 			}
+			.btn-excel{
+				color:#ffffff !important;
+				text-decoration: none !important;
+				border-radius: 7px !important;
+				padding: 3px 15px !important;
+			}
+			.btn-excel:hover{
+				color:#ffffff !important;
+			}
 		</style>
 	</head>
 
@@ -747,7 +762,7 @@
 								</apex:outputPanel>
 								<apex:outputPanel rendered="{!encounters.size>0}">
 									<div style="width:100%; overflow:auto;">
-										<table>
+										<table id="dataTable">
 											<thead>
 												<tr>
 													<th class="text-primary">Audit Rating</th>
@@ -759,12 +774,16 @@
 													<th>Date</th>
 													<th>Open Ended Questions</th>
 													<th>Contact</th>
+													<th>Account</th>
+													<th>Unit</th>
 													<th>Marketing Collateral</th>
 													<th>Data Preparation</th>
 													<th>Agenda Preparation</th>
 													<th>Close / Customer Commitment</th>
 													<th>Result</th>
 													<th>Next Encounter</th>
+													<th>Sales Plan</th>
+													<th>Link to Encounter</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -821,22 +840,38 @@
 															</td>
 														</apex:outputPanel>
 
-														<td style="white-space:nowrap;" onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.Owner.Name}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.SalesHD_Contact_Method__c}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.SalesHD_Topic__c}</td>
-														<td style="white-space:nowrap;" onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">
+														<td style="white-space:nowrap;">{!e.Owner.Name}</td>
+														<td>{!e.SalesHD_Contact_Method__c}</td>
+														<td>{!e.SalesHD_Topic__c}</td>
+														<td style="white-space:nowrap;">
 															<apex:outputText value="{0,date,MM-dd-yyyy}">
 																<apex:param value="{!e.StartDateTime}" />
 															</apex:outputText>
 														</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.SalesHD_Open_Ended_Questions__c}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.Who.Name}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.SalesHD_Marketing_Collateral__c}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.SalesHD_Data_Preparation__c}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.SalesHD_Agenda_Preparation__c}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.SalesHD_Close_Customer_Commitment__c}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.Result__c}</td>
-														<td onclick="window.location.href='apex/SalesHD_Encounter?id={!e.Id}';">{!e.SalesHD_Next_Encounter__c}</td>
+														<td>{!e.SalesHD_Open_Ended_Questions__c}</td>
+														<td>{!e.Who.Name}</td>
+														<td>{!e.What.Name}</td>
+														<td>
+															{!if(e.SalesHD_Account_Unit__r.Unit__r.Name="Administrative", "Global / Director", e.SalesHD_Account_Unit__r.Unit__r.Name)}
+														</td>
+														<td>{!e.SalesHD_Marketing_Collateral__c}</td>
+														<td>{!e.SalesHD_Data_Preparation__c}</td>
+														<td>{!e.SalesHD_Agenda_Preparation__c}</td>
+														<td>{!e.SalesHD_Close_Customer_Commitment__c}</td>
+														<td>{!e.Result__c}</td>
+														<td>{!e.SalesHD_Next_Encounter__c}</td>
+														<td>
+															<apex:outputPanel rendered="{!IF(e.SalesHD_Account_Strategy__c!=null, true, false)}">
+																{!CASE(MONTH(e.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c), 1, "January",
+																2, "February", 3, "March", 4, "April", 5, "May", 6, "June", 7, "July", 8, "August", 9, "September", 10, "October",
+																11, "November", 12, "December", "None")&" "&TEXT(YEAR(e.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c))}
+															</apex:outputPanel>
+														</td>
+														<td style="border:none; font-size:20px; padding: 0px 5px !important;">
+															<a href="apex/SalesHD_Encounter?id={!e.Id}">
+																<i class="fas fa-share"></i>
+															</a>
+														</td>
 													</tr>
 
 												</apex:repeat>
@@ -888,7 +923,31 @@
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 		 crossorigin="anonymous"></script>
 		<script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+		<script src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.1.7/js/dataTables.fixedHeader.min.js"></script>
+
 		<script>
+
+			$(document).ready(function () {
+				$('#dataTable').DataTable({
+					dom: 'Bfrtip',
+					fixedHeader: {
+						headerOffset: 40,
+					},
+					paging: false,
+					// buttons: {
+					// 	dom: {
+					// 		button: {
+					// 			className: 'btn-primary btn-excel'
+					// 		}
+					// 	},
+					// 	buttons: ['excel']
+					// }
+				});
+			});
 
 			function passEncounterId(encounterId, managerComment) {
 				document.getElementById('{!$Component.filterList.managerEncounterId}').value = encounterId;
@@ -897,25 +956,25 @@
 
 			var green = 'text-success', yellow = 'text-warning', red = 'text-danger';
 			var auditResultColorMap = {
-				'Approved' : green,
-				'Asking for business only' : red,
-				'Duplicate encounter' : red,
-				'Improper use of field' : yellow,
-				'Info in summary or agenda does not match objective' : yellow,
-				'Lacking detail' : yellow,
-				'Lacking strategy' : yellow,
-				'Missing agenda' : yellow,
-				'Missing next steps' : yellow,
-				'Missing summary' : yellow,
-				'No data/metrics/collateral used when needed' : yellow,
-				'Not a sales call' : red,
-				'Referral managing' : red
+				'Approved': green,
+				'Asking for business only': red,
+				'Duplicate encounter': red,
+				'Improper use of field': yellow,
+				'Info in summary or agenda does not match objective': yellow,
+				'Lacking detail': yellow,
+				'Lacking strategy': yellow,
+				'Missing agenda': yellow,
+				'Missing next steps': yellow,
+				'Missing summary': yellow,
+				'No data/metrics/collateral used when needed': yellow,
+				'Not a sales call': red,
+				'Referral managing': red
 			};
 
 			$(".audit-picklist").on('click', function () {
 				$(this).find("option").each(function (index, value) {
 					var color = auditResultColorMap[$(value).val()];
-					if(color) $(value).addClass(color);
+					if (color) $(value).addClass(color);
 				});
 			});
 

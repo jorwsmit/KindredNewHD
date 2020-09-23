@@ -197,7 +197,7 @@ public List<Sales_Plans__c> getMyTeamsPlans(){
 	// allSubRoleIds.add(UserInfo.getUserRoleId());
 	if(selectedCL!=null) {
 		return [select Id, SalesHD_Plan_Date__c, Owner.Name from Sales_Plans__c where
-		        Owner.UserRoleId in : allSubRoleIds and OwnerId=: selectedCL and
+		        ((Owner.UserRoleId in : allSubRoleIds and OwnerId=: selectedCL) or (OwnerId=:UserInfo.getUserId())) and
 		                                                         SalesHD_Plan_Date__c>=: lowDate and SalesHD_Plan_Date__c<=: highDate
 		                                                         order by SalesHD_Plan_Date__c desc];
 	} else {

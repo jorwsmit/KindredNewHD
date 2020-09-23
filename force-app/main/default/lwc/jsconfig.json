@@ -2,7 +2,14 @@
     "compilerOptions": {
         "experimentalDecorators": true,
         "baseUrl": ".",
-        "paths": {}
+        "paths": {
+            "c/testLWC": [
+                "testLWC/testLWC.js"
+            ],
+            "c/unitContactSheet": [
+                "unitContactSheet/unitContactSheet.js"
+            ]
+        }
     },
     "include": [
         "**/*",
@@ -11,6 +18,11 @@
     "typeAcquisition": {
         "include": [
             "jest"
+        ]
+    },
+    "paths": {
+        "c/*": [
+            "*"
         ]
     }
 }
