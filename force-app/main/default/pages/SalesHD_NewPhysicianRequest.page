@@ -358,6 +358,14 @@
 	.no-pad{
 		padding: 0px !important;
 	}
+	.blue-link{
+		color: #208FFF !important;
+		text-decoration: underline !important;
+		padding-right: 10px;
+	}
+	.blue-link:hover{
+		color: #1773d1 !important;
+	}
 	@media only screen
 	and (min-device-width : 768px)
 	and (max-device-width : 1024px)
@@ -593,7 +601,7 @@
 			</apex:facet>
 		</apex:actionStatus>
 		<div style="margin-top:10px;">
-			<apex:pageMessages />
+			<apex:pageMessages escape="false"/>
 		</div>
 	</apex:form>
 	</apex:outputPanel>

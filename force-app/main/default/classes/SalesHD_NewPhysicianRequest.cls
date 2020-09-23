@@ -16,9 +16,16 @@ public PageReference saveNew() {
 		if(!unassignHdAccount.isEmpty()) physician.AccountId = unassignHdAccount[0].Id;
 		physician.RecordTypeId=requestRecordType.Id;
 		if(physician.Requested_Physician_NPI__c!=null && physician.Requested_Physician_NPI__c.isNumeric() && physician.Requested_Physician_NPI__c.length()==10) {
-			insert physician;
-			homepage = new PageReference('/apex/SalesHD_homepage');
-			homepage.setRedirect(true);
+			List<Contact> foundNpi = [select Id, Name from contact where npi__c=:physician.Requested_Physician_NPI__c];
+			if(!foundNpi.isEmpty()){
+				String alert = 'A physician record already exists with the requested NPI. <a class="blue-link" href="/apex/saleshd_contact?id='+foundNpi[0].id+'">Click here to navigate to '
+				+foundNpi[0].name+'\'s contact page.</a>';
+				ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,alert));
+			} else {
+				insert physician;
+				homepage = new PageReference('/apex/SalesHD_homepage');
+				homepage.setRedirect(true);
+			}
 		} else{
 			String alert = 'You must enter a valid NPI to request a physician. Try using an NPI lookup tool (https://npidb.org/npi-lookup/).';
 			ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR,alert));
