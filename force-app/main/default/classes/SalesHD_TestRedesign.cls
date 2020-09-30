@@ -1111,6 +1111,29 @@ public Boolean isActive;
 	Test.stopTest();
 }
 
+@isTest static void NewPhysicianRequest_saveNewNpiFoundPhysician() {
+	PageReference pageRef = Page.SalesHD_NewPhysicianRequest;
+	Test.setCurrentPage(pageRef);
+
+	RecordType physicianRecordType = [select Id from RecordType where
+	                                Name='HD Physicians' and SObjectType='Contact' limit 1];
+
+	Contact p = new Contact();
+	p.FirstName='test'; p.LastName='request'; p.NPI__c='1234567890'; p.RecordTypeId=physicianRecordType.Id;
+	insert p;
+
+	Contact pr = new Contact();
+	pr.FirstName='test'; pr.LastName='request'; pr.Requested_Physician_NPI__c='1234567890';
+	insert pr;
+	pageRef.getParameters().put('id',pr.id);
+	ApexPages.StandardController sc = new ApexPages.standardController(pr);
+	SalesHD_NewPhysicianRequest controller = new SalesHD_NewPhysicianRequest(sc);
+	controller.physician = pr;
+	Test.startTest();
+	controller.saveNew();
+	Test.stopTest();
+}
+
 @isTest static void NewPhysicianRequest_saveNewNoNpi() {
 	PageReference pageRef = Page.SalesHD_NewPhysicianRequest;
 	Test.setCurrentPage(pageRef);

@@ -16,7 +16,7 @@ public PageReference saveNew() {
 		if(!unassignHdAccount.isEmpty()) physician.AccountId = unassignHdAccount[0].Id;
 		physician.RecordTypeId=requestRecordType.Id;
 		if(physician.Requested_Physician_NPI__c!=null && physician.Requested_Physician_NPI__c.isNumeric() && physician.Requested_Physician_NPI__c.length()==10) {
-			List<Contact> foundNpi = [select Id, Name from contact where npi__c=:physician.Requested_Physician_NPI__c];
+			List<Contact> foundNpi = [select Id, Name from contact where npi__c=:physician.Requested_Physician_NPI__c order by lastModifiedDate desc limit 1];
 			if(!foundNpi.isEmpty()){
 				String alert = 'A physician record already exists with the requested NPI. <a class="blue-link" href="/apex/saleshd_contact?id='+foundNpi[0].id+'">Click here to navigate to '
 				+foundNpi[0].name+'\'s contact page.</a>';
