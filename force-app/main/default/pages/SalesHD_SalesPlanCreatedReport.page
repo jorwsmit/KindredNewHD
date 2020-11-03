@@ -3,7 +3,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        <title>Sales Plan Manager</title>
+        <title>Sales Plan Reports</title>
 
         <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/> -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
@@ -108,6 +108,7 @@
 
             table {
                 overflow: hidden;
+                font-size: 14px;
             }
 
             table td,
@@ -658,6 +659,11 @@
                 top: -18px;
                 right: 25px;
             }
+
+            #chartdiv {
+                width: 100%;
+                height: 500px;
+            }
         </style>
     </head>
 
@@ -667,33 +673,18 @@
 
             <c:SalesHD_RedesignNav/>
 
-            <div class="container no-padding">
-                <button class="btn btn-block btn-primary" data-toggle="modal" data-target="#newSalesPlanModal">
-                    <i class="fas fa-plus"></i> New Sales Plan</button>
-            </div>
-
-            <div class="container white-bg shadow">
-                <h4>Sales Plan Reports</h4>
-                <div>
-                    <a href="/apex/SalesHD_SalesPlanReports"><h5>Sales Plan Totals by Market</h5></a>
-                </div>
-                <div>
-                    <a href="/apex/SalesHD_SalesPlanCreatedReport"><h5>Sales Plan Filled Out Date</h5></a>
-                </div>
-            </div>
-
             <div class="container white-bg shadow">
                 <h3 class="thin italic">
-                    <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i> My Teams Sales Plans </h3>
+                    <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i> Sales Plan Filled Out Date Report </h3>
 
                 <apex:form>
                     <div class="row" style="margin-top:10px;margin-bottom:10px;">
-                        <div class="col-md-3" style="padding-left:0px;">
+                        <!-- <div class="col-md-3" style="padding-left:0px;">
                             <apex:selectList size="1" value="{!selectedCL}" style="width:100%">
                                 <apex:selectOptions value="{!CLPicklist}" />
                                 <apex:actionsupport event="onchange" action="{!selectCL}" />
                             </apex:selectList>
-                        </div>
+                        </div> -->
                         <div class="col-md-3">
                             <apex:selectList size="1" value="{!selectedMonth}" style="width:100%">
                                 <apex:selectOptions value="{!MonthPicklist}" />
@@ -708,71 +699,75 @@
                             </apex:selectList>
                         </div>
                     </div>
+                    <div class="row" style="margin-bottom:10px;">
+                        <apex:inputField style="display:none;" value="{!usr.Region__c}" />
+                        <div class="col-md-3">
+                            <div>
+                                <b>District</b>
+                            </div>
+                            <apex:inputField value="{!usr.District__c}" styleClass="width:100%;" type="text">
+                                <apex:actionsupport event="onchange" action="{!changeMarket}" />
+                            </apex:inputField>
+                        </div>
+                        <div class="col-md-3">
+                            <div>
+                                <b>Market</b>
+                            </div>
+                            <apex:inputField value="{!usr.Area__c}" styleClass="width:100%;" type="text">
+                                <apex:actionsupport event="onchange" action="{!changeMarket}" />
+                            </apex:inputField>
+                        </div>
+                        <!-- <div class="col-md-3">
+                            <div><b>Employee</b></div>
+                            <apex:selectList size="1" value="{!selectedCL}">
+                                <apex:selectOptions value="{!CLPicklist}" />
+                                <apex:actionsupport event="onchange" action="{!toggleCL}" />
+                            </apex:selectList>
+                        </div> -->
+                    </div>
+                    <div class="row">
+                        <div id="chartdiv"></div>
+                    </div>
                 </apex:form>
 
 
-                <apex:repeat value="{!myTeamsPlans}" var="plan" id="myTeamsPlans">
-                    <div>
-                        <a href="/apex/SalesHD_SalesPlan?id={!plan.Id}">
-                            <b>{!plan.Owner.Name}'s Sales Plan</b> - {!CASE(MONTH(plan.SalesHD_Plan_Date__c), 1, "January", 2, "February", 3, "March",
-                            4, "April", 5, "May", 6, "June", 7, "July", 8, "August", 9, "September", 10, "October", 11, "November",
-                            12, "December", "None")&" "&TEXT(YEAR(plan.SalesHD_Plan_Date__c))}</a>
-                    </div>
-                </apex:repeat>
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>CL Name</th>
+                            <!-- <th>Plan Created</th> -->
+                            <!-- <th>Plan Filled Out</th> -->
+                            <th>Plan Filled Out Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <apex:repeat value="{!createdReport}" var="mc">
+                            <tr>
+                                <td>{!mc.cl}</td>
+                                <!-- <td class=" {!if(!mc.created, if(value(selectedYear)<=year(today()) && value(selectedMonth)<month(today()), "text-danger",
+                                    if(value(selectedMonth)=month(today()) && day(today())>5, "text-danger", "")
+                                )
+                                    , "")} ">
+                                    {!mc.created}
+                                </td> -->
+                                <!-- <td>{!mc.completed}</td> -->
+                                <td class=" {!if(mc.completedLate, " text-danger ", "text-success ")} ">
+                                    <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                        <apex:param value="{!mc.completedDate}" />
+                                    </apex:outputText>
+                                </td>
+                            </tr>
+
+                        </apex:repeat>
+
+
+                    </tbody>
+
+                </table>
+
             </div>
-
-            <apex:form id="newSalesPlanForm">
-                <div id="newSalesPlanModal" class="modal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-primary">
-                                <h3 class="modal-title" style="color:#fff!important;">
-                                    <i style="margin-right:10px;" class="far fa-trash-alt"></i> New Sales Plan
-                                </h3>
-                            </div>
-                            <div class="modal-body">
-                                <label>Sales Plan Month</label>
-                                <apex:selectList required="true" size="1" value="{!newPlanMonth}" style="width:100%;color:black;">
-                                    <apex:selectOptions value="{!MonthPicklist}" />
-                                </apex:selectList>
-
-                                <label>Sales Plan Year</label>
-                                <apex:selectList required="true" size="1" value="{!newPlanYear}" style="width:100%;color:black;">
-                                    <apex:selectOptions value="{!YearPicklist}" />
-                                </apex:selectList>
-                            </div>
-
-                            <div class="modal-footer">
-                                <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNewPlan}" value="Save New Sales Plan"
-                                    rerender="errorMessages" style="vertical-align:bottom; margin-top:0px!important; padding:8px 12px!important">
-                                </apex:commandButton>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            </div>
-
-                            <apex:outputPanel id="errorMessages">
-                                <div>
-                                    <apex:pageMessages />
-                                </div>
-                            </apex:outputPanel>
-
-
-                       
-                        </div>
-                    </div>
-                </div>
-                <apex:actionStatus id="statusSpinner">
-                    <apex:facet name="start">
-
-                        <div class="slds-spinner_container" style="position:fixed; left:0px; top:0px; width:100vw; height:100vh;">
-                            <div class="slds-spinner slds-spinner--large slds-spinner--brand">
-                                <div class="slds-spinner__dot-a"></div>
-                                <div class="slds-spinner__dot-b"></div>
-                            </div>
-                        </div>
-
-                    </apex:facet>
-                </apex:actionStatus>
-            </apex:form>
 
 
         </div>
@@ -785,13 +780,168 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
         <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+        <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+        <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+        <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
         <script>
-            Visualforce.remoting.timeout = 120000;
-            $(document).ready(function () {
+            am4core.ready(function () {
+
+                var chartFontSize = 16;
+                am4core.useTheme(am4themes_animated);
+
+                var container = am4core.create("chartdiv", am4core.Container);
+                container.width = am4core.percent(100);
+                container.height = am4core.percent(100);
+                container.layout = "horizontal";
 
 
+                var chart = container.createChild(am4charts.PieChart);
 
-            });
+                let subData = [{name: "", value: 1, "color": "#808285", "opacity": 0.3, "strokeDasharray": "4,4", "tooltip": ""}];
+                if({!crp.completedTotal} != 0){
+                    subData = [];
+                    if({!crp.completedOnTimeTotal}!=0) subData.push({ name: "Plan Filled Out on Time", value: {!crp.completedOnTimeTotal}, "color": "#28a745" });
+                    if({!crp.completedLateTotal}) subData.push({ name: "Plan Filled Out Late", value: {!crp.completedLateTotal}, "color": "#dc3545" });
+                }
+                // Add data
+                chart.data = [
+                    {
+                        "plans": "Users With Filled Out Plan",
+                        "total": {!crp.completedTotal},
+                        "color": "#3d90e8",
+                        "subData": subData
+                    }, {
+                        "plans": "Users Without Filled Out Plan",
+                        "color": "#808285",
+                        "total": {!crp.incompletedTotal}
+                    }
+                ];
+                chart.fontSize = chartFontSize;
+                // chart2.width = am4core.percent(70);
+                chart.radius = am4core.percent(70);  
+
+                // Add and configure Series
+                var pieSeries = chart.series.push(new am4charts.PieSeries());
+                pieSeries.dataFields.value = "total";
+                pieSeries.dataFields.category = "plans";
+                pieSeries.slices.template.states.getKey("active").properties.shiftRadius = 0;
+                
+                pieSeries.ticks.template.disabled = true;
+                pieSeries.alignLabels = false;
+                pieSeries.labels.template.text = "{category}\n{value}";
+                pieSeries.labels.template.radius = am4core.percent(85);
+                pieSeries.labels.template.inside = true;
+                pieSeries.slices.template.propertyFields.fill = "color";
+                
+                
+                var chart2 = container.createChild(am4charts.PieChart);
+                chart2.width = am4core.percent(70);
+                chart2.radius = am4core.percent(40);    
+                chart2.fontSize = chartFontSize;    
+
+                // Add and configure Series
+                var pieSeries2 = chart2.series.push(new am4charts.PieSeries());
+                pieSeries2.dataFields.value = "value";
+                pieSeries2.dataFields.category = "name";
+                pieSeries2.slices.template.states.getKey("active").properties.shiftRadius = 0;
+                pieSeries2.labels.template.radius = am4core.percent(75);
+                pieSeries2.labels.template.inside = true;
+                pieSeries2.labels.template.text = "{category}\n{value}";
+                pieSeries2.slices.template.propertyFields.fill = "color";
+                pieSeries2.ticks.template.disabled = true;
+                pieSeries2.alignLabels = false;
+                pieSeries2.events.on("positionchanged", updateLines);
+
+                if({!crp.completedTotal}==0){
+                    let slice = pieSeries2.slices.template;
+                    slice.propertyFields.color = "color";
+                    slice.propertyFields.tooltipText = "tooltip";
+                    slice.propertyFields.fillOpacity = "opacity";
+                    slice.propertyFields.strokeDasharray = "strokeDasharray";
+                    slice.propertyFields.stroke = "color";
+
+                    pieSeries2.labels.template.propertyFields.disabled = "disabled";
+                    pieSeries2.ticks.template.propertyFields.disabled = "disabled";
+                    pieSeries2.labels.template.disabled = true;
+                }
+
+                var interfaceColors = new am4core.InterfaceColorSet();
+
+                var line1 = container.createChild(am4core.Line);
+                line1.strokeDasharray = "2,2";
+                line1.strokeOpacity = 0.5;
+                line1.stroke = interfaceColors.getFor("alternativeBackground");
+                line1.isMeasured = false;
+
+                var line2 = container.createChild(am4core.Line);
+                line2.strokeDasharray = "2,2";
+                line2.strokeOpacity = 0.5;
+                line2.stroke = interfaceColors.getFor("alternativeBackground");
+                line2.isMeasured = false;
+
+                var selectedSlice;
+
+                function selectSlice(dataItem) {
+
+                    selectedSlice = dataItem.slice;
+
+                    var fill = selectedSlice.fill;
+
+                    var count = dataItem.dataContext.subData.length;
+                    pieSeries2.colors.list = [];
+                    for (var i = 0; i < count; i++) {
+                        pieSeries2.colors.list.push(fill.brighten(i * 2 / count));
+                    }
+
+                    chart2.data = dataItem.dataContext.subData;
+                    pieSeries2.appear();
+
+                    var middleAngle = selectedSlice.middleAngle;
+                    var firstAngle = pieSeries.slices.getIndex(0).startAngle;
+                    var animation = pieSeries.animate([{ property: "startAngle", to: firstAngle - middleAngle }, { property: "endAngle", to: firstAngle - middleAngle + 360 }], 600, am4core.ease.sinOut);
+                    animation.events.on("animationprogress", updateLines);
+
+                    selectedSlice.events.on("transformed", updateLines);
+
+                    //  var animation = chart2.animate({property:"dx", from:-container.pixelWidth / 2, to:0}, 2000, am4core.ease.elasticOut)
+                    //  animation.events.on("animationprogress", updateLines)
+                }
+
+
+                function updateLines() {
+                    if (selectedSlice) {
+                        var p11 = { x: selectedSlice.radius * am4core.math.cos(selectedSlice.startAngle), y: selectedSlice.radius * am4core.math.sin(selectedSlice.startAngle) };
+                        var p12 = { x: selectedSlice.radius * am4core.math.cos(selectedSlice.startAngle + selectedSlice.arc), y: selectedSlice.radius * am4core.math.sin(selectedSlice.startAngle + selectedSlice.arc) };
+
+                        p11 = am4core.utils.spritePointToSvg(p11, selectedSlice);
+                        p12 = am4core.utils.spritePointToSvg(p12, selectedSlice);
+
+                        var p21 = { x: 0, y: -pieSeries2.pixelRadius };
+                        var p22 = { x: 0, y: pieSeries2.pixelRadius };
+
+                        p21 = am4core.utils.spritePointToSvg(p21, pieSeries2);
+                        p22 = am4core.utils.spritePointToSvg(p22, pieSeries2);
+
+                        line1.x1 = p11.x;
+                        line1.x2 = p21.x;
+                        line1.y1 = p11.y;
+                        line1.y2 = p21.y;
+
+                        line2.x1 = p12.x;
+                        line2.x2 = p22.x;
+                        line2.y1 = p12.y;
+                        line2.y2 = p22.y;
+                    }
+                }
+
+                chart.events.on("datavalidated", function () {
+                    setTimeout(function () {
+                        selectSlice(pieSeries.dataItems.getIndex(0));
+                    }, 1000);
+                });
+
+
+            }); // end am4core.ready()
         </script>
     </body>
 

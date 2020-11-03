@@ -942,6 +942,9 @@
 								<div style="margin-top:20px;">
 									<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}';"
 									 style="margin-top:-7px!important" />
+									 <apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Relate to Sales Plan"
+									 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_RelateToSalesPlan?eid={!event.Id}';"
+									/>
 									<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
 									 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}&duplicate=true';"
 									/>

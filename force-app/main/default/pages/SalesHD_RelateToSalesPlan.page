@@ -3,7 +3,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        <title>Sales Plan Manager</title>
+        <title>Relate to Sales Plan</title>
 
         <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/> -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
@@ -667,112 +667,93 @@
 
             <c:SalesHD_RedesignNav/>
 
-            <div class="container no-padding">
-                <button class="btn btn-block btn-primary" data-toggle="modal" data-target="#newSalesPlanModal">
-                    <i class="fas fa-plus"></i> New Sales Plan</button>
-            </div>
-
-            <div class="container white-bg shadow">
-                <h4>Sales Plan Reports</h4>
-                <div>
-                    <a href="/apex/SalesHD_SalesPlanReports"><h5>Sales Plan Totals by Market</h5></a>
-                </div>
-                <div>
-                    <a href="/apex/SalesHD_SalesPlanCreatedReport"><h5>Sales Plan Filled Out Date</h5></a>
-                </div>
-            </div>
-
             <div class="container white-bg shadow">
                 <h3 class="thin italic">
-                    <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i> My Teams Sales Plans </h3>
+                    <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i> My Sales Plans </h3>
 
-                <apex:form>
-                    <div class="row" style="margin-top:10px;margin-bottom:10px;">
-                        <div class="col-md-3" style="padding-left:0px;">
-                            <apex:selectList size="1" value="{!selectedCL}" style="width:100%">
-                                <apex:selectOptions value="{!CLPicklist}" />
-                                <apex:actionsupport event="onchange" action="{!selectCL}" />
-                            </apex:selectList>
-                        </div>
-                        <div class="col-md-3">
-                            <apex:selectList size="1" value="{!selectedMonth}" style="width:100%">
-                                <apex:selectOptions value="{!MonthPicklist}" />
-                                <apex:actionsupport event="onchange" action="{!selectMonth}" />
-                            </apex:selectList>
-                        </div>
+                <apex:outputPanel rendered="{!planRelateList.size=0}">
+                    <h3>You must create a sales plans, account plan, and at least one strategy before relating an encounter to
+                        a sales plan's strategy.</h3>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!planRelateList.size>=1}">
+                    <p>Only one strategy can be selected and related to the encounter. 
+                        If no strategy is selected, then the encounter will be un-related from a strategy if it is related to one.</p>
+                    <apex:form id="strategiesForm">
+                        <apex:inputHidden value="{!selectedRelatedStrategy}" id="selectedRelatedStrategy" />
+                        <div class="accordion" id="accordionExample">
 
-                        <div class="col-md-3">
-                            <apex:selectList size="1" value="{!selectedYear}" style="width:100%">
-                                <apex:selectOptions value="{!YearPicklist}" />
-                                <apex:actionsupport event="onchange" action="{!selectYear}" />
-                            </apex:selectList>
-                        </div>
-                    </div>
-                </apex:form>
+                            <apex:variable value="1" var="i" />
+                            <apex:repeat value="{!planRelateList}" var="plan">
 
 
-                <apex:repeat value="{!myTeamsPlans}" var="plan" id="myTeamsPlans">
-                    <div>
-                        <a href="/apex/SalesHD_SalesPlan?id={!plan.Id}">
-                            <b>{!plan.Owner.Name}'s Sales Plan</b> - {!CASE(MONTH(plan.SalesHD_Plan_Date__c), 1, "January", 2, "February", 3, "March",
-                            4, "April", 5, "May", 6, "June", 7, "July", 8, "August", 9, "September", 10, "October", 11, "November",
-                            12, "December", "None")&" "&TEXT(YEAR(plan.SalesHD_Plan_Date__c))}</a>
-                    </div>
-                </apex:repeat>
-            </div>
+                                <div class="card">
+                                    <div class="card-header" id="heading{!i}">
+                                        <h3 class="mb-0">
+                                            <button class="btn btn-link blue" type="button" data-toggle="collapse" data-target="#collapse{!i}" aria-expanded="true" aria-controls="collapse{!i}">
+                                                <b>Sales Plan</b> - {!CASE(MONTH(plan.sPlan.SalesHD_Plan_Date__c), 1, "January",
+                                                2, "February", 3, "March", 4, "April", 5, "May", 6, "June", 7, "July", 8,
+                                                "August", 9, "September", 10, "October", 11, "November", 12, "December",
+                                                "None")&" "&TEXT(YEAR(plan.sPlan.SalesHD_Plan_Date__c))}
+                                            </button>
+                                        </h3>
+                                    </div>
 
-            <apex:form id="newSalesPlanForm">
-                <div id="newSalesPlanModal" class="modal" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header bg-primary">
-                                <h3 class="modal-title" style="color:#fff!important;">
-                                    <i style="margin-right:10px;" class="far fa-trash-alt"></i> New Sales Plan
-                                </h3>
-                            </div>
-                            <div class="modal-body">
-                                <label>Sales Plan Month</label>
-                                <apex:selectList required="true" size="1" value="{!newPlanMonth}" style="width:100%;color:black;">
-                                    <apex:selectOptions value="{!MonthPicklist}" />
-                                </apex:selectList>
+                                    <div id="collapse{!i}" class="collapse" aria-labelledby="heading{!i}" data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            <apex:repeat value="{!plan.acctPlans}" var="accountPlan">
+                                                <h3>
+                                                    {!accountPlan.aPlan.Account__r.Name}
+                                                </h3>
+                                                <apex:variable value="1" var="stratNumber" />
+                                                <apex:repeat value="{!accountPlan.strats}" var="strats">
 
-                                <label>Sales Plan Year</label>
-                                <apex:selectList required="true" size="1" value="{!newPlanYear}" style="width:100%;color:black;">
-                                    <apex:selectOptions value="{!YearPicklist}" />
-                                </apex:selectList>
-                            </div>
+                                                    <div style="margin-top:15px; margin-bottom:-10px;">
+                                                        <label>
+                                                            <apex:inputField style="margin-top:12px; display:inline-block;" value="{!strats.strat.Complete__c}" onchange="checkedBox(this, '{!strats.strat.id}');"
+                                                            /> Strategy {!stratNumber}
+                                                        </label>
+                                                        <p style="padding-bottom: 20px;">{!strats.strat.Strategy__c}</p>
+                                                    </div>
+                                                    <apex:variable var="stratNumber" value="{!VALUE(stratNumber) + 1}" />
+                                                </apex:repeat>
+                                            </apex:repeat>
 
-                            <div class="modal-footer">
-                                <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNewPlan}" value="Save New Sales Plan"
-                                    rerender="errorMessages" style="vertical-align:bottom; margin-top:0px!important; padding:8px 12px!important">
-                                </apex:commandButton>
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                            </div>
-
-                            <apex:outputPanel id="errorMessages">
-                                <div>
-                                    <apex:pageMessages />
+                                        </div>
+                                    </div>
                                 </div>
-                            </apex:outputPanel>
 
+                                <apex:variable var="i" value="{!VALUE(i) + 1}" />
 
-                       
+                            </apex:repeat>
                         </div>
-                    </div>
-                </div>
-                <apex:actionStatus id="statusSpinner">
-                    <apex:facet name="start">
-
-                        <div class="slds-spinner_container" style="position:fixed; left:0px; top:0px; width:100vw; height:100vh;">
-                            <div class="slds-spinner slds-spinner--large slds-spinner--brand">
-                                <div class="slds-spinner__dot-a"></div>
-                                <div class="slds-spinner__dot-b"></div>
-                            </div>
+                        <div class="container no-padding">
+                            <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!relateEncounterPlan}" value="Done"
+                                rerender="strategiesForm" style="vertical-align:bottom; margin-top:10px!important;">
+                            </apex:commandButton>
                         </div>
+                        <div class="container no-padding">
+                            <apex:actionStatus id="statusSpinner">
+                                <apex:facet name="start">
+    
+                                    <div class="slds-spinner_container" style="position:fixed; width:100vw; height:100vh;">
+                                        <div class="slds-spinner slds-spinner--large slds-spinner--brand">
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </div>
+    
+                                </apex:facet>
+                            </apex:actionStatus>
+    
+    
+                        </div>
+                        <apex:pageMessages />
+                    </apex:form>
+                </apex:outputPanel>
 
-                    </apex:facet>
-                </apex:actionStatus>
-            </apex:form>
+                
+
+            </div>
 
 
         </div>
@@ -786,12 +767,20 @@
             crossorigin="anonymous"></script>
         <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
         <script>
-            Visualforce.remoting.timeout = 120000;
-            $(document).ready(function () {
+            function checkedBox(obj, stratId) {
+                document.getElementById('{!$Component.strategiesForm.selectedRelatedStrategy}').value = stratId;
+                if (obj.checked) {
+                    var inputs = document.getElementsByTagName("input");
 
+                    for (var i = 0; i < inputs.length; i++) {
+                        var oInput = inputs[i];
+                        if (oInput.type == "checkbox" && oInput.checked && oInput != obj) {
+                            oInput.checked = false;
+                        }
+                    }
+                }
 
-
-            });
+            }
         </script>
     </body>
 

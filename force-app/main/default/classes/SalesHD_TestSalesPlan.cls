@@ -227,4 +227,90 @@ public class SalesHD_TestSalesPlan {
 	Test.stopTest();
 }
 
+@isTest static void SalesPlanCreatedReport() {
+
+	PageReference pageRef = Page.SalesHD_SalesPlans;
+	Test.setCurrentPage(pageRef);
+	Sales_Plans__c sp = new Sales_Plans__c();
+	SalesHD_SalesPlan controller =
+		new SalesHD_SalesPlan(new ApexPages.StandardController(sp));
+	controller.newPlanYear=System.now().year();
+	controller.newPlanMonth=System.now().month();
+	//save for current month
+	Test.setCurrentPage(controller.saveNewPlan());
+	Account acct = [select id from account where name='Test Account'];
+	controller.selectedAccount = acct.Id;
+	controller.addAccountPlan();
+	Account_Sales_Plan__c asp = [select id from Account_Sales_Plan__c where Account__c=:acct.Id];
+	controller.accountPlanId = asp.id;
+	controller.addStrategy();
+	Account_Strategy__c aStrat = [select id from Account_Strategy__c where Account_Sales_Plan__c=:asp.Id];
+
+	controller.planFilledOut();
+
+	pageRef = Page.SalesHD_SalesPlanCreatedReport;
+	Test.setCurrentPage(pageRef);
+	controller.selectedMonth=String.valueOf(System.now().month());
+	Test.startTest();
+	controller.getCreatedReport();
+	Test.stopTest();
+}
+
+@isTest static void SalesPlanPdf() {
+
+PageReference page = new PageReference('/apex/SalesHD_SalesPlanPdf');
+Sales_Plans__c salesPlan = null;
+for(Sales_Plans__c sp : [select Id, SalesHD_Plan_Date__c from Sales_Plans__c]){
+	salesPlan = sp;
+}
+if(salesPlan!=null){
+	page = new PageReference('/apex/SalesHD_SalesPlanPdf?id='+salesPlan.Id);
+}
+SalesHD_SalesPlan controller = new SalesHD_SalesPlan(new ApexPages.StandardController(salesPlan));
+Test.setCurrentPage(page);
+Test.startTest();
+controller.spDate = salesPlan.SalesHD_Plan_Date__c;
+controller.getAccountMetricsPdf();
+Test.stopTest();
+}
+
+@isTest static void RelatePlanToEncounter() {
+	PageReference pageRef = Page.SalesHD_SalesPlans;
+	Test.setCurrentPage(pageRef);
+
+	Sales_Plans__c sp = new Sales_Plans__c();
+	SalesHD_SalesPlan controller =
+		new SalesHD_SalesPlan(new ApexPages.StandardController(sp));
+	controller.newPlanYear=System.now().year();
+	controller.newPlanMonth=System.now().month();
+    pageRef = controller.saveNewPlan();
+    Test.setCurrentPage(pageRef);
+	sp = [select id, SalesHD_Plan_Date__c from Sales_Plans__c where id=:ApexPages.currentPage().getParameters().get('id')];
+	// sp.SalesHD_Plan_Date__c = sp.SalesHD_Plan_Date__c.addMonths(-1);
+	// update sp;
+	controller = new SalesHD_SalesPlan(new ApexPages.StandardController(sp));
+
+	Account acct = [select id from account where name='Test Account'];
+	controller.selectedAccount = acct.Id;
+	controller.addAccountPlan();
+	Account_Sales_Plan__c asp = [select id from Account_Sales_Plan__c where Account__c=:acct.Id];
+	controller.accountPlanId = asp.id;
+	controller.addStrategy();
+	Account_Strategy__c aStrat = [select id from Account_Strategy__c where Account_Sales_Plan__c=:asp.Id];
+
+	Contact con = new Contact(FirstName='Relate', LastName = 'Strategy');
+	insert con;
+	Event e = new Event(ownerId=UserInfo.getUserId(), ActivityDateTime=System.now(),
+	                    EndDateTime=system.now()+5, Type='Follow-up', whoId=con.Id);
+	insert e;
+
+	pageRef = new PageReference('/apex/SalesHD_RelateToSalesPlan?eid='+e.Id); 
+	Test.setCurrentPage(pageRef);
+	Test.startTest();
+	controller.getPlanRelateList();
+	controller.selectedRelatedStrategy = aStrat.Id;
+	controller.relateEncounterPlan();
+	Test.stopTest();
+}
+
 }

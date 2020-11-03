@@ -706,7 +706,8 @@
             #educationTip .modal-body {
                 font-size: 14px;
             }
-            .copy-strategies{
+
+            .copy-strategies {
                 font-size: 14px;
                 margin-top: 0px !important;
                 margin-bottom: 0px !important;
@@ -728,11 +729,27 @@
                     <b>{!spOwnerName}</b> {!planDate}</h2>
             </div>
 
-            <apex:outputPanel rendered="{!canCopyStrategies && canDelete}">
-                <div class="container copy-strategies">
+            <div style="height:30px;" class="container copy-strategies">
+                <apex:outputPanel rendered="{!canCopyStrategies && canDelete}">
+
                     <a href="/apex/SalesHD_CopyStrategies?id={!previousPlanId}&newId={!salesPlan.Id}">
                         <i class="far fa-clone"></i> Copy incomplete strategies from previous sales plan.
                     </a>
+
+                </apex:outputPanel>
+                <a class="float-right" href="/apex/SalesHD_SalesPlanPdf?id={!salesPlan.Id}">
+                    <i class="far fa-file-pdf"></i> Download PDF
+                </a>
+            </div>
+
+            <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete && Sales_Plans__c.Plan_Filled_Out_Date__c=null}">
+                <div class="container no-padding">
+                    <apex:form>
+                        <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!planFilledOut}" value="Plan Filled Out"
+                            style="vertical-align:bottom; margin-top:10px!important;">
+                        </apex:commandButton>
+                    </apex:form>
+
                 </div>
             </apex:outputPanel>
 
@@ -763,7 +780,8 @@
             <apex:form id="planForm">
                 <apex:outputPanel rendered="{!nonConversion.size<=0}">
                     <div class="container white-bg shadow text-primary">
-                        <i class="fas fa-info-circle"></i> There is no non-conversion data available for {!IF(planDateLastMonth!=null, planDateLastMonth, "the previous month")}.
+                        <i class="fas fa-info-circle"></i> There is no non-conversion data available for {!IF(planDateLastMonth!=null, planDateLastMonth,
+                        "the previous month")}.
                     </div>
                 </apex:outputPanel>
                 <apex:outputPanel rendered="{!nonConversion.size>0}">
@@ -771,7 +789,9 @@
 
                         <table class="non-conversion-table">
                             <thead>
-                                <th colspan="5">Non-Conversion Summary</th>
+                                <th colspan="6">Non-Conversion Summary {!IF(planDateLastMonth!=null, "for " & planDateLastMonth, "for Previous
+                                    Month")}
+                                </th>
 
                             </thead>
 
@@ -783,6 +803,11 @@
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Conversion_Rate__c.Label}</th>
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Non_Converted_Referrals__c.Label}</th>
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Percent_Non_Converted__c.Label}</th>
+                                    <th>
+                                        <a href="#" data-toggle="tooltip" data-placement="top" title="(Non-Converted Referrals - Pending Referrals) / Total Referrals">
+                                            {!$ObjectType.Non_Conversion__c.fields.Percent_Viable__c.Label}
+                                        </a>
+                                    </th>
                                 </tr>
                                 <tr>
                                     <td>{!nonConversion[0].Total_Referrals__c}</td>
@@ -790,10 +815,11 @@
                                     <td>{!nonConversion[0].Conversion_Rate__c}%</td>
                                     <td>{!nonConversion[0].Non_Converted_Referrals__c}</td>
                                     <td>{!nonConversion[0].Percent_Non_Converted__c}%</td>
+                                    <td>{!nonConversion[0].Percent_Viable__c}%</td>
                                 </tr>
 
                                 <tr>
-                                    <td colspan="5">
+                                    <td colspan="6">
                                         <br/>
                                     </td>
                                 </tr>
@@ -802,48 +828,51 @@
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Insurance_Denials__c.Label}</th>
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Lower_Level_of_Care__c.Label}</th>
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Med_Necessity__c.Label}</th>
-                                    <th>{!$ObjectType.Non_Conversion__c.fields.Financial_Denial__c.Label}</th>
-                                    <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Competitor__c.Label}</th>
+                                    <th colspan="3">{!$ObjectType.Non_Conversion__c.fields.Financial_Denial__c.Label}</th>
+
                                 </tr>
                                 <tr>
                                     <td>{!nonConversion[0].Insurance_Denials__c}</td>
                                     <td>{!nonConversion[0].Lost_to_Lower_Level_of_Care__c}</td>
                                     <td>{!nonConversion[0].Med_Necessity__c}</td>
-                                    <td>{!nonConversion[0].Financial_Denial__c}</td>
-                                    <td>{!nonConversion[0].Lost_to_Competitor__c}</td>
+                                    <td colspan="3">{!nonConversion[0].Financial_Denial__c}</td>
+
                                 </tr>
 
                                 <tr>
                                     <td>{!nonConversion[0].Percent_Insurance_Denials__c}%</td>
                                     <td>{!nonConversion[0].Percent_Lost_to_Lower_Level_of_Care__c}%</td>
                                     <td>{!nonConversion[0].Percent_Med_Necessity__c}%</td>
-                                    <td>{!nonConversion[0].Percent_Financial_Denial__c}%</td>
-                                    <td>{!nonConversion[0].Percent_Lost_to_Competitor__c}%</td>
+                                    <td colspan="3">{!nonConversion[0].Percent_Financial_Denial__c}%</td>
+
                                 </tr>
 
                                 <tr>
-                                    <td colspan="4">
+                                    <td colspan="6">
                                         <br/>
                                     </td>
                                 </tr>
 
                                 <tr>
+                                    <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Competitor__c.Label}</th>
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Kindred_LTAC__c.Label}</th>
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Family_Decision__c.Label}</th>
                                     <th>{!$ObjectType.Non_Conversion__c.fields.Expired__c.Label}</th>
-                                    <th>{!$ObjectType.Non_Conversion__c.fields.Pending__c.Label}</th>
+                                    <th colspan="2">{!$ObjectType.Non_Conversion__c.fields.Pending__c.Label}</th>
                                 </tr>
                                 <tr>
+                                    <td>{!nonConversion[0].Lost_to_Competitor__c}</td>
                                     <td>{!nonConversion[0].Lost_to_Kindred_LTAC__c}</td>
                                     <td>{!nonConversion[0].Family_Decision__c}</td>
                                     <td>{!nonConversion[0].Expired__c}</td>
-                                    <td>{!nonConversion[0].Pending__c}</td>
+                                    <td colspan="2">{!nonConversion[0].Pending__c}</td>
                                 </tr>
                                 <tr>
+                                    <td>{!nonConversion[0].Percent_Lost_to_Competitor__c}%</td>
                                     <td>{!nonConversion[0].Percent_Lost_to_Kindred_LTAC__c}%</td>
                                     <td>{!nonConversion[0].Percent_Family_Decision__c}%</td>
                                     <td>{!nonConversion[0].Percent_Expired__c}%</td>
-                                    <td>{!nonConversion[0].Percent_Pending__c}%</td>
+                                    <td colspan="2">{!nonConversion[0].Percent_Pending__c}%</td>
                                 </tr>
 
                             </tbody>
@@ -855,6 +884,12 @@
                             <i onclick="getEducationTip('conversion');" class="text-primary fas fa-question-circle cursor-pointer"></i>
                         </h3>
                         <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c}" html-placeholder="Non-Conversion Reasons"
+                        />
+
+                        <h3 style="margin-top:10px;">Non-Conversion Solutions
+                            <!-- <i onclick="getEducationTip('conversion');" class="text-primary fas fa-question-circle cursor-pointer"></i> -->
+                        </h3>
+                        <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Solutions__c}" html-placeholder="Non-Conversion Solutions"
                         />
 
                     </div>
@@ -960,6 +995,27 @@
                             </div>
                         </div>
                     </apex:repeat>
+
+                    <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId!=$User.Id && isManager}">
+                        <div class="container white-bg shadow">
+                            <h3>Manager Comment</h3>
+                            <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Manager_Comment__c}" html-placeholder="Manager Comment"
+                            />
+                            <apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveComment}" value="Save Manager Comment"
+                                rerender="planForm" style="vertical-align:bottom; margin-top:10px!important;">
+                            </apex:commandButton>
+
+                        </div>
+                    </apex:outputPanel>
+
+                    <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && Sales_Plans__c.SalesHD_Manager_Comment__c!=null}">
+                        <div class="container white-bg shadow">
+                            <h3>Manager Comment</h3>
+                            <apex:outputText styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Manager_Comment__c}" html-placeholder="Manager Comment"
+                            />
+                        </div>
+                    </apex:outputPanel>
+
                     <div class="container no-padding">
                         <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id && canDelete}">
                             <apex:commandButton styleClass="btn btn-block btn-primary" status="statusSpinner" action="{!saveAccountPlans}" value="Save Plan"
@@ -1150,6 +1206,8 @@
         <script>
             // Visualforce.remoting.timeout = 120000;
             $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+
                 for (am of {!accountMetrics
             }) {
                 var mtdVarColor = '';

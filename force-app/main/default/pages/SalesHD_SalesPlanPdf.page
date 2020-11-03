@@ -1,0 +1,313 @@
+<apex:page renderAs="pdf" standardController="Sales_Plans__c" extensions="SalesHD_SalesPlan" showHeader="false" sidebar="false"
+    standardStylesheets="false" applyBodyTag="false" applyHtmlTag="false">
+
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>Sales Plan</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <style>
+            body {
+                font-family: 'Helvetica', 'Arial', sans-serif;
+            }
+
+            .title {
+                text-align: center;
+            }
+
+            table {
+                font-size: 14px;
+                border-spacing: 0px;
+                border-collapse: collapse;
+            }
+
+            p {
+                font-size: 14px;
+            }
+
+            table td,
+            table th {
+                border: 1px solid #ddd;
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+            }
+
+            table thead th {
+                text-align: center !important;
+            }
+
+            table tbody td {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+
+            .non-conversion-table tbody td {
+                text-align: left !important;
+            }
+
+            .container {
+                border: 1px solid #ddd;
+                border-radius: 7px !important;
+                padding: 5px;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="title">
+            <h1>Sales Plan</h1>
+            <h2>
+                <b>{!spOwnerName}</b>
+                <span style="font-weight:100;">{!planDate}</span>
+            </h2>
+        </div>
+
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th colspan="3">Admits MTD</th>
+                        <th colspan="3">Admits YTD</th>
+                    </tr>
+                    <tr>
+                        <th>Favorited Account</th>
+                        <th>{!IF(planDateLastYear!=null, planDateLastYear, "")}</th>
+                        <th>{!IF(planDateLastMonth!=null, planDateLastMonth, "")}</th>
+                        <th>Variance</th>
+                        <th>{!IF(planDateLastYear!=null, planDateLastYear, "")}</th>
+                        <th>{!IF(planDateLastMonth!=null, planDateLastMonth, "")}</th>
+                        <th>Variance</th>
+                    </tr>
+                </thead>
+                <tbody id="planTable">
+                    <apex:repeat value="{!accountMetricsPdf}" var="metric">
+                        <tr>
+                            <td>{!metric.accountName}</td>
+                            <td>{!metric.pyMtdAdmit}</td>
+                            <td>{!metric.cyMtdAdmit}</td>
+                            <td style="color: {!IF(metric.mtdVariance!=null, IF(metric.mtdVariance>0, " green ", IF(metric.mtdVariance<0, "red ", " ")), " ")};">{!metric.mtdVariance}</td>
+                            <td>{!metric.pyYtdAdmit}</td>
+                            <td>{!metric.cyYtdAdmit}</td>
+                            <td class="">{!metric.ytdVariance}</td>
+                        </tr>
+                    </apex:repeat>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <div style="margin-top:20px;">
+
+            <apex:outputPanel rendered="{!nonConversion.size<=0}">
+                <div class="container white-bg shadow text-primary">
+                    <i class="fas fa-info-circle"></i> There is no non-conversion data available for {!IF(planDateLastMonth!=null, planDateLastMonth, "the
+                    previous month")}.
+                </div>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!nonConversion.size>0}">
+                <div>
+
+                    <table class="non-conversion-table">
+                        <thead>
+                            <th colspan="6">Non-Conversion Summary {!IF(planDateLastMonth!=null, "for " & planDateLastMonth, "for Previous Month")}</th>
+
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Total_Referrals__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Total_Admits__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Conversion_Rate__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Non_Converted_Referrals__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Percent_Non_Converted__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Percent_Viable__c.Label}</th>
+                            </tr>
+                            <tr>
+                                <td>{!nonConversion[0].Total_Referrals__c}</td>
+                                <td>{!nonConversion[0].Total_Admits__c}</td>
+                                <td>{!nonConversion[0].Conversion_Rate__c}%</td>
+                                <td>{!nonConversion[0].Non_Converted_Referrals__c}</td>
+                                <td>{!nonConversion[0].Percent_Non_Converted__c}%</td>
+                                <td>{!nonConversion[0].Percent_Viable__c}%</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="6">
+                                    <br/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Insurance_Denials__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Lower_Level_of_Care__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Med_Necessity__c.Label}</th>
+                                <th colspan="3">{!$ObjectType.Non_Conversion__c.fields.Financial_Denial__c.Label}</th>
+
+                            </tr>
+                            <tr>
+                                <td>{!nonConversion[0].Insurance_Denials__c}</td>
+                                <td>{!nonConversion[0].Lost_to_Lower_Level_of_Care__c}</td>
+                                <td>{!nonConversion[0].Med_Necessity__c}</td>
+                                <td colspan="3">{!nonConversion[0].Financial_Denial__c}</td>
+
+                            </tr>
+
+                            <tr>
+                                <td>{!nonConversion[0].Percent_Insurance_Denials__c}%</td>
+                                <td>{!nonConversion[0].Percent_Lost_to_Lower_Level_of_Care__c}%</td>
+                                <td>{!nonConversion[0].Percent_Med_Necessity__c}%</td>
+                                <td colspan="3">{!nonConversion[0].Percent_Financial_Denial__c}%</td>
+
+                            </tr>
+
+                            <tr>
+                                <td colspan="6">
+                                    <br/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Competitor__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Lost_to_Kindred_LTAC__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Family_Decision__c.Label}</th>
+                                <th>{!$ObjectType.Non_Conversion__c.fields.Expired__c.Label}</th>
+                                <th colspan="2">{!$ObjectType.Non_Conversion__c.fields.Pending__c.Label}</th>
+                            </tr>
+                            <tr>
+                                <td>{!nonConversion[0].Lost_to_Competitor__c}</td>
+                                <td>{!nonConversion[0].Lost_to_Kindred_LTAC__c}</td>
+                                <td>{!nonConversion[0].Family_Decision__c}</td>
+                                <td>{!nonConversion[0].Expired__c}</td>
+                                <td colspan="2">{!nonConversion[0].Pending__c}</td>
+                            </tr>
+                            <tr>
+                                <td>{!nonConversion[0].Percent_Lost_to_Competitor__c}%</td>
+                                <td>{!nonConversion[0].Percent_Lost_to_Kindred_LTAC__c}%</td>
+                                <td>{!nonConversion[0].Percent_Family_Decision__c}%</td>
+                                <td>{!nonConversion[0].Percent_Expired__c}%</td>
+                                <td colspan="2">{!nonConversion[0].Percent_Pending__c}%</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+                <h3 style="margin-top:10px;">Non-Conversion Reasons</h3>
+                <p>{!IF(Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c=null, "X", Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c)}</p>
+
+
+                <h3 style="margin-top:10px;">Non-Conversion Solutions</h3>
+                <p>{!IF(Sales_Plans__c.SalesHD_Non_Conversion_Solutions__c=null, "X", Sales_Plans__c.SalesHD_Non_Conversion_Solutions__c)}</p>
+
+            </apex:outputPanel>
+        </div>
+
+        <apex:outputPanel rendered="{!aPlans.size<=0}">
+            <h3 style="color:red;">No Account Plans</h3>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!aPlans.size>0}">
+            <h3>{!IF(aPlans.size=1, "1 Account Plan Continued on Next Page", TEXT(aPlans.size)&" Account Plans Continued on Next Pages")} </h3>
+        
+        <div style="margin-top:20px; page-break-before:always;">
+            <apex:repeat value="{!aPlans}" var="accountPlan">
+                <div class="container">
+                    <div>
+                        <h3 style="margin-top:0px;">{!accountPlan.aPlan.Account__r.Name}
+                        </h3>
+                        <div>
+                            <label>{!$ObjectType.Account_Sales_Plan__c.fields.Challenges_Critical_Issues__c.Label}</label>
+                            <p>{!IF(accountPlan.aPlan.Challenges_Critical_Issues__c=null, "X", accountPlan.aPlan.Challenges_Critical_Issues__c)}</p>
+                        </div>
+
+                        <div>
+                            <label>{!$ObjectType.Account_Sales_Plan__c.fields.Goal__c.Label}</label>
+                            <p>{!IF(accountPlan.aPlan.Goal__c=null, "X", accountPlan.aPlan.Goal__c)}</p>
+                        </div>
+
+
+                        <apex:variable value="1" var="stratNumber" />
+                        <apex:repeat value="{!accountPlan.strats}" var="strats">
+
+                            <div style="margin-top:15px; margin-bottom:-10px;">
+                                <label>Strategy {!stratNumber}</label>
+                            </div>
+                            <div style="margin-top:15px; padding:10px; border:1px solid #ddd; border-radius:7px;">
+                                <div>
+                                    <h5 style="margin-bottom:5px;">{!$ObjectType.Account_Strategy__c.fields.Strategy__c.Label}</h5>
+                                    <p>{!IF(strats.strat.Strategy__c=null, "X", strats.strat.Strategy__c)}</p>
+                                </div>
+                                <div class="row strat-row">
+                                    <div class="col-sm-6">
+                                        <h5>{!$ObjectType.Account_Strategy__c.fields.Due_Date__c.Label}</h5>
+                                        <apex:outputPanel rendered="{!strats.strat.Due_Date__c=null}">
+                                            X
+                                        </apex:outputPanel>
+
+                                        <apex:outputText value="{0, date, MMMM d','  yyyy}">
+                                            <apex:param value="{!strats.strat.Due_Date__c}" />
+                                        </apex:outputText>
+
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <apex:outputPanel rendered="{!strats.strat.Complete__c=true}">
+                                            <h5 style="color:green;">Strategy Completed</h5>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel rendered="{!strats.strat.Complete__c=false}">
+                                            <h5 style="color:red;">Strategy Not Completed</h5>
+                                        </apex:outputPanel>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top:10px;">
+
+                                    <apex:outputPanel rendered="{!strats.stratEncounters.size<=0}">
+                                        <div>
+                                            <h5 style="color:red;">No Related Encounters</h5>
+                                        </div>
+                                    </apex:outputPanel>
+
+                                    <apex:outputPanel rendered="{!strats.stratEncounters.size>0}">
+                                        <div>
+                                            <h5>Related Encounters</h5>
+                                        </div>
+                                        <apex:repeat value="{!strats.stratEncounters}" var="e">
+                                            <div>
+                                                {!IF(e.SalesHD_Complete__c=true, " complete ", " incomplete ")} {!e.SalesHD_Call_Objective__c} with {!e.Who.Name} on {!CASE(MONTH(DATEVALUE(e.StartDateTime)),
+                                                1, "January", 2, "February", 3, "March", 4, "April", 5, "May", 6, "June",
+                                                7, "July", 8, "August", 9, "September", 10, "October", 11, "November", 12,
+                                                "December", "None")&"/"&TEXT(DAY(DATEVALUE(e.StartDateTime)))&"/"&TEXT(YEAR(DATEVALUE(e.StartDateTime)))}
+                                            </div>
+                                        </apex:repeat>
+                                    </apex:outputPanel>
+
+
+
+                                </div>
+                            </div>
+                            <apex:variable var="stratNumber" value="{!VALUE(stratNumber) + 1}" />
+                        </apex:repeat>
+
+                    </div>
+                </div>
+            </apex:repeat>
+
+        </div>
+    </apex:outputPanel>
+
+    <!-- <h3 style="margin-top:10px;">Manager Comment</h3>
+    <p>{!IF(Sales_Plans__c.SalesHD_Manager_Comment__c=null, "X", Sales_Plans__c.SalesHD_Manager_Comment__c)}</p> -->
+
+
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    </body>
+
+    </html>
+</apex:page>

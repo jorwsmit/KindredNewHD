@@ -670,7 +670,7 @@
 
             <div class="container white-bg shadow">
                 <h3 class="thin italic">
-                    <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i> Monthly Sales Plan Report </h3>
+                    <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i> Sales Plans Totals by Market Report</h3>
 
                 <apex:form>
                     <div class="row" style="margin-top:10px;margin-bottom:10px;">
@@ -701,8 +701,9 @@
 
                     <thead>
                         <tr>
-                            <th>CL Market</th>
-                            <th>CL Name</th>
+                            <th>District</th>
+                            <th>Market</th>
+                            <th>Name</th>
                             <th>Account Plans</th>
                             <th>Total Strategies</th>
                             <th>Complete Strategies</th>
@@ -712,33 +713,46 @@
                     </thead>
                     <tbody>
 
-                        <apex:repeat value="{!monthlySalesPlanReport}" var="monthlyMarket">
+                        <apex:repeat value="{!monthlySalesPlanReport}" var="monthlyDistrict">
                             <tr>
-
-
-                                <td>{!monthlyMarket.market}</td>
-                                <td colspan="6"></td>
+                                <td>{!monthlyDistrict.district}</td>
+                                <td colspan="7"></td>
+                                <!-- <apex:repeat value="{!monthlyDistrict.districtTotal}" var="dt">
+                                    <td>{!dt}</td>
+                                </apex:repeat> -->
                             </tr>
-
-                            <apex:repeat value="{!monthlyMarket.monthlyCL}" var="monthlyCL">
+                            <apex:repeat value="{!monthlyDistrict.monthlyMarket}" var="mMarket">
+                                <apex:variable value="{!monthlyDistrict.monthlyMarket[mMarket].monthlyCL}" var="clmarket" />
                                 <tr>
                                     <td></td>
-                                    <td>{!monthlyCL.cl}</td>
-                                    <td colspan="5"></td>
+                                    <td>{!monthlyDistrict.monthlyMarket[mMarket].market}</td>
+                                    <td colspan="6"></td>
+                                    <!-- <apex:repeat value="{!monthlyDistrict.monthlyMarket[mMarket].marketTotal}" var="mt">
+                                        <td>{!mt}</td>
+                                    </apex:repeat> -->
                                 </tr>
-                                <apex:repeat value="{!monthlyCL.monthlyAccount}" var="monthlyAccount">
+
+
+
+                                <apex:repeat value="{!clmarket}" var="c">
                                     <tr>
                                         <td colspan="2"></td>
-                                        <td>{!monthlyAccount.accountName}</td>
-                                        <td>{!monthlyAccount.stratEncounterTotals[0]}</td>
-                                        <td>{!monthlyAccount.stratEncounterTotals[1]}</td>
-                                        <td>{!monthlyAccount.stratEncounterTotals[2]}</td>
-                                        <td>{!monthlyAccount.stratEncounterTotals[3]}</td>
+                                        <td>{!c.cl}</td>
+                                        <td colspan="5"></td>
                                     </tr>
-
+                                    <apex:repeat value="{!c.monthlyAccount}" var="monthlyAccount">
+                                        <apex:variable value="{!monthlyAccount.stratEncounterTotals}" var="seTotals" />
+                                        <tr>
+                                            <td colspan="3"></td>
+                                            <td>{!monthlyAccount.accountName}</td>
+                                            <apex:repeat value="{!seTotals}" var="totals">
+                                                <td>{!totals}</td>
+                                            </apex:repeat>
+                                        </tr>
+                                    </apex:repeat>
                                 </apex:repeat>
                             </apex:repeat>
-
+                            <tr><td colspan="8" style="border:1px solid black;"></td></tr>
                         </apex:repeat>
 
 
@@ -760,7 +774,6 @@
             crossorigin="anonymous"></script>
         <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
         <script>
-            Visualforce.remoting.timeout = 120000;
             $(document).ready(function () {
 
 
