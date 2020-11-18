@@ -70,14 +70,8 @@
                     </div>
                 </apex:form>
 
-                <apex:outputPanel rendered="{!IF(kpi!=null, true, false)}">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="report-container" style="overflow-x:auto;margin-left:5px;margin-right:5px;">
-                                <c:SalesHD_KPI/>
-                            </div>
-                        </div>
-                    </div>
+                <apex:outputPanel>
+                    <c:SalesHD_KPI/>
                 </apex:outputPanel>
 
 

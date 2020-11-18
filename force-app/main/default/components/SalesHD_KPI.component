@@ -30,11 +30,13 @@
                 height: 30px;
                 line-height: 12px;
             }
-            #kpiTable{
+
+            #kpiTable {
                 margin: 10px;
             }
-            
-            #kpiTable td, #kpiTable th{
+
+            #kpiTable td,
+            #kpiTable th {
                 border: 1px solid #aaaaaa;
                 white-space: nowrap;
                 text-align: center;
@@ -89,91 +91,124 @@
             </div>
         </div> -->
 
-        <table id="kpiTable" class="table table-sm" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Referrals_Per_Day__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Admits_Per_Day__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Batting_Average__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.CMI__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Referral_Lag_Time__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Admit_Lag_Time__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Conversion_Percentage__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.ICU_Referral_Percentage__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Encounters_Per_Day_Month__c.Label}</th>
-                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Encounters_Per_Day_Quarter__c.Label}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{!kpi.CL__r.Name}</td>
-                    <td class="{!kpiColors[0]}">{!kpi.Referrals_Per_Day__c}</td>
-                    <td class="{!kpiColors[1]}">{!kpi.Admits_Per_Day__c}</td>
-                    <td class="{!kpiColors[2]}">{!kpi.Batting_Average__c} {!IF(kpi.Batting_Average__c!=null,"%","")}</td>
-                    <td class="{!kpiColors[3]}">{!kpi.CMI__c}</td>
-                    <td class="{!kpiColors[4]}">{!kpi.Referral_Lag_Time__c}</td>
-                    <td class="{!kpiColors[5]}">{!kpi.Admit_Lag_Time__c}</td>
-                    <td class="{!kpiColors[6]}">{!kpi.Conversion_Percentage__c} {!IF(kpi.Conversion_Percentage__c!=null,"%","")}</td>
-                    <td class="{!kpiColors[7]}">{!kpi.ICU_Referral_Percentage__c} {!IF(kpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
-                    <td class="{!kpiColors[8]}">{!kpi.Encounters_Per_Day_Month__c}</td>
-                    <td class="{!kpiColors[9]}">{!kpi.Encounters_Per_Day_Quarter__c}</td>
-                </tr>
-                <tr style="height:20px;border:none;"></tr>
-                <tr style="height:30px;">
-                    <td class="bg-primary"></td>
-                    <td>Higher is better</td>
-                    <td>Higher is better</td>
-                    <td>Higher is better</td>
-                    <td>Higher is better</td>
-                    <td>Lower is better</td>
-                    <td>Lower is better</td>
-                    <td>Higher is better</td>
-                    <td>Higher is better</td>
-                    <td>Higher is better</td>
-                    <td>Higher is better</td>
-                </tr>
-                <tr>
-                    <td class="bg-success"></td>
-                    <td>{!highKpi.Referrals_Per_Day__c}</td>
-                    <td>{!highKpi.Admits_Per_Day__c}</td>
-                    <td>{!highKpi.Batting_Average__c} {!IF(highKpi.Batting_Average__c!=null,"%","")}</td>
-                    <td>{!highKpi.CMI__c}</td>
-                    <td>{!highKpi.Referral_Lag_Time__c}</td>
-                    <td>{!highKpi.Admit_Lag_Time__c}</td>
-                    <td>{!highKpi.Conversion_Percentage__c} {!IF(highKpi.Conversion_Percentage__c!=null,"%","")}</td>
-                    <td>{!highKpi.ICU_Referral_Percentage__c} {!IF(highKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
-                    <td>{!highKpi.Encounters_Per_Day_Month__c}</td>
-                    <td>{!highKpi.Encounters_Per_Day_Quarter__c}</td>
-                </tr>
-                <tr>
-                    <td class="bg-warning"></td>
-                    <td>{!middleKpi.Referrals_Per_Day__c}</td>
-                    <td>{!middleKpi.Admits_Per_Day__c}</td>
-                    <td>{!middleKpi.Batting_Average__c} {!IF(middleKpi.Batting_Average__c!=null,"%","")}</td>
-                    <td>{!middleKpi.CMI__c}</td>
-                    <td>{!middleKpi.Referral_Lag_Time__c}</td>
-                    <td>{!middleKpi.Admit_Lag_Time__c}</td>
-                    <td>{!middleKpi.Conversion_Percentage__c} {!IF(middleKpi.Conversion_Percentage__c!=null,"%","")}</td>
-                    <td>{!middleKpi.ICU_Referral_Percentage__c} {!IF(middleKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
-                    <td>{!middleKpi.Encounters_Per_Day_Month__c}</td>
-                    <td>{!middleKpi.Encounters_Per_Day_Quarter__c}</td>
-                </tr>
-                <tr>
-                    <td class="bg-danger"></td>
-                    <td>{!lowKpi.Referrals_Per_Day__c}</td>
-                    <td>{!lowKpi.Admits_Per_Day__c}</td>
-                    <td>{!lowKpi.Batting_Average__c} {!IF(lowKpi.Batting_Average__c!=null,"%","")}</td>
-                    <td>{!lowKpi.CMI__c}</td>
-                    <td>{!lowKpi.Referral_Lag_Time__c}</td>
-                    <td>{!lowKpi.Admit_Lag_Time__c}</td>
-                    <td>{!lowKpi.Conversion_Percentage__c} {!IF(lowKpi.Conversion_Percentage__c!=null,"%","")}</td>
-                    <td>{!lowKpi.ICU_Referral_Percentage__c} {!IF(lowKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
-                    <td>{!lowKpi.Encounters_Per_Day_Month__c}</td>
-                    <td>{!lowKpi.Encounters_Per_Day_Quarter__c}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="report-container" style="overflow-x:auto;margin-left:5px;margin-right:5px;">
+
+                    <apex:outputPanel rendered="{!k_kpi!=null || k_kpi_previous!=null}">
+                        <table id="kpiTable" class="table table-sm" cellspacing="0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Referrals_Per_Day__c.Label}</th>
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Admits_Per_Day__c.Label}</th>
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Batting_Average__c.Label}</th>
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.CMI__c.Label}</th>
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Referral_Lag_Time__c.Label}</th>
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Admit_Lag_Time__c.Label}</th>
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Conversion_Percentage__c.Label}</th>
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.ICU_Referral_Percentage__c.Label}</th>
+                                    <!-- <th>{!$ObjectType.SalesHD_KPI__c.fields.Encounters_Per_Day_Month__c.Label}</th>
+                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Encounters_Per_Day_Quarter__c.Label}</th> -->
+                                    <th>{!$ObjectType.SalesHD_KPI__c.fields.Encounters_Per_Day__c.Label}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <apex:outputPanel rendered="{!k_kpi!=null}">
+                                    <tr>
+                                        <td>
+                                            <b>{!k_kpi.kpi.CL__r.Name}</b> - Current </td>
+                                        <td class="{!k_kpi.kpiColors[0]}">{!k_kpi.kpi.Referrals_Per_Day__c}</td>
+                                        <td class="{!k_kpi.kpiColors[1]}">{!k_kpi.kpi.Admits_Per_Day__c}</td>
+                                        <td class="{!k_kpi.kpiColors[2]}">{!k_kpi.kpi.Batting_Average__c} {!IF(k_kpi.kpi.Batting_Average__c!=null,"%","")}</td>
+                                        <td class="{!k_kpi.kpiColors[3]}">{!k_kpi.kpi.CMI__c}</td>
+                                        <td class="{!k_kpi.kpiColors[4]}">{!k_kpi.kpi.Referral_Lag_Time__c}</td>
+                                        <td class="{!k_kpi.kpiColors[5]}">{!k_kpi.kpi.Admit_Lag_Time__c}</td>
+                                        <td class="{!k_kpi.kpiColors[6]}">{!k_kpi.kpi.Conversion_Percentage__c} {!IF(k_kpi.kpi.Conversion_Percentage__c!=null,"%","")}</td>
+                                        <td class="{!k_kpi.kpiColors[7]}">{!k_kpi.kpi.ICU_Referral_Percentage__c} {!IF(k_kpi.kpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                                        <!-- <td class="{!kpiColors[8]}">{!kpi.Encounters_Per_Day_Month__c}</td>
+                    <td class="{!kpiColors[9]}">{!kpi.Encounters_Per_Day_Quarter__c}</td> -->
+                                        <td class="{!k_kpi.kpiColors[8]}">{!k_kpi.kpi.Encounters_Per_Day__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!k_kpi_previous!=null}">
+                                    <tr>
+                                        <td>
+                                            <b>{!k_kpi_previous.kpi.CL__r.Name}</b> - Previous </td>
+                                        <td class="{!k_kpi_previous.kpiColors[0]}">{!k_kpi_previous.kpi.Referrals_Per_Day__c}</td>
+                                        <td class="{!k_kpi_previous.kpiColors[1]}">{!k_kpi_previous.kpi.Admits_Per_Day__c}</td>
+                                        <td class="{!k_kpi_previous.kpiColors[2]}">{!k_kpi_previous.kpi.Batting_Average__c} {!IF(k_kpi_previous.kpi.Batting_Average__c!=null,"%","")}</td>
+                                        <td class="{!k_kpi_previous.kpiColors[3]}">{!k_kpi_previous.kpi.CMI__c}</td>
+                                        <td class="{!k_kpi_previous.kpiColors[4]}">{!k_kpi_previous.kpi.Referral_Lag_Time__c}</td>
+                                        <td class="{!k_kpi_previous.kpiColors[5]}">{!k_kpi_previous.kpi.Admit_Lag_Time__c}</td>
+                                        <td class="{!k_kpi_previous.kpiColors[6]}">{!k_kpi_previous.kpi.Conversion_Percentage__c} {!IF(k_kpi_previous.kpi.Conversion_Percentage__c!=null,"%","")}</td>
+                                        <td class="{!k_kpi_previous.kpiColors[7]}">{!k_kpi_previous.kpi.ICU_Referral_Percentage__c} {!IF(k_kpi_previous.kpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                                        <td class="{!k_kpi_previous.kpiColors[8]}">{!k_kpi_previous.kpi.Encounters_Per_Day__c}</td>
+                                    </tr>
+                                </apex:outputPanel>
+                                <tr style="height:20px;border:none;"></tr>
+                                <tr style="height:30px;">
+                                    <td class="bg-primary"></td>
+                                    <td>Higher is better</td>
+                                    <td>Higher is better</td>
+                                    <td>Higher is better</td>
+                                    <td>Higher is better</td>
+                                    <td>Lower is better</td>
+                                    <td>Lower is better</td>
+                                    <td>Higher is better</td>
+                                    <td>Higher is better</td>
+                                    <!-- <td>Higher is better</td>
+                    <td>Higher is better</td> -->
+                                    <td>Higher is better</td>
+                                </tr>
+                                <tr>
+                                    <td class="bg-success"></td>
+                                    <td>{!highKpi.Referrals_Per_Day__c}</td>
+                                    <td>{!highKpi.Admits_Per_Day__c}</td>
+                                    <td>{!highKpi.Batting_Average__c} {!IF(highKpi.Batting_Average__c!=null,"%","")}</td>
+                                    <td>{!highKpi.CMI__c}</td>
+                                    <td>{!highKpi.Referral_Lag_Time__c}</td>
+                                    <td>{!highKpi.Admit_Lag_Time__c}</td>
+                                    <td>{!highKpi.Conversion_Percentage__c} {!IF(highKpi.Conversion_Percentage__c!=null,"%","")}</td>
+                                    <td>{!highKpi.ICU_Referral_Percentage__c} {!IF(highKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                                    <!-- <td>{!highKpi.Encounters_Per_Day_Month__c}</td>
+                    <td>{!highKpi.Encounters_Per_Day_Quarter__c}</td> -->
+                                    <td>{!highKpi.Encounters_Per_Day__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="bg-warning"></td>
+                                    <td>{!middleKpi.Referrals_Per_Day__c}</td>
+                                    <td>{!middleKpi.Admits_Per_Day__c}</td>
+                                    <td>{!middleKpi.Batting_Average__c} {!IF(middleKpi.Batting_Average__c!=null,"%","")}</td>
+                                    <td>{!middleKpi.CMI__c}</td>
+                                    <td>{!middleKpi.Referral_Lag_Time__c}</td>
+                                    <td>{!middleKpi.Admit_Lag_Time__c}</td>
+                                    <td>{!middleKpi.Conversion_Percentage__c} {!IF(middleKpi.Conversion_Percentage__c!=null,"%","")}</td>
+                                    <td>{!middleKpi.ICU_Referral_Percentage__c} {!IF(middleKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                                    <!-- <td>{!middleKpi.Encounters_Per_Day_Month__c}</td>
+                    <td>{!middleKpi.Encounters_Per_Day_Quarter__c}</td> -->
+                                    <td>{!middleKpi.Encounters_Per_Day__c}</td>
+                                </tr>
+                                <tr>
+                                    <td class="bg-danger"></td>
+                                    <td>{!lowKpi.Referrals_Per_Day__c}</td>
+                                    <td>{!lowKpi.Admits_Per_Day__c}</td>
+                                    <td>{!lowKpi.Batting_Average__c} {!IF(lowKpi.Batting_Average__c!=null,"%","")}</td>
+                                    <td>{!lowKpi.CMI__c}</td>
+                                    <td>{!lowKpi.Referral_Lag_Time__c}</td>
+                                    <td>{!lowKpi.Admit_Lag_Time__c}</td>
+                                    <td>{!lowKpi.Conversion_Percentage__c} {!IF(lowKpi.Conversion_Percentage__c!=null,"%","")}</td>
+                                    <td>{!lowKpi.ICU_Referral_Percentage__c} {!IF(lowKpi.ICU_Referral_Percentage__c!=null,"%","")}</td>
+                                    <!-- <td>{!lowKpi.Encounters_Per_Day_Month__c}</td>
+                    <td>{!lowKpi.Encounters_Per_Day_Quarter__c}</td> -->
+                                    <td>{!lowKpi.Encounters_Per_Day__c}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </apex:outputPanel>
+                </div>
+            </div>
+        </div>
     </body>
 
     </html>
