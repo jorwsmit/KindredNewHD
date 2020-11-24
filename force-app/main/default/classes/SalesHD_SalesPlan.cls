@@ -246,8 +246,8 @@ public List<Sales_Plans__c> getMyTeamsPlans(){
 }
 
 public boolean getIsManager(){
-	for(Sales_Plans__c sp : [select Id from Sales_Plans__c where 
-	Owner.UserRoleId in: allSubRoleIds and Id=:salesPlan.Id]){
+	for(Sales_Plans__c sp : [select Id from Sales_Plans__c where
+	                         Owner.UserRoleId in: allSubRoleIds and Id=:salesPlan.Id]) {
 		return true;
 	}
 	return false;
@@ -283,7 +283,7 @@ public Map<String, monthlyReportMarket> monthlyMarket {get; set;}
 public monthlyReportDistrict(String district)
 {
 	this.district = district;
-	districtTotal = new List<integer>{0,0,0,0};
+	districtTotal = new List<integer> {0,0,0,0};
 	monthlyMarket = new Map<String, monthlyReportMarket>();
 }
 
@@ -300,7 +300,7 @@ public list<monthlyReportCL> monthlyCL {get; set;}
 public monthlyReportMarket(String market)
 {
 	this.market = market;
-	marketTotal = new List<integer>{0,0,0,0};
+	marketTotal = new List<integer> {0,0,0,0};
 	monthlyCL = new list<monthlyReportCL>();
 }
 
@@ -435,8 +435,8 @@ public List<monthlyReportDistrict> getMonthlySalesPlanReport(){
 		}
 	}
 
-	Map<String, List<Integer>> districtTotalsData = new Map<String, List<Integer>>();
-	Map<String, List<Integer>> marketTotalsData = new Map<String, List<Integer>>();
+	Map<String, List<Integer> > districtTotalsData = new Map<String, List<Integer> >();
+	Map<String, List<Integer> > marketTotalsData = new Map<String, List<Integer> >();
 
 	for(AggregateResult ar : [select
 	                          Parent_Sales_Plan__r.OwnerId clId, Account__c accountId from Account_Sales_Plan__c
@@ -460,22 +460,22 @@ public List<monthlyReportDistrict> getMonthlySalesPlanReport(){
 
 			if(clMarket.get(clId).district__c!=null) district = clMarket.get(clId).district__c;
 			if(clMarket.get(clId).area__c!=null) market = clMarket.get(clId).area__c;
-			
-			if(districtTotalsData.containsKey(district)){
-				for(integer i=0; i< districtTotalsData.get(district).size(); i++){
+
+			if(districtTotalsData.containsKey(district)) {
+				for(integer i=0; i< districtTotalsData.get(district).size(); i++) {
 					districtTotalsData.get(district)[i] += mAccount.stratEncounterTotals[i];
 				}
 			} else{
 				districtTotalsData.put(district, mAccount.stratEncounterTotals);
 			}
-			if(marketTotalsData.containsKey(market)){
-				for(integer i=0; i< marketTotalsData.get(market).size(); i++){
+			if(marketTotalsData.containsKey(market)) {
+				for(integer i=0; i< marketTotalsData.get(market).size(); i++) {
 					marketTotalsData.get(market)[i] += mAccount.stratEncounterTotals[i];
 				}
 			} else{
 				marketTotalsData.put(market, mAccount.stratEncounterTotals);
 			}
-			
+
 		} else{
 			mAccount.stratEncounterTotals = new List<Integer> {0,0,0,0};
 		}
@@ -499,15 +499,15 @@ public List<monthlyReportDistrict> getMonthlySalesPlanReport(){
 
 		if(clMarket.get(clId).district__c!=null) district = clMarket.get(clId).district__c;
 		if(clMarket.get(clId).area__c!=null) market = clMarket.get(clId).area__c;
-		if(reportData.containsKey(district)){
+		if(reportData.containsKey(district)) {
 			// if(districtTotalsData.containsKey(district)){
 			// 	reportData.get(district).districtTotal = districtTotalsData.get(district);
 			// }
-			reportData.get(district).districtTotal = new List<Integer>{2,5,3,8};
-			if(reportData.get(district).monthlyMarket.containsKey(market)){
+			reportData.get(district).districtTotal = new List<Integer> {2,5,3,8};
+			if(reportData.get(district).monthlyMarket.containsKey(market)) {
 				reportData.get(district).monthlyMarket.get(market).monthlyCL.add(dataByCl.get(clId));
 
-				if(marketTotalsData.containsKey(market)){
+				if(marketTotalsData.containsKey(market)) {
 					reportData.get(district).monthlyMarket.get(market).marketTotal = marketTotalsData.get(market);
 				}
 			} else{
@@ -517,15 +517,15 @@ public List<monthlyReportDistrict> getMonthlySalesPlanReport(){
 			}
 		} else{
 			monthlyReportDistrict mrd = new monthlyReportDistrict(district);
-			if(districtTotalsData.containsKey(district)){
+			if(districtTotalsData.containsKey(district)) {
 				mrd.districtTotal = districtTotalsData.get(district);
 			}
 			monthlyReportMarket mrm = new monthlyReportMarket(market);
-			if(marketTotalsData.containsKey(market)){
+			if(marketTotalsData.containsKey(market)) {
 				mrm.marketTotal = marketTotalsData.get(market);
 			}
 			mrm.monthlyCL.add(dataByCl.get(clId));
-			mrd.monthlyMarket = new Map<String, monthlyReportMarket>{market => mrm};
+			mrd.monthlyMarket = new Map<String, monthlyReportMarket> {market => mrm};
 			reportData.put(district, mrd);
 		}
 
@@ -911,8 +911,25 @@ public PageReference planFilledOut(){
 }
 
 public PageReference saveComment(){
+	Messaging.SingleEmailMessage mail = null;
+	List<EmailTemplate> emailTemplate = [Select Id from EmailTemplate where name = 'HD Sales Plan Comment' limit 1];
+	List<User> spOwner= [select Id, email from user where id in (select ownerid from sales_plans__c where id=:salesPlan.Id) limit 1];
+	if(!emailTemplate.isEmpty() && !spOwner.isEmpty()){
+		mail = new Messaging.SingleEmailMessage();
+		mail.setToAddresses(new String[] {spOwner[0].email});
+		mail.setReplyTo(UserInfo.getUserEmail());
+		mail.setSenderDisplayName(UserInfo.getName());
+		mail.setTargetObjectId(spOwner[0].id); 
+		mail.setWhatId(salesPlan.Id);
+		mail.setSaveAsActivity(false);
+		mail.setTemplateId(emailTemplate[0].Id);
+	}
 	try{
+		
 		update salesPlan;
+		if(mail!=null){
+			Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+		}
 	} catch(DmlException ex) {
 		ApexPages.addMessages(ex);
 	}

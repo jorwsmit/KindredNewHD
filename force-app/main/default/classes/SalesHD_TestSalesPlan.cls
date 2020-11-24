@@ -274,6 +274,8 @@ controller.getAccountMetricsPdf();
 Test.stopTest();
 }
 
+
+
 @isTest static void RelatePlanToEncounter() {
 	PageReference pageRef = Page.SalesHD_SalesPlans;
 	Test.setCurrentPage(pageRef);
@@ -310,6 +312,23 @@ Test.stopTest();
 	controller.getPlanRelateList();
 	controller.selectedRelatedStrategy = aStrat.Id;
 	controller.relateEncounterPlan();
+	Test.stopTest();
+}
+
+@isTest static void SalesPlanManagerComment() {
+	// EmailTemplate e = new EmailTemplate (developerName = 'HD_Sales_Plan_Comment_Test', FolderId = UserInfo.getUserId(), TemplateType= 'Text', Name = 'HD Sales Plan Comment');
+	// insert e;
+	PageReference pageRef = Page.SalesHD_SalesPlans;
+	Test.setCurrentPage(pageRef);
+	Test.startTest();
+	Sales_Plans__c sp = new Sales_Plans__c();
+	SalesHD_SalesPlan controller =
+		new SalesHD_SalesPlan(new ApexPages.StandardController(sp));
+	controller.newPlanYear=System.now().year();
+	controller.newPlanMonth=System.now().month();
+	//save for current month
+	Test.setCurrentPage(controller.saveNewPlan());
+	controller.saveComment();
 	Test.stopTest();
 }
 

@@ -883,14 +883,37 @@
                         <h3 style="margin-top:10px;">Non-Conversion Reasons
                             <i onclick="getEducationTip('conversion');" class="text-primary fas fa-question-circle cursor-pointer"></i>
                         </h3>
+
+                        <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId!=$User.Id && isManager}">
+                            <apex:outputText styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c}" html-placeholder="Non-Conversion Reasons"
+                            />
+                        </apex:outputPanel>
+
+                    <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id}">
                         <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c}" html-placeholder="Non-Conversion Reasons"
                         />
+                    </apex:outputPanel>
+
+
+                        <!-- <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Reasons__c}" html-placeholder="Non-Conversion Reasons"
+                        /> -->
 
                         <h3 style="margin-top:10px;">Non-Conversion Solutions
                             <!-- <i onclick="getEducationTip('conversion');" class="text-primary fas fa-question-circle cursor-pointer"></i> -->
                         </h3>
+
+                        <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId!=$User.Id && isManager}">
+                            <apex:outputText styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Solutions__c}" html-placeholder="Non-Conversion Solutions"
+                            />
+                        </apex:outputPanel>
+
+                    <apex:outputPanel rendered="{!Sales_Plans__c.OwnerId=$User.Id}">
                         <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Solutions__c}" html-placeholder="Non-Conversion Solutions"
                         />
+                    </apex:outputPanel>
+                        
+                        <!-- <apex:inputField styleClass="form-control" value="{!Sales_Plans__c.SalesHD_Non_Conversion_Solutions__c}" html-placeholder="Non-Conversion Solutions"
+                        /> -->
 
                     </div>
 
