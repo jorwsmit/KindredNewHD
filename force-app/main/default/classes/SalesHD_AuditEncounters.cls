@@ -3,9 +3,16 @@ public with sharing class SalesHD_AuditEncounters {
 private static Set<Id> allSubRoleIds = getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()});
 
 public boolean weekly {get; set;}
+public boolean thisweek {get; set;}
 public boolean mtd {get; set;}
 public boolean monthly {get; set;}
 public boolean audited {get; set;}
+
+public String month {get;set;}
+public String year {get;set;}
+
+//chart all needs to be implemented fully
+public boolean chartAll {get; set;}
 
 public List<Event> encounters {get; set;}
 
@@ -65,6 +72,17 @@ public chartData(){
 }
 }
 
+public districtChartData dcd {get; set;}
+
+public class districtChartData {
+public String district {get; set;}
+public chartData chartData {get; set;}
+public districtChartData(String district, chartData chartData){
+	this.district = district;
+	this.chartData = chartData;
+}
+}
+
 public User usr {get; set;}
 
 
@@ -73,14 +91,34 @@ public SalesHD_AuditEncounters() {
 	usr = new User();
 	usr.Region__c='HD';
 
+	for(User u : [select region__c, district__c, area__c from user where Id=:UserInfo.getUserId()]){
+		// if(u.Region__c!=null) usr.Region__c = u.Region__c;
+		if(u.district__c!=null && ApexPages.currentPage().getParameters().get('district')==null) usr.district__c = u.district__c;
+		if(u.area__c!=null && ApexPages.currentPage().getParameters().get('market')==null) usr.area__c = u.area__c;
+	}
+
 
 	weekly = true;
+	thisweek = false;
 	mtd = false;
 	monthly = false;
 	audited = false;
 
+	chartAll = true;
+
+	month = String.valueOf(Date.valueOf(system.now()).month());
+	year = String.valueOf(Date.valueOf(system.now()).year());
+
+	if(ApexPages.currentPage().getParameters().get('month')!=null)
+		month = String.valueOf(ApexPages.currentPage().getParameters().get('month'));
+	if(ApexPages.currentPage().getParameters().get('year')!=null)
+		year = String.valueOf(ApexPages.currentPage().getParameters().get('year'));
+
 	if(ApexPages.currentPage().getParameters().get('weekly')!=null)
 		weekly=Boolean.valueOf(ApexPages.currentPage().getParameters().get('weekly'));
+
+	if(ApexPages.currentPage().getParameters().get('thisweek')!=null)
+		thisweek=Boolean.valueOf(ApexPages.currentPage().getParameters().get('thisweek'));
 
 	if(ApexPages.currentPage().getParameters().get('mtd')!=null)
 		mtd=Boolean.valueOf(ApexPages.currentPage().getParameters().get('mtd'));
@@ -112,9 +150,13 @@ public SalesHD_AuditEncounters() {
 	if(weekly) {
 		Date d = System.Today().toStartOfWeek().addDays(-7);
 		dateRangeStr = d.format() + ' - ' + d.addDays(7-1).format();
-	} else if(monthly) {
-		Date d = System.Today().addDays(-days);
-		dateRangeStr = d.format() + ' - ' + d.addDays(days).format();
+	} else if(thisweek){
+		Date d = System.Today().toStartOfWeek();
+		dateRangeStr = d.format() + ' - ' + d.addDays(7-1).format();
+	}
+	else if(monthly) {
+		Date d = Date.newInstance(Integer.valueOf(year), Integer.valueOf(month), 1);
+		dateRangeStr = d.format() + ' - ' + d.addDays(Date.daysInMonth(Integer.valueOf(year), Integer.valueOf(month))).format();
 	} else if(mtd) {
 		Date d = System.Today().addDays(-System.Today().day()+1);
 		dateRangeStr = d.format() + ' - ' + d.addDays(System.Today().day()-1).format();
@@ -132,11 +174,11 @@ public SalesHD_AuditEncounters() {
 		encounters = getEncounters();
 	}
 
-	for(User currentUser : [select Region__c, District__c, Area__c from user where Id=:UserInfo.getUserId()]) {
-		if(currentUser.Region__c!=null) usr.Region__c = currentUser.Region__c;
-		if(currentUser.District__c!=null) usr.District__c = currentUser.District__c;
-		if(currentUser.Area__c!=null) usr.Area__c = currentUser.Area__c;
-	}
+	// for(User currentUser : [select Region__c, District__c, Area__c from user where Id=:UserInfo.getUserId()]) {
+	// 	if(currentUser.Region__c!=null) usr.Region__c = currentUser.Region__c;
+	// 	if(currentUser.District__c!=null) usr.District__c = currentUser.District__c;
+	// 	if(currentUser.Area__c!=null) usr.Area__c = currentUser.Area__c;
+	// }
 
 
 	cd = new chartData();
@@ -148,20 +190,46 @@ public List<Event> getEncounters(){
 	String query = 'select SalesHD_Call_Objective__c, Who.Name, Who.Title, What.Name, SalesHD_Account_Unit__r.Unit__r.Name, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,'+
 	               'SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,'+
 	               'SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,'+
-	               'Owner.Name, event.SalesHD_Account_Strategy__c, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c from event where owner.userRoleId in : allSubRoleIds';
+	               'Owner.Name, event.SalesHD_Account_Strategy__c, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c from event where ';
+
+	
+
+	if(weekly) query += 'startDateTime=Last_Week';
+	else if(thisweek) query += 'startDateTime=This_Week';
+	// else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
+	else if(monthly) query += 'startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
 
 	if(!audited) query += ' and Encounter_Audit__r.Audit_Result__c=null';
 
-	if(weekly) query += ' and startDateTime=Last_Week';
-	else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
-
 	if(selectedCL!=null) query += ' and ownerId=:selectedCL';
+
+	if(usr.District__c!=null && usr.Area__c==null) query += ' and District__c=\''+usr.District__c+'\'';
+	else if(usr.Area__c!=null && usr.District__c==null) query += ' and Area__c=\''+usr.Area__c+'\'';
+	else if(usr.Area__c!=null && usr.District__c!=null) query += ' and District__c=\''+usr.District__c+'\' and Area__c=\''+usr.Area__c+'\'';
+
 	List<Event> events = database.query(query);
 	// for(Integer i=0; i<30; i++){
 	// 	events.add(events[0]);
 	// }
 	return events;
 
+}
+
+private String monthYearQueryStringLow(){
+	String monthYear = year + '-' + month + '-' + '01';
+	// Datetime.newInstance(Integer.valueOf(year), Integer.valueOf(month), 1);
+	if(Integer.valueOf(month)<10) monthYear = year+'-0'+month+'-01T00:00:00Z';
+	else monthYear = year+'-'+month+'-01T00:00:00Z';
+	return monthYear;
+}
+private String monthYearQueryStringHigh(){
+	String monthYear = year + '-' + month + '-' + Date.daysInMonth(Integer.valueOf(year), Integer.valueOf(month));
+	Date d = Date.newInstance(Integer.valueOf(year), Integer.valueOf(month), 1);
+	d = d.addMonths(1);
+	if(d.month()<10) monthYear = d.year()+'-0'+d.month()+'-01T00:00:00Z';
+	else monthYear = d.year()+'-'+d.month()+'-01T00:00:00Z';
+	// monthYear = '2020-12-01T00:00:00Z';
+	return monthYear;
 }
 
 private Map<String, String> auditResultMap = new Map<String, String>
@@ -195,7 +263,9 @@ public List<auditReport> getReport(){
 	               'owner.userRoleId in : allSubRoleIds';
 
 	if(weekly) query += ' and startDateTime=Last_Week';
-	else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
+	else if(thisweek) query += ' and startDateTime=This_Week';
+	// else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
+	else if(monthly) query += ' and startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
 	else if(mtd) query += ' and startDateTime>=this_month and startDateTime<=today';
 
 	if(selectedCL!=null) query += ' and ownerId=:selectedCL';
@@ -260,7 +330,9 @@ public Boolean getShowChart(){
 	               'owner.userRoleId in : allSubRoleIds';
 
 	if(weekly) query += ' and startDateTime=Last_Week';
-	else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
+	else if(thisweek) query += ' and startDateTime=This_Week';
+	// else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
+	else if(monthly) query += ' and startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
 	else if(mtd) query += ' and startDateTime>=this_month and startDateTime<=today';
 
 	if(selectedCL!=null) query += ' and ownerId=:selectedCL';
@@ -275,24 +347,209 @@ public Boolean getShowChart(){
 	return false;
 }
 
+private List<String> districts = new List<String>
+{'California', 'Dallas/Ft. Worth', 'East', 'Florida', 'Houston', 'Midwest', 'Mountain'};
+
+public List<districtChartData> getdistrictChart(){
+	Map<String, chartData> chartData = new Map<String, chartData>();
+
+	String query = 'select District__c, Encounter_Audit__r.Audit_Result__c from event where '+
+	               'owner.userRoleId in : allSubRoleIds';
+
+	if(weekly) query += ' and startDateTime=Last_Week';
+	else if(thisweek) query += ' and startDateTime=This_Week';
+	// else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
+	else if(monthly) query += ' and startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
+	else if(mtd) query += ' and startDateTime>=this_month and startDateTime<=today';
+
+	if(selectedCL!=null) query += ' and ownerId=:selectedCL';
+
+	// if(usr.District__c!=null && usr.Area__c==null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\')';
+	// else if(usr.Area__c!=null && usr.District__c==null) query += ' and ownerId in (select Id from user where Area__c=\''+usr.Area__c+'\')';
+	// else if(usr.Area__c!=null && usr.District__c!=null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\' and Area__c=\''+usr.Area__c+'\')';
+
+	// query += ' and startDateTime=Last_n_days:'+60;
+
+	// query += ' group by District__c, Encounter_Audit__r.Audit_Result__c';
+
+	for(Event e : database.query(query)) {
+		chartData cData = new chartData();
+		if(chartData.containsKey(e.district__c)) {
+			cData = chartData.remove(e.district__c);
+		}
+		chartData.put(String.valueOf(e.district__c), calcChartData(cData, e.Encounter_Audit__r.Audit_Result__c));
+
+	}
+
+	for(AggregateResult ar : [select District__c district from user where isActive=true group by District__c]) {
+		String d = String.valueOf(ar.get('district'));
+		if(d != null && !chartData.containsKey(d)){
+			chartData cData = new chartData();
+			chartData.put(d, cData);
+		}
+	}
+
+	List<districtChartData> divChartList = new List<districtChartData>();
+	for(String district : chartData.keySet()) {
+		districtChartData divChartData = new districtChartData(district, chartData.get(district));
+		divChartList.add(divChartData);
+	}
+	return divChartList;
+}
+
+public List<districtChartData> getMarketChart(){
+	Map<String, chartData> chartData = new Map<String, chartData>();
+
+	String query = 'select Area__c, Encounter_Audit__r.Audit_Result__c from event where '+
+	               'owner.userRoleId in : allSubRoleIds';
+
+	if(weekly) query += ' and startDateTime=Last_Week';
+	else if(thisweek) query += ' and startDateTime=This_Week';
+	// else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
+	else if(monthly) query += ' and startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
+	else if(mtd) query += ' and startDateTime>=this_month and startDateTime<=today';
+
+	if(selectedCL!=null) query += ' and ownerId=:selectedCL';
+
+	// if(usr.District__c!=null && usr.Area__c==null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\')';
+	// else if(usr.Area__c!=null && usr.District__c==null) query += ' and ownerId in (select Id from user where Area__c=\''+usr.Area__c+'\')';
+	// else if(usr.Area__c!=null && usr.District__c!=null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\' and Area__c=\''+usr.Area__c+'\')';
+
+	// query += ' and startDateTime=Last_n_days:'+60;
+
+	// query += ' group by District__c, Encounter_Audit__r.Audit_Result__c';
+
+	for(Event e : database.query(query)) {
+		chartData cData = new chartData();
+		if(chartData.containsKey(e.area__c)) {
+			cData = chartData.remove(e.area__c);
+		}
+		chartData.put(String.valueOf(e.area__c), calcChartData(cData, e.Encounter_Audit__r.Audit_Result__c));
+
+	}
+
+	for(AggregateResult ar : [select Area__c area from user where isActive=true group by Area__c]) {
+		String market = String.valueOf(ar.get('area'));
+		if(market != null && !chartData.containsKey(market)){
+			chartData cData = new chartData();
+			chartData.put(market, cData);
+		}
+	}
+
+	Map<String,List<String>> dependentPicklistValuesMap = getDependentPicklistValues(user.Area__c);
+	List<districtChartData> divChartList = new List<districtChartData>();
+	if(dependentPicklistValuesMap.containsKey(usr.District__c)){
+		for(String market : dependentPicklistValuesMap.get(usr.District__c)) {
+			districtChartData divChartData = new districtChartData(market, chartData.get(market));
+			divChartList.add(divChartData);
+		}
+	}
+	
+
+	// List<districtChartData> divChartList = new List<districtChartData>();
+	// for(String market : chartData.keySet()) {
+	// 	districtChartData divChartData = new districtChartData(market, chartData.get(market));
+	// 	divChartList.add(divChartData);
+	// }
+	return divChartList;
+}
+
+public static Map<String, List<String>> getDependentPicklistValues(Schema.sObjectField dependToken) {
+    Schema.DescribeFieldResult depend = dependToken.getDescribe();
+    Schema.sObjectField controlToken = depend.getController();
+    if (controlToken == null) {
+        return new Map<String, List<String>>();
+    }
+ 
+    Schema.DescribeFieldResult control = controlToken.getDescribe();
+    List<Schema.PicklistEntry> controlEntries;
+    if(control.getType() != Schema.DisplayType.Boolean) {
+        controlEntries = control.getPicklistValues();
+    }
+ 
+    String base64map = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    Map<String,List<String>> dependentPicklistValues = new Map<String,List<String>>();
+    for (Schema.PicklistEntry entry : depend.getPicklistValues()) {
+        if (entry.isActive() && String.isNotEmpty(String.valueOf(((Map<String,Object>) JSON.deserializeUntyped(JSON.serialize(entry))).get('validFor')))) {
+            List<String> base64chars =
+                    String.valueOf(((Map<String,Object>) JSON.deserializeUntyped(JSON.serialize(entry))).get('validFor')).split('');
+            for (Integer index = 0; index < (controlEntries != null ? controlEntries.size() : 2); index++) {
+                Object controlValue =
+                        (controlEntries == null
+                                ?   (Object) (index == 1)
+                                :   (Object) (controlEntries[index].isActive() ? controlEntries[index].getLabel() : null)
+                        );
+                Integer bitIndex = index / 6;
+                if (bitIndex > base64chars.size() - 1) {
+                    break;
+                }
+                Integer bitShift = 5 - Math.mod(index, 6);
+                if  (   controlValue == null
+                || (base64map.indexOf( base64chars[ bitIndex ] ) & (1 << bitShift)) == 0
+                ) continue;
+                if (!dependentPicklistValues.containsKey((String) controlValue)) {
+                    dependentPicklistValues.put((String) controlValue, new List<String>());
+                }
+                dependentPicklistValues.get((String) controlValue).add(entry.getLabel());
+            }
+        }
+    }
+    return dependentPicklistValues;
+}
+
+public chartData calcChartData(chartData cData, String result){
+	cData.totalEncounters += 1;
+	if(result!=null) {
+		cData.totalAudited += 1;
+		if(!auditResultMap.containsKey(result)) cData.totalNeedsReview += 1;
+		if(auditResultMap.get(result)=='Approved') {
+			cData.totalApproved += 1;
+		}else if(auditResultMap.get(result)=='Rejected') {
+			cData.totalRejected += 1;
+		}
+	}
+	return cData;
+}
+
 public List<Event> getMyEncounters(){
 
-	if(weekly) {
-		return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-		        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-		        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-		        Owner.Name
-		        from event where ownerId=: UserInfo.getUserId()
-		                                  and startDateTime=Last_Week];
-	} if(monthly) {
-		return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-		        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-		        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-		        Owner.Name
-		        from event where ownerId=: UserInfo.getUserId()
-		                                  and startDateTime=Last_n_days : 30];
-	}
-	return null;
+	// if(weekly) {
+	// 	return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
+	// 	        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
+	// 	        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
+	// 	        Owner.Name
+	// 	        from event where ownerId=: UserInfo.getUserId()
+	// 	                                  and startDateTime=Last_Week];
+	// } else if(thisweek){
+	// 	return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
+	// 	        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
+	// 	        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
+	// 	        Owner.Name
+	// 	        from event where ownerId=: UserInfo.getUserId()
+	// 	                                  and startDateTime=This_Week];
+	// }
+	// else if(monthly) {
+	// 	return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
+	// 	        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
+	// 	        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
+	// 	        Owner.Name
+	// 	        from event where ownerId=: UserInfo.getUserId()
+	// 	                                  and startDateTime=Last_n_days : 30];
+	// }
+
+
+	String query = 'select SalesHD_Call_Objective__c, Who.Name, Who.Title, What.Name, SalesHD_Account_Unit__r.Unit__r.Name, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,'+
+	               'SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,'+
+	               'SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,'+
+	               'Owner.Name, event.SalesHD_Account_Strategy__c, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c from event where ownerId=: UserInfo.getUserId()';
+
+
+	if(weekly) query += ' and startDateTime=Last_Week';
+	else if(thisweek) query += ' and startDateTime=This_Week';
+	else if(monthly) query += ' and startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
+
+	return database.query(query);
+	// return null;
 }
 
 public List<Selectoption> getCLPicklist(){
@@ -318,6 +575,31 @@ public List<Selectoption> getDaysPicklist(){
 	return picklist;
 }
 
+Map<String, String> monthMap = new Map<String, String> {
+	'1'=>'January', '2'=>'February', '3'=>'March', '4'=>'April',
+	'5'=>'May', '6'=>'June', '7'=>'July', '8'=>'August', '9'=>'September',
+	'10'=>'October', '11'=>'November', '12'=>'December'
+};
+
+public List<Selectoption> getMonthPicklist(){
+	List<Selectoption> picklist = new List<selectoption>();
+	// picklist.add(new selectOption('', '- Select a Month -'));
+	for(String monthNum : monthMap.keyset()) {
+		picklist.add(new selectOption(monthNum, monthMap.get(monthNum)));
+	}
+	return picklist;
+}
+
+public List<Selectoption> getYearPicklist(){
+	List<Selectoption> picklist = new List<selectoption>();
+	Integer currentYear = System.now().year();
+	// picklist.add(new selectOption('', '- Select a Year -'));
+	picklist.add(new selectOption(String.valueOf(currentYear-1), String.valueOf(currentYear-1)));
+	picklist.add(new selectOption(String.valueOf(currentYear), String.valueOf(currentYear)));
+	picklist.add(new selectOption(String.valueOf(currentYear+1), String.valueOf(currentYear+1)));
+	return picklist;
+}
+
 
 private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	set<Id> returnRoleIds = new set<Id>();
@@ -333,17 +615,36 @@ public PageReference changeMarket(){
 	return toggleFilters();
 }
 
+public PageReference changeDistrict(){
+	selectedCL = null;
+	usr.area__c = null;
+	return toggleFilters();
+}
+
 public Pagereference toggleWeekly(){
 	if(weekly==false) weekly = true;
 	else{
+		thisweek = false;
 		monthly = false;
 		mtd = false;
 	}
 	return toggleFilters();
 }
+
+public Pagereference toggleThisWeek(){
+	if(thisweek==false) thisweek = true;
+	else{
+		weekly = false;
+		monthly = false;
+		mtd = false;
+	}
+	return toggleFilters();
+}
+
 public Pagereference toggleMonthly(){
 	if(monthly==false) monthly = true;
 	else{
+		thisweek = false;
 		weekly = false;
 		mtd = false;
 	}
@@ -353,6 +654,7 @@ public Pagereference toggleMonthly(){
 public Pagereference toggleMtd(){
 	if(mtd==false) mtd = true;
 	else{
+		thisweek = false;
 		weekly = false;
 		monthly = false;
 	}
@@ -379,7 +681,10 @@ public Pagereference toggleFilters(){
 	PageReference page = new Pagereference('/apex/SalesHD_AuditEncounters');
 	if(Apexpages.currentPage().getUrl().contains('AuditReport')) page = new Pagereference('/apex/SalesHD_AuditReport');
 	page.getParameters().put('monthly', String.valueOf(monthly));
+	page.getParameters().put('month', String.valueOf(month));
+	page.getParameters().put('year', String.valueOf(year));
 	page.getParameters().put('weekly', String.valueOf(weekly));
+	page.getParameters().put('thisweek', String.valueOf(thisweek));
 	page.getParameters().put('mtd', String.valueOf(mtd));
 	page.getParameters().put('audited', String.valueOf(audited));
 	page.getParameters().put('cl', String.valueOf(selectedCL));

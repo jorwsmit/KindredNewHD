@@ -1,0 +1,201 @@
+<apex:component controller="SalesHD_AuditEncounters">
+    <apex:outputPanel rendered="{!showChart}">
+                <div class="container white-bg shadow">
+                    <div class="row inner-container">
+                        <div class="col-md-12 p-0" onclick="window.location.href='/apex/SalesHD_AuditReport';">
+                            <apex:outputPanel rendered="{!report.size>0}">
+                                </apex:outputPanel>
+                            <h4><b>Last Weeks Encounter Audit Summary</b> {!dateRangeStr}</h4>
+                            <div id="chartdiv"></div>
+                        </div>
+                    </div>
+                </div>
+    </apex:outputPanel>
+
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            // Themes begin
+            am4core.useTheme(am4themes_animated);
+            // Themes end
+
+            var container = am4core.create("chartdiv", am4core.Container);
+            container.width = am4core.percent(100);
+            // container.align = 'center';
+            container.height = am4core.percent(100);
+            container.layout = "horizontal";
+            container.fontSize = 14;
+
+
+            var chart = container.createChild(am4charts.PieChart);
+            // chart.width = am4core.percent(75);
+            // chart.radius = am4core.percent(50);
+
+            // Add data
+
+            chart.data = [];
+
+            if ({!cd.totalAudited > 0
+        }){
+            chart.data.push(
+                {
+                    "audited": "Audited Encounters",
+                    "total": {!cd.totalAudited
+                },
+                "color": "#3d90e8",
+                "subData" : []
+                }
+            );
+
+        if ({!cd.totalApproved > 0}) chart.data[0].subData.push({ name: "Approved", total: {!cd.totalApproved }, "color": "#28a745" });
+
+        if ({!cd.totalNeedsReview > 0}) chart.data[0].subData.push({ name: "Needs Review", total: {!cd.totalNeedsReview }, "color": "#ffc107" });
+
+        if ({!cd.totalRejected > 0}) chart.data[0].subData.push({ name: "Rejected", total: {!cd.totalRejected }, "color": "#dc3545" });
+
+            }
+
+
+
+        if ({!cd.totalEncounters > 0 && (cd.totalEncounters - cd.totalAudited) > 0}) chart.data.push(
+            {
+                "audited": "Unaudited Encounters",
+                "total": {!cd.totalEncounters - cd.totalAudited
+            },
+            "color": "#808285"
+                    }
+        );
+
+        // chart.data.push()
+
+
+
+        // Add and configure Series
+        var pieSeries = chart.series.push(new am4charts.PieSeries());
+        pieSeries.dataFields.value = "total";
+        pieSeries.dataFields.category = "audited";
+        pieSeries.slices.template.states.getKey("active").properties.shiftRadius = 0;
+
+        pieSeries.ticks.template.disabled = true;
+        pieSeries.alignLabels = false;
+        pieSeries.labels.template.text = "{category}\n{value}";
+        pieSeries.labels.template.radius = am4core.percent(85);
+        pieSeries.labels.template.inside = true;
+        pieSeries.slices.template.propertyFields.fill = "color";
+
+        var chart2 = container.createChild(am4charts.PieChart);
+        chart2.width = am4core.percent(50);
+        chart2.radius = am4core.percent(50);
+
+        // Add and configure Series
+        var pieSeries2 = chart2.series.push(new am4charts.PieSeries());
+        pieSeries2.dataFields.value = "total";
+        pieSeries2.dataFields.category = "name";
+        pieSeries2.slices.template.states.getKey("active").properties.shiftRadius = 0;
+
+        pieSeries2.labels.template.radius = am4core.percent(50);
+        pieSeries2.labels.template.inside = true;
+        pieSeries2.labels.template.text = "{category}\n{value}";
+        //pieSeries2.labels.template.fill = am4core.color("#ffffff");
+        pieSeries2.slices.template.propertyFields.fill = "color";
+
+        // pieSeries2.labels.template.disabled = true;
+        pieSeries2.ticks.template.disabled = true;
+        pieSeries2.alignLabels = false;
+        pieSeries2.events.on("positionchanged", updateLines);
+
+        var interfaceColors = new am4core.InterfaceColorSet();
+
+        var line1 = container.createChild(am4core.Line);
+        line1.strokeDasharray = "2,2";
+        line1.strokeOpacity = 0.5;
+        line1.stroke = interfaceColors.getFor("alternativeBackground");
+        line1.isMeasured = false;
+
+        var line2 = container.createChild(am4core.Line);
+        line2.strokeDasharray = "2,2";
+        line2.strokeOpacity = 0.5;
+        line2.stroke = interfaceColors.getFor("alternativeBackground");
+        line2.isMeasured = false;
+
+        var selectedSlice;
+
+        function selectSlice(dataItem) {
+
+            selectedSlice = dataItem.slice;
+
+            var fill = selectedSlice.fill;
+
+            var count = dataItem.dataContext.subData.length;
+            pieSeries2.colors.list = [];
+            for (var i = 0; i < count; i++) {
+                pieSeries2.colors.list.push(fill.brighten(i * 2 / count));
+            }
+
+            chart2.data = dataItem.dataContext.subData;
+            pieSeries2.appear();
+
+            var middleAngle = selectedSlice.middleAngle;
+            var firstAngle = pieSeries.slices.getIndex(0).startAngle;
+            var animation = pieSeries.animate([{ property: "startAngle", to: firstAngle - middleAngle }, { property: "endAngle", to: firstAngle - middleAngle + 360 }], 600, am4core.ease.sinOut);
+            animation.events.on("animationprogress", updateLines);
+
+            selectedSlice.events.on("transformed", updateLines);
+
+            //  var animation = chart2.animate({property:"dx", from:-container.pixelWidth / 2, to:0}, 2000, am4core.ease.elasticOut)
+            //  animation.events.on("animationprogress", updateLines)
+        }
+
+
+        function updateLines() {
+            if (selectedSlice) {
+
+                var p11 = { x: selectedSlice.radius * am4core.math.cos(selectedSlice.startAngle), y: selectedSlice.radius * am4core.math.sin(selectedSlice.startAngle) };
+                var p12 = { x: selectedSlice.radius * am4core.math.cos(selectedSlice.startAngle + selectedSlice.arc), y: selectedSlice.radius * am4core.math.sin(selectedSlice.startAngle + selectedSlice.arc) };
+
+                p11 = am4core.utils.spritePointToSvg(p11, selectedSlice);
+                p12 = am4core.utils.spritePointToSvg(p12, selectedSlice);
+
+                if (selectedSlice.startAngle <= -90) {
+                    p11 = { x: 0, y: -pieSeries.pixelRadius };
+                    p12 = { x: 0, y: pieSeries.pixelRadius };
+
+                    p11 = am4core.utils.spritePointToSvg(p11, pieSeries);
+                    p12 = am4core.utils.spritePointToSvg(p12, pieSeries);
+                }
+
+                // p11 = am4core.utils.spritePointToSvg(p11, selectedSlice);
+                // p12 = am4core.utils.spritePointToSvg(p12, selectedSlice);
+
+                var p21 = { x: 0, y: -pieSeries2.pixelRadius };
+                var p22 = { x: 0, y: pieSeries2.pixelRadius };
+
+                p21 = am4core.utils.spritePointToSvg(p21, pieSeries2);
+                p22 = am4core.utils.spritePointToSvg(p22, pieSeries2);
+
+                line1.x1 = p11.x;
+                line1.x2 = p21.x;
+                line1.y1 = p11.y;
+                line1.y2 = p21.y;
+
+                line2.x1 = p12.x;
+                line2.x2 = p22.x;
+                line2.y1 = p12.y;
+                line2.y2 = p22.y;
+            }
+        }
+
+        chart.events.on("datavalidated", function () {
+            selectSlice(pieSeries.dataItems.getIndex(0));
+        });
+
+
+            });
+
+    </script>
+</apex:component>

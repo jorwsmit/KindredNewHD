@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
             crossorigin="anonymous" />
         <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.min.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
         <apex:slds />
         <style>
@@ -676,7 +677,7 @@
                 padding-right: 5px !important;
             }
 
-            #chartdiv {
+            .chartdiv {
                 width: 100%;
                 height: 300px;
             }
@@ -697,20 +698,36 @@
                                 <i class="fas fa-phone icon icon-blue" style="margin-left:0px;margin-right:5px;padding:10px;" aria-hidden="true"></i>Audit Encounters Report</h3>
                             <apex:form id="filterList">
                                 <div>
-                                    <apex:inputcheckbox styleClass="form-control" value="{!weekly}" style="width:15px; display:inline-block;">
+                                    <apex:inputcheckbox styleClass="form-control" value="{!thisweek}" style="width:15px; display:inline-block;">
+                                        <apex:actionSupport event="onclick" rerender="filterList" action="{!toggleThisWeek}" />
+                                    </apex:inputcheckbox> This Week
+
+                                    <apex:inputcheckbox styleClass="form-control" value="{!weekly}" style="margin-left:20px; width:15px; display:inline-block;">
                                         <apex:actionSupport event="onclick" rerender="filterList" action="{!toggleWeekly}" />
                                     </apex:inputcheckbox> Last Week
-                                    <apex:inputcheckbox styleClass="form-control" value="{!mtd}" style="margin-left:20px; width:15px; display:inline-block;">
-                                        <apex:actionSupport event="onclick" rerender="filterList" action="{!toggleMtd}" />
-                                    </apex:inputcheckbox> MTD
+
                                     <apex:inputcheckbox styleClass="form-control" value="{!monthly}" style="margin-left:20px; width:15px; display:inline-block;">
+                                        <apex:actionSupport event="onclick" rerender="filterList" action="{!toggleMonthly}" />
+                                    </apex:inputcheckbox> Monthly
+
+                                    <apex:selectList size="1" value="{!month}">
+                                        <apex:selectOptions value="{!monthPicklist}" />
+                                        <apex:actionsupport event="onchange" action="{!toggleFilters}" />
+                                    </apex:selectList>
+
+                                    <apex:selectList size="1" value="{!year}">
+                                        <apex:selectOptions value="{!yearPicklist}" />
+                                        <apex:actionsupport event="onchange" action="{!toggleFilters}" />
+                                    </apex:selectList>
+
+                                    <!-- <apex:inputcheckbox styleClass="form-control" value="{!monthly}" style="margin-left:20px; width:15px; display:inline-block;">
                                         <apex:actionSupport event="onclick" rerender="filterList" action="{!toggleMonthly}" />
                                     </apex:inputcheckbox> Last
                                     <apex:selectList size="1" value="{!selectedNDays}">
                                         <apex:selectOptions value="{!daysPicklist}" />
                                         <apex:actionsupport event="onchange" action="{!toggleDays}" />
                                     </apex:selectList>
-                                    Days
+                                    Days -->
 
                                     <span style="float:right;">
                                         <a href="/apex/SalesHD_AuditEncounters">Audit Encounters</a>
@@ -723,19 +740,25 @@
                                                 <div class="row">
                                                     <apex:inputField style="display:none;" value="{!usr.Region__c}" />
                                                     <div class="upcoming-events">
-                                                        <div><b>District</b></div>
+                                                        <div>
+                                                            <b>District</b>
+                                                        </div>
                                                         <apex:inputField value="{!usr.District__c}">
-                                                            <apex:actionsupport event="onchange" action="{!changeMarket}" />
+                                                            <apex:actionsupport event="onchange" action="{!changeDistrict}" />
                                                         </apex:inputField>
                                                     </div>
                                                     <div class="upcoming-events">
-                                                        <div><b>Market</b></div>
+                                                        <div>
+                                                            <b>Market</b>
+                                                        </div>
                                                         <apex:inputField value="{!usr.Area__c}">
                                                             <apex:actionsupport event="onchange" action="{!changeMarket}" />
                                                         </apex:inputField>
                                                     </div>
                                                     <div class="upcoming-events">
-                                                        <div><b>Employee</b></div>
+                                                        <div>
+                                                            <b>Employee</b>
+                                                        </div>
                                                         <apex:selectList size="1" value="{!selectedCL}">
                                                             <apex:selectOptions value="{!CLPicklist}" />
                                                             <apex:actionsupport event="onchange" action="{!toggleCL}" />
@@ -757,9 +780,68 @@
 
                                 </div>
 
-                                <apex:outputPanel rendered="{!showChart}">
-                                    <div id="chartdiv"></div>
+                                <apex:outputPanel rendered="{!usr.District__c=null && districtChart.size>0}">
+                                    <table style="font-size:18px; margin-bottom:18px;">
+                                        <thead>
+                                            <th>District</th>
+                                            <th>Number of Encounters</th>
+                                            <th>Total Audited</th>
+                                            <th class="text-success">Approved</th>
+                                            <th class="text-warning">Needs Review</th>
+                                            <th class="text-danger">Rejected</th>
+                                        </thead>
+                                        <tbody>
+
+                                            <apex:repeat value="{!districtChart}" var="dc">
+                                                <tr>
+                                                    <td>{!dc.district}</td>
+                                                    <td>{!dc.chartData.totalEncounters}</td>
+                                                    <td>{!dc.chartData.totalAudited}</td>
+                                                    <td>{!dc.chartData.totalApproved}</td>
+                                                    <td>{!dc.chartData.totalNeedsReview}</td>
+                                                    <td>{!dc.chartData.totalRejected}</td>
+                                                </tr>
+
+                                            </apex:repeat>
+
+                                        </tbody>
+                                    </table>
                                 </apex:outputPanel>
+
+                                <apex:outputPanel rendered="{!usr.District__c!=null && marketChart.size>0}">
+                                    <table style="font-size:18px; margin-bottom:18px;">
+                                        <thead>
+                                            <th>Market</th>
+                                            <th>Number of Encounters</th>
+                                            <th>Total Audited</th>
+                                            <th class="text-success">Approved</th>
+                                            <th class="text-warning">Needs Review</th>
+                                            <th class="text-danger">Rejected</th>
+                                        </thead>
+                                        <tbody>
+
+                                            <apex:repeat value="{!marketChart}" var="mc">
+                                                <tr>
+                                                    <td>{!mc.district}</td>
+                                                    <td>{!mc.chartData.totalEncounters}</td>
+                                                    <td>{!mc.chartData.totalAudited}</td>
+                                                    <td>{!mc.chartData.totalApproved}</td>
+                                                    <td>{!mc.chartData.totalNeedsReview}</td>
+                                                    <td>{!mc.chartData.totalRejected}</td>
+                                                </tr>
+
+                                            </apex:repeat>
+
+                                        </tbody>
+                                    </table>
+                                </apex:outputPanel>
+
+                                <apex:outputPanel rendered="{!showChart}">
+                                    <div class="chartdiv" id="chartdiv"></div>
+                                </apex:outputPanel>
+
+
+
 
 
                                 <!-- <ul id="accounts"> -->
@@ -769,8 +851,8 @@
                                     </div>
                                 </apex:outputPanel>
                                 <apex:outputPanel rendered="{!report.size>0}">
-                                    <div style="width:100%; overflow:auto;">
-                                        <table>
+                                    <div style="width:100%; overflow:auto; border-top:1px solid #ddd; margin-top:10px; padding-top: 10px;">
+                                        <table id="cl_table">
                                             <thead>
                                                 <tr>
                                                     <th>CL</th>
@@ -854,7 +936,6 @@
                 </div>
             </div>
 
-
         </div>
         <!-- Lightning Wrapper -->
 
@@ -868,9 +949,11 @@
         <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
         <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
         <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+        <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
         <script>
 
             $(document).ready(function () {
+                $('#cl_table').DataTable();
 
                 // Themes begin
                 am4core.useTheme(am4themes_animated);
@@ -897,8 +980,9 @@
                 chart.data.push(
                     {
                         "audited": "Audited Encounters",
-                        "total": {!cd.totalAudited},
-                        "color": "#3d90e8",
+                        "total": {!cd.totalAudited                    
+},
+                    "color": "#3d90e8",
                     "subData" : []
                 }
             );
@@ -916,8 +1000,9 @@
             if ({!cd.totalEncounters > 0 && (cd.totalEncounters - cd.totalAudited) > 0}) chart.data.push(
                 {
                     "audited": "Unaudited Encounters",
-                    "total": {!cd.totalEncounters - cd.totalAudited},
-                    "color": "#808285"
+                    "total": {!cd.totalEncounters - cd.totalAudited                
+},
+                "color": "#808285"
                     }
             );
 
@@ -933,7 +1018,7 @@
 
             pieSeries.ticks.template.disabled = true;
             pieSeries.alignLabels = false;
-            pieSeries.labels.template.text = "{category}\n{value}";
+            pieSeries.labels.template.text = "[bold]{category}[/] {value}\n{value.percent.formatNumber('#.0')}%";
             pieSeries.labels.template.radius = am4core.percent(85);
             pieSeries.labels.template.inside = true;
             pieSeries.slices.template.propertyFields.fill = "color";
@@ -950,7 +1035,7 @@
 
             pieSeries2.labels.template.radius = am4core.percent(50);
             pieSeries2.labels.template.inside = true;
-            pieSeries2.labels.template.text = "{category}\n{value}";
+            pieSeries2.labels.template.text = "[bold]{category}[/] {value}\n{value.percent.formatNumber('#.0')}%";
             //pieSeries2.labels.template.fill = am4core.color("#ffffff");
             pieSeries2.slices.template.propertyFields.fill = "color";
 
@@ -1043,6 +1128,12 @@
             chart.events.on("datavalidated", function () {
                 selectSlice(pieSeries.dataItems.getIndex(0));
             });
+
+            $(window).resize(function () {
+                updateLines();
+            });
+
+            
 
 
             });
