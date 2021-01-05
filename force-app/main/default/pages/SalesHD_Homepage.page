@@ -639,8 +639,14 @@
 
 			<c:SalesHD_RedesignNav />
 
-			<apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
-				<c:SalesHD_AuditSummary />
+			<c:SalesHD_AuditSummary />
+
+			<!-- <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}"> -->
+				
+			
+				<!-- <c:SalesHD_AuditSummary /> -->
+
+
 			<!-- <div class="container" style="padding:0px!important;">
 				<div class="row inner-container">
 					<div class="col-md-12 no-pad">
@@ -665,7 +671,7 @@
 				</div>
 			</div> -->
 
-		</apex:outputPanel>
+		<!-- </apex:outputPanel> -->
 
 			<div class="container white-bg shadow">
 				<div class="row inner-container">

@@ -708,7 +708,7 @@
 							<apex:form id="filterList">
 
 
-								<div>
+								<div style="margin-bottom:10px;">
 									<!-- <apex:inputcheckbox styleClass="form-control" value="{!weekly}" style="width:15px; display:inline-block;">
 										<apex:actionSupport event="onclick" rerender="filterList" action="{!toggleWeekly}" />
 									</apex:inputcheckbox> Last Week
@@ -748,6 +748,10 @@
 											<apex:actionSupport event="onclick" rerender="filterList" action="{!toggleAudited}" />
 										</apex:inputcheckbox> Show Audited Encounters
 									</span>
+
+									<span style="float:right;">
+                                        <a href="/apex/SalesHD_AuditReport">Audited Encounters Report</a>
+                                    </span>
 
 									<!-- <apex:outputPanel rendered="{!NOT(CONTAINS($Profile.Name, 'Associate') || CONTAINS($Profile.Name, 'PAC'))}">
 										<span style="border-left:1px solid black; margin-left:20px; padding-left: 20px;">

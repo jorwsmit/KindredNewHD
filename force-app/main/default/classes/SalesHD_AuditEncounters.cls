@@ -91,10 +91,12 @@ public SalesHD_AuditEncounters() {
 	usr = new User();
 	usr.Region__c='HD';
 
-	for(User u : [select region__c, district__c, area__c from user where Id=:UserInfo.getUserId()]){
+	for(User u : [select id, region__c, district__c, area__c, profile.name from user where Id=:UserInfo.getUserId()]){
 		// if(u.Region__c!=null) usr.Region__c = u.Region__c;
 		if(u.district__c!=null && ApexPages.currentPage().getParameters().get('district')==null) usr.district__c = u.district__c;
-		if(u.area__c!=null && ApexPages.currentPage().getParameters().get('market')==null) usr.area__c = u.area__c;
+		if(u.area__c!=null&& ApexPages.currentPage().getParameters().get('district')==null && ApexPages.currentPage().getParameters().get('market')==null) usr.area__c = u.area__c;
+
+		if(u.profile.name.contains('Associate') || u.profile.name.contains('PAC')) selectedCL=u.Id;
 	}
 
 
@@ -169,17 +171,8 @@ public SalesHD_AuditEncounters() {
 		audited=true;
 		encounters = getMyEncounters();
 	} else {
-		// if(selectedCL!=null) encounters = getEncountersCL();
-		// else encounters = getEncounters();
 		encounters = getEncounters();
 	}
-
-	// for(User currentUser : [select Region__c, District__c, Area__c from user where Id=:UserInfo.getUserId()]) {
-	// 	if(currentUser.Region__c!=null) usr.Region__c = currentUser.Region__c;
-	// 	if(currentUser.District__c!=null) usr.District__c = currentUser.District__c;
-	// 	if(currentUser.Area__c!=null) usr.Area__c = currentUser.Area__c;
-	// }
-
 
 	cd = new chartData();
 
@@ -190,14 +183,13 @@ public List<Event> getEncounters(){
 	String query = 'select SalesHD_Call_Objective__c, Who.Name, Who.Title, What.Name, SalesHD_Account_Unit__r.Unit__r.Name, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,'+
 	               'SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,'+
 	               'SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,'+
-	               'Owner.Name, event.SalesHD_Account_Strategy__c, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c from event where ';
+	               'Owner.Name, event.SalesHD_Account_Strategy__c, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c from event where owner.isActive=true';
 
 	
 
-	if(weekly) query += 'startDateTime=Last_Week';
-	else if(thisweek) query += 'startDateTime=This_Week';
-	// else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
-	else if(monthly) query += 'startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
+	if(weekly) query += ' and startDateTime=Last_Week';
+	else if(thisweek) query += ' and startDateTime=This_Week';
+	else if(monthly) query += ' and startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
 
 	if(!audited) query += ' and Encounter_Audit__r.Audit_Result__c=null';
 
@@ -208,16 +200,12 @@ public List<Event> getEncounters(){
 	else if(usr.Area__c!=null && usr.District__c!=null) query += ' and District__c=\''+usr.District__c+'\' and Area__c=\''+usr.Area__c+'\'';
 
 	List<Event> events = database.query(query);
-	// for(Integer i=0; i<30; i++){
-	// 	events.add(events[0]);
-	// }
 	return events;
 
 }
 
 private String monthYearQueryStringLow(){
 	String monthYear = year + '-' + month + '-' + '01';
-	// Datetime.newInstance(Integer.valueOf(year), Integer.valueOf(month), 1);
 	if(Integer.valueOf(month)<10) monthYear = year+'-0'+month+'-01T00:00:00Z';
 	else monthYear = year+'-'+month+'-01T00:00:00Z';
 	return monthYear;
@@ -228,7 +216,6 @@ private String monthYearQueryStringHigh(){
 	d = d.addMonths(1);
 	if(d.month()<10) monthYear = d.year()+'-0'+d.month()+'-01T00:00:00Z';
 	else monthYear = d.year()+'-'+d.month()+'-01T00:00:00Z';
-	// monthYear = '2020-12-01T00:00:00Z';
 	return monthYear;
 }
 
@@ -243,8 +230,8 @@ private Map<String, String> auditResultMap = new Map<String, String>
 public List<auditReport> getReport(){
 
 	Map<Id, auditReport> userData = new Map<Id, auditReport>();
-
-	String userQuery = 'select Id, Name from user where UserRoleId in :allSubRoleIds';
+	Id currentUserId = UserInfo.getUserId();
+	String userQuery = 'select Id, Name from user where isActive=true';
 	if(selectedCL!=null) userQuery += ' and Id=:selectedCL';
 	if(usr.District__c!=null && usr.Area__c==null) userQuery += ' and District__c=\''+usr.District__c+'\'';
 	else if(usr.Area__c!=null && usr.District__c==null) userQuery += ' and Area__c=\''+usr.Area__c+'\'';
@@ -259,12 +246,11 @@ public List<auditReport> getReport(){
 	}
 
 
-	String query = 'select OwnerId cl, Encounter_Audit__r.Audit_Result__c result, Count(Id) total from event where '+
-	               'owner.userRoleId in : allSubRoleIds';
+	String query = 'select OwnerId cl, Encounter_Audit__r.Audit_Result__c result, Count(Id) total from event where owner.isActive=true';
+	              
 
 	if(weekly) query += ' and startDateTime=Last_Week';
 	else if(thisweek) query += ' and startDateTime=This_Week';
-	// else if(monthly) query += ' and startDateTime=Last_n_days:'+days;
 	else if(monthly) query += ' and startDateTime>=' + monthYearQueryStringLow() + ' and startDateTime<=' + monthYearQueryStringHigh() ;
 	else if(mtd) query += ' and startDateTime>=this_month and startDateTime<=today';
 
@@ -273,8 +259,6 @@ public List<auditReport> getReport(){
 	if(usr.District__c!=null && usr.Area__c==null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\')';
 	else if(usr.Area__c!=null && usr.District__c==null) query += ' and ownerId in (select Id from user where Area__c=\''+usr.Area__c+'\')';
 	else if(usr.Area__c!=null && usr.District__c!=null) query += ' and ownerId in (select Id from user where District__c=\''+usr.District__c+'\' and Area__c=\''+usr.Area__c+'\')';
-
-	// query += ' and startDateTime=Last_n_days:'+60;
 
 	query += ' group by OwnerId, Encounter_Audit__r.Audit_Result__c';
 
@@ -326,8 +310,8 @@ public List<auditReport> getReport(){
 }
 
 public Boolean getShowChart(){
-	String query = 'select Count(Id) total from event where '+
-	               'owner.userRoleId in : allSubRoleIds';
+	Id currentUserId = UserInfo.getUserId();
+	String query = 'select Count(Id) total from event where owner.isActive=true';
 
 	if(weekly) query += ' and startDateTime=Last_Week';
 	else if(thisweek) query += ' and startDateTime=This_Week';
@@ -353,8 +337,7 @@ private List<String> districts = new List<String>
 public List<districtChartData> getdistrictChart(){
 	Map<String, chartData> chartData = new Map<String, chartData>();
 
-	String query = 'select District__c, Encounter_Audit__r.Audit_Result__c from event where '+
-	               'owner.userRoleId in : allSubRoleIds';
+	String query = 'select District__c, Encounter_Audit__r.Audit_Result__c from event where owner.isActive=true';
 
 	if(weekly) query += ' and startDateTime=Last_Week';
 	else if(thisweek) query += ' and startDateTime=This_Week';
@@ -400,8 +383,7 @@ public List<districtChartData> getdistrictChart(){
 public List<districtChartData> getMarketChart(){
 	Map<String, chartData> chartData = new Map<String, chartData>();
 
-	String query = 'select Area__c, Encounter_Audit__r.Audit_Result__c from event where '+
-	               'owner.userRoleId in : allSubRoleIds';
+	String query = 'select Area__c, Encounter_Audit__r.Audit_Result__c from event where owner.isActive=true';
 
 	if(weekly) query += ' and startDateTime=Last_Week';
 	else if(thisweek) query += ' and startDateTime=This_Week';
@@ -513,35 +495,11 @@ public chartData calcChartData(chartData cData, String result){
 
 public List<Event> getMyEncounters(){
 
-	// if(weekly) {
-	// 	return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-	// 	        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-	// 	        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-	// 	        Owner.Name
-	// 	        from event where ownerId=: UserInfo.getUserId()
-	// 	                                  and startDateTime=Last_Week];
-	// } else if(thisweek){
-	// 	return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-	// 	        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-	// 	        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-	// 	        Owner.Name
-	// 	        from event where ownerId=: UserInfo.getUserId()
-	// 	                                  and startDateTime=This_Week];
-	// }
-	// else if(monthly) {
-	// 	return [select SalesHD_Call_Objective__c, Who.Name, Who.Title, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,
-	// 	        SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,
-	// 	        SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,
-	// 	        Owner.Name
-	// 	        from event where ownerId=: UserInfo.getUserId()
-	// 	                                  and startDateTime=Last_n_days : 30];
-	// }
-
-
+	Id currentUserId = UserInfo.getUserId();
 	String query = 'select SalesHD_Call_Objective__c, Who.Name, Who.Title, What.Name, SalesHD_Account_Unit__r.Unit__r.Name, StartDateTime, Encounter_Audit__r.Rating__c, Encounter_Audit__r.Audit_Result__c,'+
 	               'SalesHD_Contact_Method__c, SalesHD_Topic__c, SalesHD_Open_Ended_Questions__c, SalesHD_Marketing_Collateral__c, SalesHD_Data_Preparation__c,'+
 	               'SalesHD_Agenda_Preparation__c, SalesHD_Close_Customer_Commitment__c, Result__c, SalesHD_Next_Encounter__c, Encounter_Audit__r.Manager_Comment__c,'+
-	               'Owner.Name, event.SalesHD_Account_Strategy__c, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c from event where ownerId=: UserInfo.getUserId()';
+	               'Owner.Name, event.SalesHD_Account_Strategy__c, SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c from event where ownerId=:currentUserId';
 
 
 	if(weekly) query += ' and startDateTime=Last_Week';

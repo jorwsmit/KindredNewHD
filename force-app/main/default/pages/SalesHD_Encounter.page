@@ -892,7 +892,9 @@
 								<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__r.Rating__c!=null}">
 									<div>
 										<label style="display:inline-block;">Audit Rating:</label>
-										<p style="display:inline-block;">
+										<p class="{!if(relatedAudit.Encounter_Audit__r.Rating__c='Approved', 'text-success',
+										if(relatedAudit.Encounter_Audit__r.Rating__c='Needs Improvement', 'text-warning',
+										if(relatedAudit.Encounter_Audit__r.Rating__c='Rejected', 'text-danger', '')))}" style="display:inline-block;">
 											{!relatedAudit.Encounter_Audit__r.Rating__c}
 										</p>
 									</div>

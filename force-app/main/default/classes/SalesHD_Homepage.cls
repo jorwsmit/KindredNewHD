@@ -287,14 +287,14 @@ private static String getMessages() {
 	// 	notifications.add(temp);
 	// }
 
-	List<event> totalEncountersLastWeek = [select id from event where startdatetime=last_week and ownerId=:currentUser];
-	List<event> unauditedEncountersLastWeek = [select id from event where startdatetime=last_week and Encounter_Audit__r.Audit_Result__c=null and ownerId=:currentUser];
-	if(unauditedEncountersLastWeek.isEmpty() && totalEncountersLastWeek.size()>0){
-		notification temp = new notification();
-		temp.icon = '<i class="fas fa-info-circle blue round-icon-blue"></i>';
-		temp.body = 'All of your encounters last week have been audited.';
-		notifications.add(temp);
-	}
+	// List<event> totalEncountersLastWeek = [select id from event where startdatetime=last_week and ownerId=:currentUser];
+	// List<event> unauditedEncountersLastWeek = [select id from event where startdatetime=last_week and Encounter_Audit__r.Audit_Result__c=null and ownerId=:currentUser];
+	// if(unauditedEncountersLastWeek.isEmpty() && totalEncountersLastWeek.size()>0){
+	// 	notification temp = new notification();
+	// 	temp.icon = '<i class="fas fa-info-circle blue round-icon-blue"></i>';
+	// 	temp.body = 'All of your encounters last week have been audited.';
+	// 	notifications.add(temp);
+	// }
 	
 
 	for(Contact pr : [select FirstName, LastName, Id, HD_Physician_Request_Completed_Date__c from Contact
