@@ -860,6 +860,10 @@
 								<i class="fas fa-phone"></i> New Encounter</button>
 						</div>
 
+						<div style="padding:10px 0px 10px 0px!important;">
+							<c:SalesHD_AccountSalesPlan />
+						</div>
+
 					</div>
 				</div>
 

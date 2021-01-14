@@ -845,9 +845,14 @@
 
 
                                 <!-- <ul id="accounts"> -->
-                                <apex:outputPanel rendered="{!report.size=0}">
+                                <apex:outputPanel rendered="{!report.size=0 && usr.District__c!=null}">
                                     <div class="grey" style="padding:10px;">
                                         <i class="fa fa-times-circle" aria-hidden="true"></i> No encounters have been logged.
+                                    </div>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!report.size=0 && usr.District__c=null}">
+                                    <div class="grey" style="padding:10px;">
+                                        <i class="fa fa-times-circle" aria-hidden="true"></i> Select a district from the dropdown above to show the report.
                                     </div>
                                 </apex:outputPanel>
                                 <apex:outputPanel rendered="{!report.size>0}">

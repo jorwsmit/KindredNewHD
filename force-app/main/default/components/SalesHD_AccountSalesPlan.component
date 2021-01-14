@@ -1,0 +1,12 @@
+<apex:component>
+    <style>
+        .icon-plan-red {
+            background-color: #E55442 !important;
+        }
+    </style>
+    <div class="shadow white-bg rounded" style="margin:10px 13px !important;">
+        <h3>
+            <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i>
+            Related Sales Plans </h3>
+    </div>
+</apex:component>

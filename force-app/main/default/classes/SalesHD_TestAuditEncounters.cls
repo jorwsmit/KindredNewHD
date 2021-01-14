@@ -21,7 +21,7 @@ public class SalesHD_TestAuditEncounters {
 	System.runAs ( thisUser ) {
 		User usr = new User(Alias = 'newUser2', Email='testhduser2@kndcrm.com',
 		                    EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
-		                    LocaleSidKey='en_US', ProfileId = '00e1B000000jWdg',
+		                    LocaleSidKey='en_US', ProfileId = '00e1B000000jWdg', Region__c='HD', District__c='California',
 		                    TimeZoneSidKey='America/Los_Angeles', UserName='testhduser2@kndcrm.com', UserRoleId='00E130000020vp7');
         insert usr;
 
@@ -54,6 +54,8 @@ public class SalesHD_TestAuditEncounters {
 	Test.setCurrentPage(pageRef);
     Test.startTest();
     SalesHD_AuditEncounters controller = new SalesHD_AuditEncounters();
+    controller.usr.Region__c = 'HD';
+    controller.usr.District__c = 'California';
     controller.getReport();
     controller.thisweek = true;
     controller.toggleThisWeek();
@@ -69,6 +71,8 @@ public class SalesHD_TestAuditEncounters {
 	Test.setCurrentPage(pageRef);
     Test.startTest();        
     SalesHD_AuditEncounters controller = new SalesHD_AuditEncounters();
+    controller.usr.Region__c = 'HD';
+    controller.usr.District__c = 'California';
     controller.getReport();
     controller.thisweek = true;
     controller.toggleThisWeek();
@@ -92,6 +96,8 @@ public class SalesHD_TestAuditEncounters {
 	Test.setCurrentPage(pageRef);
     Test.startTest();        
     SalesHD_AuditEncounters controller = new SalesHD_AuditEncounters();
+    controller.usr.Region__c = 'HD';
+    controller.usr.District__c = 'California';
     controller.getReport();
     controller.thisweek = true;
     controller.toggleThisWeek();
@@ -105,6 +111,8 @@ public class SalesHD_TestAuditEncounters {
 	Test.setCurrentPage(pageRef);
     Test.startTest();        
     SalesHD_AuditEncounters controller = new SalesHD_AuditEncounters();
+    controller.usr.Region__c = 'HD';
+    controller.usr.District__c = 'California';
     controller.thisweek = true;
     controller.toggleThisWeek();
     User u = [select Id from user where UserName='testhduser2@kndcrm.com' limit 1];
@@ -119,6 +127,8 @@ public class SalesHD_TestAuditEncounters {
 	Test.setCurrentPage(pageRef);
 	Test.startTest();
     SalesHD_AuditEncounters controller = new SalesHD_AuditEncounters();
+    controller.usr.Region__c = 'HD';
+    controller.usr.District__c = 'California';
     controller.thisweek = true;
     controller.toggleThisWeek();
     controller.getEncounters();
@@ -138,6 +148,8 @@ public class SalesHD_TestAuditEncounters {
     Event e = [select id from event where ownerid=:u.id order by activitydate desc limit 1];
     Test.startTest();        
     SalesHD_AuditEncounters controller = new SalesHD_AuditEncounters();
+    controller.usr.Region__c = 'HD';
+    controller.usr.District__c = 'California';
     controller.encounterId = e.Id;
     controller.auditResult = 'Approved';
     controller.saveAudit();
@@ -153,6 +165,8 @@ public class SalesHD_TestAuditEncounters {
     Event e = [select id from event where ownerid=:u.id order by activitydate desc limit 1];
     Test.startTest();        
     SalesHD_AuditEncounters controller = new SalesHD_AuditEncounters();
+    controller.usr.Region__c = 'HD';
+    controller.usr.District__c = 'California';
     controller.encounterId = e.Id;
     controller.managerComment = 'Testing a comment';
     controller.saveComment();
