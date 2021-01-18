@@ -1,12 +1,41 @@
-<apex:component>
+<apex:component controller="SalesHD_AccountHelper">
     <style>
         .icon-plan-red {
             background-color: #E55442 !important;
         }
+
     </style>
-    <div class="shadow white-bg rounded" style="margin:10px 13px !important;">
-        <h3>
-            <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i>
-            Related Sales Plans </h3>
-    </div>
+    <apex:outputPanel rendered="{!accountPlans.size>0}">
+
+        <div class="shadow white-bg rounded">
+            <h3 style="margin: 0 10px;">
+                <i class="fas fa-notes-medical icon icon-plan-red" style="margin-left:0px;padding:10px 13px;" aria-hidden="true"></i>
+                Related Sales Plans </h3>
+    
+            <ul style="max-height:400px;overflow:auto;">
+    
+                <apex:repeat value="{!accountPlans}" var="ap">
+                    <a class="text-primary" href="SalesHD_SalesPlan?id={!ap.Parent_Sales_Plan__c}">
+                        <li>
+                            <b>Sales Plan</b> - {!CASE(MONTH(ap.Parent_Sales_Plan__r.SalesHD_Plan_Date__c), 1, "January", 2, "February", 3, "March",
+                            4, "April", 5, "May", 6, "June", 7, "July", 8, "August", 9, "September", 10, "October", 11, "November",
+                            12, "December", "None")&" "&TEXT(YEAR(ap.Parent_Sales_Plan__r.SalesHD_Plan_Date__c))}
+                        </li>
+                    </a>
+                </apex:repeat>
+    
+                <!-- <apex:outputPanel rendered="{!accountPlans.size>0}">
+                        <apex:repeat value="{!accountPlans}" var="ap">
+                            <li>{!ap}</li>
+                        </apex:repeat>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!accountPlans.size<=0}">
+    
+                    </apex:outputPanel> -->
+            </ul>
+    
+        </div>
+
+    </apex:outputPanel>
+
 </apex:component>

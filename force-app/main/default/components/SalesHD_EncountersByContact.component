@@ -50,7 +50,10 @@
                 var options = {
                     height: 500,
                     title: 'Encounters by Contact Title Category',
-                    pieSliceText: 'label',
+                    pieSliceText: 'percentage',
+                    legend: {
+                        position: 'labeled'
+                    },
                     backgroundColor: { fill: 'transparent' }
                 };
 

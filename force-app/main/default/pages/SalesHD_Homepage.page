@@ -677,13 +677,42 @@
                             </div>
                         </ul>
                     </div>
+                    
                 </div>
             </div>
+
+            <div class="container no-pad">
+                <div class="shadow white-bg rounded" style="margin-bottom:10px;">
+                    <h3 class="thin italic">
+                        <i class="fas fa-chart-pie icon icon-lightblue" style="padding:10px 9px 10px 9px;" aria-hidden="true"></i> Reports</h3>
+                    <div style="margin-left:10px;" id="reports">
+                        <div>
+                            <a target="_blank" href="/00O/o?isdtp=vw">
+                                <b>Salesforce Reports</b>
+                            </a>
+                        </div>
+                        <div>
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                                <a target="_blank" href="/apex/SalesHD_DashboardManager">
+                                    <b>Dashboard</b>
+                                </a>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
+                                <a target="_blank" href="/apex/SalesHD_DashboardCL">
+                                    <b>Dashboard</b>
+                                </a>
+                            </apex:outputPanel>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
 
             <div class="container no-pad" style="margin-top:0px;margin-bottom:0px;">
                 <div class="row inner-container">
                     <div class="col-md-6 no-pad">
                         <div class="shadow white-bg rounded" style="margin-bottom:10px; {!IF (CONTAINS($Profile.Name, 'Manager'), " display:none;
+                         ", " ")} {!IF (CONTAINS($Profile.Name, 'Administrator'), " display:none;
                          ", " ")}">
                             <h3 class="thin italic">
                                 <i class="fas fa-chart-line icon icon-purple" style="padding:10px;" aria-hidden="true"></i> My Performance</h3>
@@ -796,7 +825,7 @@
                             </ul>
                         </div>
 
-                        <div class="shadow white-bg rounded" style="margin-bottom:10px;">
+                        <!-- <div class="shadow white-bg rounded" style="margin-bottom:10px;">
                             <h3 class="thin italic">
                                 <i class="fas fa-chart-pie icon icon-lightblue" style="padding:10px 9px 10px 9px;" aria-hidden="true"></i> Reports</h3>
                             <div style="margin-left:10px;" id="reports">
@@ -818,7 +847,7 @@
                                     </apex:outputPanel>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
 
                     </div>
                 </div>

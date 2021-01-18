@@ -69,21 +69,40 @@
                             <div class="col-md-12">
                                 <h2 class="text-center ">{!dateRange}</h2>
                             </div>
-                            <div class="col-md-3 offset-md-3">
+
+                            <!-- <div class="col-md-3 offset-md-3">
                                 <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!previousWeek}" value="Previous Week"></apex:commandButton>
                             </div>
                             <div class="col-md-3">
                                 <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!nextWeek}" value="Next Week"></apex:commandButton>
+                            </div> -->
+
+                            <div class="col-md-6 offset-md-3">
+                                <apex:selectList size="1" value="{!dateOption}">
+                                    <apex:selectOptions value="{!dateOptionPicklist}" />
+                                    <apex:actionsupport event="onchange" action="{!selectDateOption}" />
+                                </apex:selectList>
                             </div>
+
                             <!-- <c:SalesHD_MarketDashboardDrilldown/> -->
                             <div class="col-md-6 offset-md-3">
                                 <apex:inputField style="display:none;" value="{!usr.Region__c}" />
-                                <apex:inputField value="{!usr.District__c}">
-                                    <apex:actionsupport event="onchange" action="{!selectDistrict}" />
-                                </apex:inputField>
-                                <apex:inputField value="{!usr.Area__c}">
-                                    <apex:actionsupport event="onchange" action="{!selectArea}" />
-                                </apex:inputField>
+                                <div class="input-group" style="margin-left:15px;">
+                                    <div class="row" style="width:100%;">
+                                        <div class="col-md-6 p-0">
+                                            <b>District</b>
+                                            <apex:inputField value="{!usr.District__c}">
+                                                <apex:actionsupport event="onchange" action="{!selectDistrict}" />
+                                            </apex:inputField>
+                                        </div>
+                                        <div class="col-md-6 p-0">
+                                            <b>Market</b>
+                                            <apex:inputField  value="{!usr.Area__c}">
+                                                <apex:actionsupport event="onchange" action="{!selectArea}" />
+                                            </apex:inputField>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-6 offset-md-3">
                                 <apex:selectList size="1" value="{!selectedCL}">

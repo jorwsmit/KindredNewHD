@@ -53,7 +53,10 @@
                 var options = {
                     height: 500,
                     title: 'Encounters by Unit',
-                    pieSliceText: 'label',
+                    pieSliceText: 'percentage',
+                    legend: {
+                        position: 'labeled'
+                    },
                     backgroundColor: { fill: 'transparent' }
                 };
 

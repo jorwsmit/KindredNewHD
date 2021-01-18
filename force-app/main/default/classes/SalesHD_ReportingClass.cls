@@ -154,7 +154,9 @@ public SalesHD_ReportingClass() {
 	if(usr.District__c!=null) district = '%'+usr.District__c+'%';
 	if(usr.Area__c!=null) area = '%'+usr.Area__c+'%';
 
-	setWeeks();
+	// setWeeks();
+	setDates();
+
 	dateRange = lowDate.format() + ' - ' + highDate.format();
 
 	clName = UserInfo.getName();
@@ -185,6 +187,8 @@ public SalesHD_ReportingClass() {
 	if(ApexPages.currentPage().getParameters().get('account')!=null) {
 		selectedAccount = ApexPages.currentPage().getParameters().get('account');
 	}
+
+	dateOptionSetup();
 
 }
 
@@ -328,6 +332,26 @@ public List<Selectoption> getAdmitsRevenuePicklist(){
 	return picklist;
 }
 
+public String dateOption {get; set;}
+
+public List<SelectOption> getDateOptionPicklist(){
+	List<Selectoption> picklist = new List<selectoption>();
+	picklist.add(new selectOption('This Week', 'This Week'));
+	picklist.add(new selectOption('Previous Week', 'Previous Week'));
+	picklist.add(new selectOption('Month to Date', 'Month to Date'));
+	picklist.add(new selectOption('Previous Month', 'Previous Month'));
+	picklist.add(new selectOption('Current Quarter', 'Current Quarter'));
+	picklist.add(new selectOption('Previous Quarter', 'Previous Quarter'));
+	return picklist;
+}
+
+public void dateOptionSetup(){
+	if(dateOption==null) dateOption = 'Previous Week';
+
+	if(ApexPages.currentPage().getParameters().get('date_option')!=null)
+	dateOption = String.valueOf(ApexPages.currentPage().getParameters().get('date_option'));
+}
+
 public List<Selectoption> getCLPicklist(){
 
 	allSubRoleIds.add(UserInfo.getUserRoleId());
@@ -381,6 +405,93 @@ public static void setWeeks(){
 	highDate = Datetime.newInstance(Date.valueOf(lowDate).addDays(7-1), Time.newInstance(23, 59, 59, 99));
 }
 
+public static void setDates(){
+
+	lowDate = Datetime.newInstance(Date.today().toStartOfWeek().addDays(-7), Time.newInstance(0, 0, 0, 0));
+	highDate = Datetime.newInstance(Date.valueOf(lowDate).addDays(7-1), Time.newInstance(23, 59, 59, 99));
+	
+	String dateOption = 'Previous Week';
+	if(ApexPages.currentPage().getParameters().get('date_option')!=null) {
+		dateOption = String.valueOf(ApexPages.currentPage().getParameters().get('date_option'));
+	}
+
+	if(dateOption == 'This Week'){
+		lowDate = Datetime.newInstance(Date.today().toStartOfWeek(), Time.newInstance(0, 0, 0, 0));
+		highDate = Datetime.newInstance(Date.valueOf(lowDate).addDays(7-1), Time.newInstance(23, 59, 59, 99));
+	} else if(dateOption == 'Previous Week'){
+		lowDate = Datetime.newInstance(Date.today().toStartOfWeek().addDays(-7), Time.newInstance(0, 0, 0, 0));
+		highDate = Datetime.newInstance(Date.valueOf(lowDate).addDays(7-1), Time.newInstance(23, 59, 59, 99));
+	} else if(dateOption == 'Month to Date'){
+		lowDate = Datetime.newInstance(Date.today().toStartOfMonth(), Time.newInstance(0, 0, 0, 0));
+		highDate = Datetime.newInstance(Date.today(), Time.newInstance(23, 59, 59, 99));
+	} else if(dateOption == 'Previous Month'){
+		lowDate = Datetime.newInstance(Date.today().toStartOfMonth().addMonths(-1), Time.newInstance(0, 0, 0, 0));
+		// Date tempDate = Date.newInstance(lowDate.year(), lowDate.month(), Date.daysInMonth(lowDate.month(), lowDate.year()));
+		// highDate = Datetime.newInstance(tempDate, Time.newInstance(23, 59, 59, 99));
+		highDate = Datetime.newInstance(
+			Date.valueOf(lowDate.addDays(Date.daysInMonth(lowDate.month(), lowDate.year()))),
+			Time.newInstance(23, 59, 59, 99));
+	} else if(dateOption == 'Current Quarter'){
+		// Integer quarter = ((Date.today().month()+3)/3);
+		// lowDate = Datetime.newInstance(Date.today().(), Time.newInstance(0, 0, 0, 0));
+		// highDate = Datetime.newInstance(Date.today(), Time.newInstance(23, 59, 59, 99));
+		Datetime low_dt = getQuarter(Date.today().toStartOfMonth());
+		if(low_dt != null){
+			lowDate = low_dt;
+			highDate = lowDate.addMonths(2);
+			highdate = Datetime.newInstance(
+				Date.newInstance(highDate.year(), highDate.month(), Date.daysInMonth(highDate.month(), highDate.year())),
+			Time.newInstance(23, 59, 59, 99));
+		}
+	} else if(dateOption == 'Previous Quarter'){
+		Datetime low_dt = getQuarter(Date.today().toStartOfMonth());
+		if(low_dt != null){
+			lowDate = Datetime.newInstance(
+				Date.valueOf(low_dt.addMonths(-3)),
+			Time.newInstance(0, 0, 0, 0));
+			
+			highDate = low_dt.addDays(-1);
+			highDate = Datetime.newInstance(Date.valueOf(highDate), Time.newInstance(23, 59, 59, 99));
+			// highdate = Datetime.newInstance(
+			// 	Date.newInstance(highDate.year(), highDate.month(), Date.daysInMonth(highDate.month(), highDate.year())),
+			// Time.newInstance(23, 59, 59, 99));
+		}
+	}
+}
+
+private static Datetime getQuarter(Date d){
+	Date low = Date.newInstance(d.year(), 1, 1);
+	Date high = low.addMonths(2);
+	high = high.addDays(Date.daysInMonth(high.month(),high.year())-1);
+
+	if(d >= low && d <= high){
+		return Datetime.newInstance(low, Time.newInstance(0, 0, 0, 0));
+	}
+
+	low = high.addDays(1);
+	high = low.addMonths(2);
+	high = high.addDays(Date.daysInMonth(high.month(),high.year())-1);
+	if(d >= low && d <= high){
+		return Datetime.newInstance(low, Time.newInstance(0, 0, 0, 0));
+	}
+
+	low = high.addDays(1);
+	high = low.addMonths(2);
+	high = high.addDays(Date.daysInMonth(high.month(),high.year())-1);
+	if(d >= low && d <= high){
+		return Datetime.newInstance(low, Time.newInstance(0, 0, 0, 0));
+	}
+
+	low = high.addDays(1);
+	high = low.addMonths(2);
+	high = high.addDays(Date.daysInMonth(high.month(),high.year())-1);
+	if(d >= low && d <= high){
+		return Datetime.newInstance(low, Time.newInstance(0, 0, 0, 0));
+	}
+
+	return null;
+}
+
 public void eLastWeek(){
 	encountersLastWeek = JSON.serializePretty(getEncountersWeek(UserInfo.getUserRoleId(), selectedCL, users));
 }
@@ -418,7 +529,8 @@ public static String getEncountersContact(Id rId, Id cl, Id accountId, List<User
 	Map<String, String> contacts = new Map<String, String>();
 
 	List<id> contactIds = new List<id>();
-	setWeeks();
+	// setWeeks();
+	setDates();
 	for(event e : [select whoId from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId()) and startDateTime>=:lowDate and startDateTime<=:highDate]) {
 		contactIds.add(e.whoId);
 	}
@@ -434,7 +546,8 @@ public static String getEncountersContact(Id rId, Id cl, Id accountId, List<User
 
 
 
-	setWeeks();
+	// setWeeks();
+	setDates();
 
 	List<AggregateResult> ars = new List<AggregateResult>();
 
@@ -493,7 +606,8 @@ public static String getEncountersWeek(Id rId, Id cl, List<User> usrs){
 	             '{"id":"","label":"Planned Encounters","pattern":"","type":"number"}, ' +
 	             '{"id":"","label":"Unplanned Encounters","pattern":"","type":"number"}],'+
 	             '"rows": [';
-	setWeeks();
+	// setWeeks();
+	setDates();
 
 	//Maps userIds to a list containing complete encounter totals at index 0 and incomplete at index 1
 	Map<Id, List<Integer> > usersEncounters = new Map<Id, List<Integer> >();
@@ -529,8 +643,8 @@ public static String getEncountersMedium(Id rId, Id cl, Id accountId, List<User>
 	String res = '{ "cols" : [{"id":"","label":"Contact Title","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
 	             '"rows": [';
-	setWeeks();
-
+	// setWeeks();
+	setDates();
 
 	List<AggregateResult> ars = new List<AggregateResult>();
 	if(cl!=null) {
@@ -565,7 +679,9 @@ public static String getEncountersObjective(Id rId, Id cl, Id accountId, List<Us
 	String res = '{ "cols" : [{"id":"","label":"Objective","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
 	             '"rows": [';
-	setWeeks();
+	// setWeeks();
+	setDates();
+
 
 	List<AggregateResult> ars = new List<AggregateResult>();
 	if(cl!=null) {
@@ -603,7 +719,8 @@ public static String getPerformanceTrend(Id rId, String admitsRevenue, Id cl){
 	             '{"id":"","label":"Actual","pattern":"","type":"number"}, ' +
 	             '{"id":"","label":"Target","pattern":"","type":"number"}],'+
 	             '"rows": [';
-	setWeeks();
+	// setWeeks();
+	setDates();
 
 	List<Sales_Performance__c> sps = new List<Sales_Performance__c>();
 	if(cl!=null) {
@@ -640,7 +757,8 @@ public static String getEncountersAccount(Id rId, Id cl, Id accountId, List<User
 	String res = '{ "cols" : [{"id":"","label":"Account","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
 	             '"rows": [';
-	setWeeks();
+	// setWeeks();
+	setDates();
 
 	List<AggregateResult> ars = new List<AggregateResult>();
 	if(cl!=null) {
@@ -677,7 +795,8 @@ public static String getUpcomingEncounters(Id rId, Id cl, List<User> usrs){
 	String res = '{ "cols" : [{"id":"","label":"CL","pattern":"","type":"string"}, ' +
 	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
 	             '"rows": [';
-	setWeeks();
+	// setWeeks();
+	setDates();
 
 	lowDate = Date.valueOf(System.now());
 	highDate = Date.valueOf(lowDate).addDays(30);
@@ -713,7 +832,8 @@ public static String getEncountersUnit(Id rId, Id cl, Id accountId, List<User> u
 	             '"rows": [';
 
 	List<Id> accountUnitIds = new List<Id>();
-	setWeeks();
+	// setWeeks();
+	setDates();
 
 	List<AggregateResult> ars = new List<AggregateResult>();
 	if(cl!=null) {
@@ -777,6 +897,13 @@ public PageReference selectCL(){
 	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
 	page.getParameters().remove('account');
 	page.getParameters().put('cl', String.valueOf(selectedCL));
+	page.setRedirect(true);
+	return page;
+}
+
+public PageReference selectDateOption(){
+	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
+	page.getParameters().put('date_option', String.valueOf(dateOption));
 	page.setRedirect(true);
 	return page;
 }

@@ -51,7 +51,10 @@
                 var options = {
                     height: 500,
                     title: 'Encounters by Medium',
-                    pieSliceText: 'label',
+                    pieSliceText: 'percentage',
+                    legend: {
+                        position: 'labeled'
+                    },
                     backgroundColor: { fill: 'transparent' }
                 };
 

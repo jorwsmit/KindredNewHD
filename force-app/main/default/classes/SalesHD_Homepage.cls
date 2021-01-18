@@ -67,6 +67,8 @@ public String icon = '';
 
 private static Set<Id> parentUsers = getParentRoleId(new Set<ID> {UserInfo.getUserRoleId()});
 
+public ApexPages.StandardSetController accountSSC {get; private set;}
+
 
 public SalesHD_Homepage() {
 	parentUsers.add(UserInfo.getUserRoleId());
@@ -114,8 +116,7 @@ public SalesHD_Homepage() {
 	medparFiles = JSON.serializePretty(medpar);
 
 
-
-
+	setupAccountStandardSetSetup();
 }
 
 @RemoteAction global static String getDirectory() {
@@ -208,9 +209,15 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 	return returnRoleIds;
 }
 
-@RemoteAction global static String getAccounts() {
-	return JSON.serializePretty([select AccountId, Account.Name, Account.ShippingAddress__c from AccountTeamMember where Account.Status__c='Active' and UserId =: currentUser and Account.RecordType.Name='HD Accounts']);
+// @RemoteAction global static String getAccounts() {
+// 	return JSON.serializePretty([select AccountId, Account.Name, Account.ShippingAddress__c from AccountTeamMember where Account.Status__c='Active' and UserId =: currentUser and Account.RecordType.Name='HD Accounts']);
+// }
+
+public List<AccountTeamMember> getAccounts(){
+	return [select AccountId, Account.Name, Account.ShippingAddress__c from AccountTeamMember where
+	Account.Status__c='Active' and UserId =: currentUser and Account.RecordType.Name='HD Accounts'];
 }
+
 
 public Integer getNumberToAudit(){
 	Set<Id> roleIds  = getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()});
@@ -434,6 +441,48 @@ private static ContentVersion prepareFile(blob file, String fileName){
 	cv.title = fileName;
 	cv.pathOnClient = fileName;
 	return cv;
+}
+
+
+
+public List<Account> getAllAccounts (){	
+	return accountSSC.getRecords();
+}
+
+public String accountSearch {get; set;}
+
+private void setupAccountStandardSetSetup(){
+	// if(accountSearch==null) accountSearch='';
+	String query = 'select id, name, shippingAddress__c, type from account where recordtype.name=\'HD Accounts\' and status__c=\'Active\'';
+	if(accountSearch!=null)
+	query += ' and (name like \'%'+accountSearch+'%\' or shippingAddress__c like \'%'+accountSearch+'%\')';
+
+	if(selectedState!=null) query += ' and ShippingState like \''+selectedState+'\'';
+	query += ' order by name asc';
+
+	accountSSC = new ApexPages.StandardSetController(Database.getQueryLocator(
+		query
+	));
+	accountSSC.setPageSize(20);
+}
+
+public PageReference searchAccounts() {
+	setupAccountStandardSetSetup();
+	getAllAccounts();
+	return null;
+}
+
+public String selectedState {get; set;}
+
+public List<Selectoption> getStatePicklist(){
+	List<Selectoption> picklist = new List<selectoption>();
+	picklist.add(new selectOption('', 'State'));
+	for(AggregateResult ar : [select ShippingState state from account where ShippingState!=null
+	and status__c='Active' and recordType.name='HD Accounts' group by ShippingState order by ShippingState ]){
+		String state = String.valueOf(ar.get('state'));
+		picklist.add(new selectOption(state, state));
+	}
+	return picklist;
 }
 
 }
