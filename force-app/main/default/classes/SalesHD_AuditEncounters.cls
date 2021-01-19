@@ -230,8 +230,9 @@ public without sharing class SalesHD_AuditEncounters {
 	private Map<String, String> auditResultMap = new Map<String, String>
 	{'Approved' => 'Approved',
 	 'Rejected' => 'Rejected',
-	 'Duplicate' => 'Rejected',
+	 'Asking for business only' => 'Rejected',
 	 'Duplicate encounter' => 'Rejected',
+	 'Not a sales call' => 'Rejected',
 	 'Referral managing' => 'Rejected'};
 	
 	
