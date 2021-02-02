@@ -760,7 +760,8 @@ public Boolean isActive;
 
 @isTest static void Homepage_getAccounts() {
 	Test.startTest();
-	SalesHD_Homepage.getAccounts();
+	SalesHD_Homepage controller = new SalesHD_Homepage();
+	controller.getAccounts();
 	Test.stopTest();
 }
 

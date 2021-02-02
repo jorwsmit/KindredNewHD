@@ -117,6 +117,18 @@ public class SalesHD_TestReporting {
 	// ApexPages.StandardController sc = new ApexPages.standardController(acct);
 	SalesHD_ReportingClass controller = new SalesHD_ReportingClass();
 	controller.eLastWeek();
+	controller.dateOption = 'Previous Week';
+	controller.eLastWeek();
+	controller.dateOption = 'This Week';
+	controller.eLastWeek();
+	controller.dateOption = 'Month to Date';
+	controller.eLastWeek();
+	controller.dateOption = 'Previous Month';
+	controller.eLastWeek();
+	controller.dateOption = 'Current Quarter';
+	controller.eLastWeek();
+	controller.dateOption = 'Previous Quarter';
+	controller.eLastWeek();
 	Test.stopTest();
 }
 
@@ -221,7 +233,51 @@ public class SalesHD_TestReporting {
 	Test.startTest();
 	List<SelectOption> picklist = controller.getAdmitsRevenuePicklist();
     picklist = controller.getAccountPicklist();
-    picklist = controller.getCLPicklist();
+	picklist = controller.getCLPicklist();
+	picklist = controller.getDateOptionPicklist();
+	Test.stopTest();
+}
+
+@isTest static void Reporting_Selectors() {
+	PageReference pageRef = Page.SalesHD_DashboardManager;
+	Test.setCurrentPage(pageRef);
+	Test.startTest();
+	SalesHD_ReportingClass controller = new SalesHD_ReportingClass();
+	controller.selectDistrict();
+	controller.selectArea();
+	controller.selectDateOption();
+
+	Test.stopTest();
+}
+
+@isTest static void Reporting_ChangingDateRange() {
+	PageReference pageRef = Page.SalesHD_DashboardManager;
+	Test.startTest();
+	SalesHD_ReportingClass controller = new SalesHD_ReportingClass();
+	controller.dateOption = 'Previous Week';
+	pageRef.getParameters().put('date_option', String.valueOf(controller.dateOption));
+	Test.setCurrentPage(pageRef);
+	controller.eLastWeek();
+	controller.dateOption = 'This Week';
+	pageRef.getParameters().put('date_option', String.valueOf(controller.dateOption));
+	Test.setCurrentPage(pageRef);
+	controller.eLastWeek();
+	controller.dateOption = 'Month to Date';
+	pageRef.getParameters().put('date_option', String.valueOf(controller.dateOption));
+	Test.setCurrentPage(pageRef);
+	controller.eLastWeek();
+	controller.dateOption = 'Previous Month';
+	pageRef.getParameters().put('date_option', String.valueOf(controller.dateOption));
+	Test.setCurrentPage(pageRef);
+	controller.eLastWeek();
+	controller.dateOption = 'Current Quarter';
+	pageRef.getParameters().put('date_option', String.valueOf(controller.dateOption));
+	Test.setCurrentPage(pageRef);
+	controller.eLastWeek();
+	controller.dateOption = 'Previous Quarter';
+	pageRef.getParameters().put('date_option', String.valueOf(controller.dateOption));
+	Test.setCurrentPage(pageRef);
+	controller.eLastWeek();
 	Test.stopTest();
 }
 

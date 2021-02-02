@@ -29,6 +29,11 @@
                 margin: 10px 0px !important;
             }
 
+            select {
+                color: #000 !important;
+                width: 100% !important;
+            }
+
             body input[type="submit"] {
                 color: #fff;
                 background-color: #6c757d;
@@ -61,11 +66,17 @@
                         <div class="col-md-12" style="color:#fff;">
                             <h2 class="text-center ">{!dateRange}</h2>
                         </div>
-                        <div class="col-md-3 offset-md-3">
+                        <!-- <div class="col-md-3 offset-md-3">
                             <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!previousWeek}" value="Previous Week"></apex:commandButton>
                         </div>
                         <div class="col-md-3">
                             <apex:commandButton styleClass="btn btn-secondary btn-block" action="{!nextWeek}" value="Next Week"></apex:commandButton>
+                        </div> -->
+                        <div class="col-md-6 offset-md-3">
+                            <apex:selectList size="1" value="{!dateOption}">
+                                <apex:selectOptions value="{!dateOptionPicklist}" />
+                                <apex:actionsupport event="onchange" action="{!selectDateOption}" />
+                            </apex:selectList>
                         </div>
                     </div>
                 </apex:form>

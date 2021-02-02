@@ -721,7 +721,7 @@
 								<apex:commandButton styleClass="btn btn-primary" action="{!searchAccounts}" reRender="accountSearch" />
 								<apex:selectList size="1" value="{!selectedState}">
 									<apex:selectOptions value="{!statePicklist}" />
-									<apex:actionsupport event="onchange" action="{!searchAccounts}" />
+									<apex:actionsupport event="onchange" action="{!searchAccounts}" reRender="accountSearch"/>
 								</apex:selectList>
 							</div>
 						</div>
@@ -768,13 +768,13 @@
 
 								<apex:outputPanel layout="block" style="text-align:center;">
 									<apex:commandButton styleClass="btn btn-primary" disabled="{!!accountSSC.hasPrevious}" value="First" action="{!accountSSC.first}"
-									/>
+									reRender="accountSearch"/>
 									<apex:commandButton styleClass="btn btn-primary" disabled="{!!accountSSC.hasPrevious}" value="Prev" action="{!accountSSC.previous}"
-									/>
+									reRender="accountSearch"/>
 									<apex:commandButton styleClass="btn btn-primary" disabled="{!!accountSSC.hasNext}" value="Next" action="{!accountSSC.next}"
-									/>
+									reRender="accountSearch"/>
 									<apex:commandButton styleClass="btn btn-primary" disabled="{!!accountSSC.hasNext}" value="Last" action="{!accountSSC.last}"
-									/>
+									reRender="accountSearch"/>
 								</apex:outputPanel>
 								<ul>
 									<apex:repeat value="{!allAccounts}" var="a">

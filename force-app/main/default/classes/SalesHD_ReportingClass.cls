@@ -193,37 +193,6 @@ public SalesHD_ReportingClass() {
 }
 
 public void getKpi(Id clId){
-	// SalesHD_KPI__c highKpi, middleKpi, lowKpi;
-
-	// for(SalesHD_KPI__c kpis : [select CL__r.Name,Admit_Lag_Time__c,
-	//                            Admits_Per_Day__c, Batting_Average__c, CMI__c, Conversion_Percentage__c, Encounters_Per_Day_Quarter__c,
-	//                            Encounters_Per_Day_Month__c, ICU_Referral_Percentage__c,  Referral_Lag_Time__c,
-	// 						   Referrals_Per_Day__c, RecordType.Name from SalesHD_KPI__c where
-	// 						   RecordType.Name='KPI High Baseline' order by KPI_Date__c desc  limit 1]) {
-	// 							highKpi = kpis;
-	// }
-	// for(SalesHD_KPI__c kpis : [select CL__r.Name,Admit_Lag_Time__c,
-	//                            Admits_Per_Day__c, Batting_Average__c, CMI__c, Conversion_Percentage__c, Encounters_Per_Day_Quarter__c,
-	//                            Encounters_Per_Day_Month__c, ICU_Referral_Percentage__c,  Referral_Lag_Time__c,
-	// 						   Referrals_Per_Day__c, RecordType.Name from SalesHD_KPI__c where
-	// 						   RecordType.Name='KPI Middle Baseline' order by KPI_Date__c desc  limit 1]) {
-	// 							middleKpi = kpis;
-	// }
-	// for(SalesHD_KPI__c kpis : [select CL__r.Name,Admit_Lag_Time__c,
-	//                            Admits_Per_Day__c, Batting_Average__c, CMI__c, Conversion_Percentage__c, Encounters_Per_Day_Quarter__c,
-	//                            Encounters_Per_Day_Month__c, ICU_Referral_Percentage__c,  Referral_Lag_Time__c,
-	// 						   Referrals_Per_Day__c, RecordType.Name from SalesHD_KPI__c where
-	// 						   RecordType.Name='KPI Low Baseline' order by KPI_Date__c desc  limit 1]) {
-	// 							lowKpi = kpis;
-	// }
-	// for(SalesHD_KPI__c kpis : [select CL__r.Name,Admit_Lag_Time__c,
-	//                            Admits_Per_Day__c, Batting_Average__c, CMI__c, Conversion_Percentage__c, Encounters_Per_Day_Quarter__c,
-	//                            Encounters_Per_Day_Month__c, ICU_Referral_Percentage__c,  Referral_Lag_Time__c,
-	// 						   Referrals_Per_Day__c, RecordType.Name from SalesHD_KPI__c where
-	// 						   CL__c=:clId order by KPI_Date__c desc  limit 1]) {
-	// 							kpi = kpis;
-	// }
-
 	for(SalesHD_KPI__c kpis : [select id, CL__r.Name,Admit_Lag_Time__c,
 	                           Admits_Per_Day__c, Batting_Average__c, CMI__c, Conversion_Percentage__c, Encounters_Per_Day_Quarter__c,
 	                           Encounters_Per_Day_Month__c, Encounters_Per_Day__c, ICU_Referral_Percentage__c,  Referral_Lag_Time__c,
@@ -244,37 +213,9 @@ public void getKpi(Id clId){
 		                           Admits_Per_Day__c, Batting_Average__c, CMI__c, Conversion_Percentage__c, Encounters_Per_Day_Quarter__c,
 		                           Encounters_Per_Day_Month__c, Encounters_Per_Day__c, ICU_Referral_Percentage__c,  Referral_Lag_Time__c,
 		                           Referrals_Per_Day__c, RecordType.Name from SalesHD_KPI__c where CL__c=:clId and Id != :k_kpi.kpi.Id order by KPI_Date__c desc limit 1]) {
-			// kpi_previous = kpis;
 			k_kpi_previous = new k_kpi(kpis);
 		}
 	}
-
-
-
-	// for(SalesHD_KPI__c kpis : [select CL__r.Name,Admit_Lag_Time__c,
-	//                            Admits_Per_Day__c, Batting_Average__c, CMI__c, Conversion_Percentage__c, Encounters_Per_Day_Quarter__c,
-	//                            Encounters_Per_Day_Month__c, ICU_Referral_Percentage__c,  Referral_Lag_Time__c,
-	//                            Referrals_Per_Day__c, RecordType.Name from SalesHD_KPI__c where (CL__c=:clId or
-	//                         	RecordType.Name='KPI High Baseline' or RecordType.Name='KPI Middle Baseline' or RecordType.Name='KPI Low Baseline') and KPI_Date__C=this_quarter]) {
-	// 	if(kpis.RecordType.Name=='KPI High Baseline') highKpi = kpis;
-	// 	else if(kpis.RecordType.Name=='KPI Middle Baseline') middleKpi = kpis;
-	// 	else if(kpis.RecordType.Name=='KPI Low Baseline') lowKpi = kpis;
-	// 	else if(kpis.CL__c==clId) kpi = kpis;
-	// }
-
-	// if(kpi!=null && highKpi!=null && middleKpi!=null && lowKpi!=null) {
-	// 	kpiColors[0] = kpiColor(kpi.Referrals_Per_Day__c, highKpi.Referrals_Per_Day__c, middleKpi.Referrals_Per_Day__c, lowKpi.Referrals_Per_Day__c);
-	// 	kpiColors[1] = kpiColor(kpi.Admits_Per_Day__c, highKpi.Admits_Per_Day__c, middleKpi.Admits_Per_Day__c, lowKpi.Admits_Per_Day__c);
-	// 	kpiColors[2] = kpiColor(kpi.Batting_Average__c, highKpi.Batting_Average__c, middleKpi.Batting_Average__c, lowKpi.Batting_Average__c);
-	// 	kpiColors[3] = kpiColor(kpi.CMI__c, highKpi.CMI__c, middleKpi.CMI__c, lowKpi.CMI__c);
-	// 	kpiColors[4] = kpiColorLowerIsBetter(kpi.Referral_Lag_Time__c, highKpi.Referral_Lag_Time__c, middleKpi.Referral_Lag_Time__c, lowKpi.Referral_Lag_Time__c);
-	// 	kpiColors[5] = kpiColorLowerIsBetter(kpi.Admit_Lag_Time__c, highKpi.Admit_Lag_Time__c, middleKpi.Admit_Lag_Time__c, lowKpi.Admit_Lag_Time__c);
-	// 	kpiColors[6] = kpiColor(kpi.Conversion_Percentage__c, highKpi.Conversion_Percentage__c, middleKpi.Conversion_Percentage__c, lowKpi.Conversion_Percentage__c);
-	// 	kpiColors[7] = kpiColor(kpi.ICU_Referral_Percentage__c, highKpi.ICU_Referral_Percentage__c, middleKpi.ICU_Referral_Percentage__c, lowKpi.ICU_Referral_Percentage__c);
-	// 	kpiColors[8] = kpiColor(kpi.Encounters_Per_Day_Month__c, highKpi.Encounters_Per_Day_Month__c, middleKpi.Encounters_Per_Day_Month__c, lowKpi.Encounters_Per_Day_Month__c);
-	// 	kpiColors[9] = kpiColor(kpi.Encounters_Per_Day_Quarter__c, highKpi.Encounters_Per_Day_Quarter__c, middleKpi.Encounters_Per_Day_Quarter__c, lowKpi.Encounters_Per_Day_Quarter__c);
-	// 	kpiColors[10] = kpiColor(kpi.Encounters_Per_Day__c, highKpi.Encounters_Per_Day__c, middleKpi.Encounters_Per_Day__c, lowKpi.Encounters_Per_Day__c);
-	// }
 
 	if(k_kpi!=null && k_kpi.kpi!=null && highKpi!=null && middleKpi!=null && lowKpi!=null) {
 		k_kpi.kpiColors[0] = kpiColor(k_kpi.kpi.Referrals_Per_Day__c, highKpi.Referrals_Per_Day__c, middleKpi.Referrals_Per_Day__c, lowKpi.Referrals_Per_Day__c);
@@ -371,10 +312,6 @@ public List<Selectoption> getAccountPicklist(){
 
 	List<Selectoption> picklist = new List<selectoption>();
 	picklist.add(new selectOption('', '- Select an Account -'));
-	// for(AggregateResult ar : [select accountId, account.name name from AccountTeamMember where
-	// (user.userRoleId in :allSubRoleIds or userId=:UserInfo.getUserId()) group by accountId, account.name order by account.name]) {
-	// 	picklist.add(new selectOption(String.valueOf(ar.get('accountId')), String.valueOf(ar.get('name'))));
-	// }
 
 	Set<Id> atms = new Set<Id>();
 
@@ -426,15 +363,10 @@ public static void setDates(){
 		highDate = Datetime.newInstance(Date.today(), Time.newInstance(23, 59, 59, 99));
 	} else if(dateOption == 'Previous Month'){
 		lowDate = Datetime.newInstance(Date.today().toStartOfMonth().addMonths(-1), Time.newInstance(0, 0, 0, 0));
-		// Date tempDate = Date.newInstance(lowDate.year(), lowDate.month(), Date.daysInMonth(lowDate.month(), lowDate.year()));
-		// highDate = Datetime.newInstance(tempDate, Time.newInstance(23, 59, 59, 99));
 		highDate = Datetime.newInstance(
 			Date.valueOf(lowDate.addDays(Date.daysInMonth(lowDate.month(), lowDate.year()))),
 			Time.newInstance(23, 59, 59, 99));
 	} else if(dateOption == 'Current Quarter'){
-		// Integer quarter = ((Date.today().month()+3)/3);
-		// lowDate = Datetime.newInstance(Date.today().(), Time.newInstance(0, 0, 0, 0));
-		// highDate = Datetime.newInstance(Date.today(), Time.newInstance(23, 59, 59, 99));
 		Datetime low_dt = getQuarter(Date.today().toStartOfMonth());
 		if(low_dt != null){
 			lowDate = low_dt;
@@ -452,9 +384,6 @@ public static void setDates(){
 			
 			highDate = low_dt.addDays(-1);
 			highDate = Datetime.newInstance(Date.valueOf(highDate), Time.newInstance(23, 59, 59, 99));
-			// highdate = Datetime.newInstance(
-			// 	Date.newInstance(highDate.year(), highDate.month(), Date.daysInMonth(highDate.month(), highDate.year())),
-			// Time.newInstance(23, 59, 59, 99));
 		}
 	}
 }

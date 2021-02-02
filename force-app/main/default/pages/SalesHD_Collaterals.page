@@ -690,7 +690,54 @@
 
                 <div class="row inner-container">
                     <div class="col-md-12 no-pad">
+                        <!-- <ul id="collaterals">
+                        </ul> -->
                         <ul id="collaterals">
+                            <apex:repeat value="{!CollateralList}" var="collateral">
+                                <!-- <li>{!collateral.title}</li> -->
+
+                                <a href="/apex/SalesHD_Collateral?id={!collateral.collateralId}" style="text-decoration:none!important;color:rgb(8, 7, 7)!important;">
+
+                                    <li data-favorited="{!collateral.favorited}" data-type="{!LOWER(SUBSTITUTE(collateral.type, ' ', ''))}" data-professional="{!collateral.audience_professional}"
+                                        data-patient="{!collateral.audience_patient}">
+
+                                        <div class="row">
+                                            <apex:outputPanel rendered="{!collateral.favorited}">
+                                                <i style="position:absolute;margin-top:10px;" class="fas fa-star yellow"></i>
+                                            </apex:outputPanel>
+
+                                            <div class="col-md-1 blue" style="font-size:40px;text-align:center;width:100%;">
+                                                <apex:outputText value="{!collateral.icon}" escape="false" /> </div>
+                                            <div class="col-md-11">
+                                                <div class="collateral-title">{!collateral.title}</div>
+                                                <div style="font-size:14px;">
+                                                    <apex:outputText rendered="{!collateral.type!=''}">
+                                                        <b>Type</b> - {!collateral.type} <span style="padding:0px 10px;"></span>
+                                                    </apex:outputText>
+                                                    <apex:outputText rendered="{!collateral.lastModifiedDate!=''}">
+                                                        <b>Last Modified</b> - {!collateral.lastModifiedDate} <span style="padding:0px 10px;"></span>
+                                                    </apex:outputText>
+                                                    <apex:outputText rendered="{!collateral.audience_patient && collateral.audience_professional}">
+                                                        <b>Audience</b> - Patient and Professional <span style="padding:0px 10px;"></span>
+                                                    </apex:outputText>
+                                                    <apex:outputText rendered="{!collateral.audience_patient && collateral.audience_professional==false}">
+                                                        <b>Audience</b> - Patient <span style="padding:0px 10px;"></span>
+                                                    </apex:outputText>
+                                                    <apex:outputText rendered="{!collateral.audience_patient==false && collateral.audience_professional}">
+                                                        <b>Audience</b> - Professional <span style="padding:0px 10px;"></span>
+                                                    </apex:outputText>
+                                                    
+                                                </div>
+                                                <div style="font-size:14px;">
+                                                    {!collateral.description}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                </a>
+
+                            </apex:repeat>
                         </ul>
                     </div>
                 </div>
@@ -711,10 +758,7 @@
         <script type="text/javascript">
             $(document).ready(function () {
 
-                for (let collateral of {!collaterals
-            }){
-                fillList(collateral);
-            }
+
 
 
             });
@@ -743,47 +787,47 @@
                 let selectedType = $("#typeDropdownButton").text().replace(/\s/g, '').toLowerCase();
                 let selectedAudience = $("#audienceDropdownButton").text().replace(/\s/g, '').toLowerCase();
 
-                $('#collaterals li').hide().filter(function () {
+                $('#collaterals a li').hide().filter(function () {
                     let searchFilter = $(this).find(".collateral-title").text().toUpperCase().replace(/\s/g, '').indexOf($("#collateralSearch").val().toUpperCase().replace(/\s/g, '')) > -1;
-                    
-                    if ($('#favoriteToggle').hasClass('btn-primary')){
-                        if(selectedType=='showalltypes' && selectedAudience=='showallaudiences') return $(this).data("favorited") && searchFilter;
-                        else if(selectedAudience=='showallaudiences') return $(this).data("favorited") && searchFilter && $(this).data("type") === selectedType;
-                        else if(selectedType=='showalltypes' && selectedAudience=='patient')  return $(this).data("favorited") && searchFilter && $(this).data("patient");
-                        else if(selectedType=='showalltypes' && selectedAudience=='professional')  return $(this).data("favorited") && searchFilter && $(this).data("professional");
-                        else if(selectedType!='showalltypes' && selectedAudience=='patient')  return $(this).data("favorited") && searchFilter && $(this).data("patient") && $(this).data("type") === selectedType;
-                        else if(selectedType!='showalltypes' && selectedAudience=='professional')  return $(this).data("favorited") && searchFilter && $(this).data("professional")&& $(this).data("type") === selectedType;
+
+                    if ($('#favoriteToggle').hasClass('btn-primary')) {
+                        if (selectedType == 'showalltypes' && selectedAudience == 'showallaudiences') return $(this).data("favorited") && searchFilter;
+                        else if (selectedAudience == 'showallaudiences') return $(this).data("favorited") && searchFilter && $(this).data("type") === selectedType;
+                        else if (selectedType == 'showalltypes' && selectedAudience == 'patient') return $(this).data("favorited") && searchFilter && $(this).data("patient");
+                        else if (selectedType == 'showalltypes' && selectedAudience == 'professional') return $(this).data("favorited") && searchFilter && $(this).data("professional");
+                        else if (selectedType != 'showalltypes' && selectedAudience == 'patient') return $(this).data("favorited") && searchFilter && $(this).data("patient") && $(this).data("type") === selectedType;
+                        else if (selectedType != 'showalltypes' && selectedAudience == 'professional') return $(this).data("favorited") && searchFilter && $(this).data("professional") && $(this).data("type") === selectedType;
                     } else {
-                        if(selectedType=='showalltypes' && selectedAudience=='showallaudiences') return searchFilter;
-                        else if(selectedAudience=='showallaudiences') return searchFilter && $(this).data("type") === selectedType;
-                        else if(selectedType=='showalltypes' && selectedAudience=='patient')  return searchFilter && $(this).data("patient");
-                        else if(selectedType=='showalltypes' && selectedAudience=='professional')  return searchFilter && $(this).data("professional");
-                        else if(selectedType!='showalltypes' && selectedAudience=='patient')  return searchFilter && $(this).data("patient") && $(this).data("type") === selectedType;
-                        else if(selectedType!='showalltypes' && selectedAudience=='professional')  return searchFilter && $(this).data("professional")&& $(this).data("type") === selectedType;
+                        if (selectedType == 'showalltypes' && selectedAudience == 'showallaudiences') return searchFilter;
+                        else if (selectedAudience == 'showallaudiences') return searchFilter && $(this).data("type") === selectedType;
+                        else if (selectedType == 'showalltypes' && selectedAudience == 'patient') return searchFilter && $(this).data("patient");
+                        else if (selectedType == 'showalltypes' && selectedAudience == 'professional') return searchFilter && $(this).data("professional");
+                        else if (selectedType != 'showalltypes' && selectedAudience == 'patient') return searchFilter && $(this).data("patient") && $(this).data("type") === selectedType;
+                        else if (selectedType != 'showalltypes' && selectedAudience == 'professional') return searchFilter && $(this).data("professional") && $(this).data("type") === selectedType;
                     }
 
-                    
+
                 }).show();
 
             }
 
 
-            function fillList(collateral) {
-                var link = 'onclick="window.location=\'/apex/SalesHD_Collateral?id=' + collateral.collateralId + '\'"';
-                let type = '';
-                if (collateral.type != '') type = 'data-type="' + collateral.type.replace(/\s/g, '').toLowerCase() + '"';
+            // function fillList(collateral) {
+            //     var link = 'onclick="window.location=\'/apex/SalesHD_Collateral?id=' + collateral.collateralId + '\'"';
+            //     let type = '';
+            //     if (collateral.type != '') type = 'data-type="' + collateral.type.replace(/\s/g, '').toLowerCase() + '"';
 
-                var html = '<li ' + link + ' data-favorited="' + collateral.favorited + '"' + type +
-                    ' data-professional=' + collateral.audience_professional + ' data-patient=' + collateral.audience_patient + '><div class="row">';
+            //     var html = '<li ' + link + ' data-favorited="' + collateral.favorited + '"' + type +
+            //         ' data-professional=' + collateral.audience_professional + ' data-patient=' + collateral.audience_patient + '><div class="row">';
 
-                if (collateral.favorited) html += '<i style="position:absolute;margin-top:10px;" class="fas fa-star yellow"></i>';
-                html += '<div class="col-md-1 blue" style="font-size:40px;text-align:center;width:100%;">' + collateral.icon + '</div>' +
-                    '<div class="col-md-11"><div class="collateral-title">' + collateral.title + '</div>' +
-                    '<div style="font-size:14px;"><b>' + collateral.type + '</b> ' + collateral.description + '</div>' +
-                    '</div></div></li>';
+            //     if (collateral.favorited) html += '<i style="position:absolute;margin-top:10px;" class="fas fa-star yellow"></i>';
+            //     html += '<div class="col-md-1 blue" style="font-size:40px;text-align:center;width:100%;">' + collateral.icon + '</div>' +
+            //         '<div class="col-md-11"><div class="collateral-title">' + collateral.title + '</div>' +
+            //         '<div style="font-size:14px;"><b>' + collateral.type + '</b> ' + collateral.description + '</div>' +
+            //         '</div></div></li>';
 
-                $("#collaterals").append(html);
-            }
+            //     $("#collaterals").append(html);
+            // }
         </script>
 
     </body>
