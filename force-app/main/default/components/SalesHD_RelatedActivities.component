@@ -1,0 +1,36 @@
+<apex:component controller="SalesHD_ManagedCareComponents">
+
+    <div class="header p-2">
+        <h3><b>Activities</b></h3> <span style="position: absolute; right:0; top:0.5rem;">
+            <apex:outputText escape="false" rendered="{!objectType='account'}">
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/apex/saleshd_managedcarenewencounter?accountId={!recordId}'">New Encounter</button>
+            </apex:outputText>
+            <apex:outputText escape="false" rendered="{!objectType='contact'}">
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/apex/saleshd_managedcarenewencounter?contactId={!recordId}'">New Encounter</button>
+            </apex:outputText>
+        </span>
+    </div>
+    <div>
+        <ul class="max-height-3 header-pad m-0">
+            <apex:repeat value="{!relatedEvents}" var="e">
+                <li class="m-2 p-1" onclick="window.location.href='/apex/SalesHD_Encounter?id={!e.Id}'">
+                    <div>
+                        <h5>
+                            <b>{!e.owner.Name} - </b>
+                            <span class="font-weight-light">
+                                <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                    <apex:param value="{!e.ActivityDate}" />
+                                </apex:outputText>
+                            </span>
+
+                        </h5>
+                    </div>
+                    <div>
+                        {!e.SalesHD_Open_Ended_Questions__c}
+                    </div>
+                </li>
+            </apex:repeat>
+        </ul>
+    </div>
+
+</apex:component>

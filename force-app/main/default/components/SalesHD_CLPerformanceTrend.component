@@ -75,7 +75,7 @@
 
     </html>
 
-    <apex:form>
+    <apex:form >
         <apex:actionFunction name="clPerformanceTrend" action="{!spTrend}" rerender="dataFunction" oncomplete="loadPerformance();"></apex:actionFunction>
     </apex:form>
 

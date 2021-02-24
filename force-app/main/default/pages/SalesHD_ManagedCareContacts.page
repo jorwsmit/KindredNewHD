@@ -1,0 +1,203 @@
+<apex:page showHeader="false" standardController="Contact" extensions="SalesHD_ManagedCareContacts" lightningStyleSheets="true"
+    standardStylesheets="false" sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>My Contacts</title>
+
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/> -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+        <style>
+            body{
+                font-family: "Salesforce Sans", Arial, sans-serif !important;
+                margin: 0px;
+                background-color: #E0E2E7 !important;
+            }
+            table {
+                width: 100%;
+            }
+
+            table th,
+            table td {
+                border: 1px solid #ddd;
+            }
+
+            table tr:first-child th {
+                border-top: none;
+            }
+
+            table tr th:first-child,
+            table tr td:first-child {
+                border-left: none
+            }
+
+            table tr th:last-child,
+            table tr td:last-child {
+                border-right: none
+            }
+
+            table tr:last-child td {
+                border-bottom: none;
+            }
+
+            .slds-scope .rounded{
+                border-radius: 10px !important;
+            }
+            h3{
+                font-size: 2rem !important;
+            }
+        </style>
+    </head>
+
+
+    <body>
+        <div class="slds-scope">
+
+
+
+            <c:SalesHD_ManagedCareNav />
+            <apex:form id="contactSearch">
+
+                <div>
+                    <div class="row justify-content-md-center m-1 mt-5">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <apex:input styleClass="form-control" value="{!searchString}" html-placeholder="Search by name or street address"></apex:input>
+                                <apex:commandButton styleClass="btn btn-primary" action="{!searchContacts}" reRender="contactSearch" />
+                            </div>
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-md-center m-1">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <apex:selectList size="1" value="{!selectedState}">
+                                    <apex:selectOptions value="{!statePicklist}" />
+                                    <apex:actionsupport event="onchange" action="{!searchContacts}" reRender="contactSearch" />
+                                </apex:selectList>
+                                <apex:selectList size="1" value="{!selectedRelationship}">
+                                    <apex:selectOptions value="{!relationshipPicklist}" />
+                                    <apex:actionsupport event="onchange" action="{!searchContacts}" reRender="contactSearch" />
+                                </apex:selectList>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-md-center">
+
+                        <div class="col-md-5 rounded bg-white m-1">
+
+                            <h3 class="thin italic">
+                                <i class="fas fa-hospital icon icon-account-purple" style="margin-left:0px;padding:10px 12px;" aria-hidden="true"></i> My Favorited Contacts</h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Contact Name</th>
+                                        <th>Address</th>
+                                        <th>Relationship</th>
+                                        <th>Last Activity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <apex:repeat value="{!favoritedContacts}" var="c">
+                                        <tr onclick="window.location.href='SalesHD_ManagedCareContact?id={!c.contact__c}'">
+                                            <td>
+                                                <a href="SalesHD_ManagedCareContact?id={!c.contact__c}">
+                                                    <b>{!c.contact__r.name}</b>
+                                                </a>
+                                            </td>
+                                            <td>{!c.contact__r.MailingAddress__c}</td>
+                                            <td>{!c.contact__r.SalesHD_Managed_Care_Relationship__c}</td>
+                                            <td>
+                                                <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                    <apex:param value="{!c.contact__r.LastActivityDate}" />
+                                                </apex:outputText>
+
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                        <div class="col-md-5 rounded bg-white m-1">
+
+                            <h3 class="thin italic">
+                                <i class="fas fa-hospital icon icon-account-purple" style="margin-left:0px;padding:10px 12px;" aria-hidden="true"></i> Contacts</h3>
+
+                            <apex:outputPanel layout="block" style="text-align:center;">
+                                <apex:commandButton styleClass="btn btn-primary" disabled="{!!contactSSC.hasPrevious}" value="First" action="{!contactSSC.first}"
+                                    reRender="contactSearch" />
+                                <apex:commandButton styleClass="btn btn-primary" disabled="{!!contactSSC.hasPrevious}" value="Prev" action="{!contactSSC.previous}"
+                                    reRender="contactSearch" />
+                                <apex:commandButton styleClass="btn btn-primary" disabled="{!!contactSSC.hasNext}" value="Next" action="{!contactSSC.next}"
+                                    reRender="contactSearch" />
+                                <apex:commandButton styleClass="btn btn-primary" disabled="{!!contactSSC.hasNext}" value="Last" action="{!contactSSC.last}"
+                                    reRender="contactSearch" />
+                            </apex:outputPanel>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Contact Name</th>
+                                        <th>Address</th>
+                                        <th>Relationship</th>
+                                        <th>Last Activity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <apex:repeat value="{!allContacts}" var="c">
+                                        <tr onclick="window.location.href='SalesHD_ManagedCareContact?id={!c.Id}'">
+                                            <td>
+                                                <a href="SalesHD_ManagedCareContact?id={!c.Id}">
+                                                    <b>{!c.name}</b>
+                                                </a>
+                                            </td>
+                                            <td>{!c.MailingAddress__c}</td>
+                                            <td>{!c.SalesHD_Managed_Care_Relationship__c}</td>
+                                            <td>
+                                                <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                                    <apex:param value="{!c.LastActivityDate}" />
+                                                </apex:outputText>
+
+                                            </td>
+                                        </tr>
+                                    </apex:repeat>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+            </apex:form>
+
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+            crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    </body>
+
+    </html>
+
+
+
+</apex:page>

@@ -64,7 +64,7 @@
     </body>
 
     </html>
-    <apex:form>
+    <apex:form >
         <apex:actionFunction name="upcomingEncounters" action="{!eUpcoming}" rerender="dataFunction" oncomplete="loadUpcoming();"></apex:actionFunction>
     </apex:form>
 </apex:component>

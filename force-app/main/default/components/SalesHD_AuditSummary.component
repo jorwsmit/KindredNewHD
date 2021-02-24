@@ -1,12 +1,12 @@
 <apex:component controller="SalesHD_AuditEncounters">
     <!-- <div class="container white-bg shadow"> -->
-    <apex:outputPanel rendered="{!usr.district__c=null}">
+    <apex:outputPanel rendered="{!usr.District__c=null}">
         <apex:outputPanel rendered="{!NOT(CONTAINS($Profile.Name, 'Associate') || CONTAINS($Profile.Name, 'PAC'))}">
             <div class="container white-bg shadow">
                 <h4>
                     <b>Select a district to show the encounters audit summary for last week.</b>
                 </h4>
-                <apex:form>
+                <apex:form >
                     <b style="padding-right:10px;">District</b>
                     <apex:inputField style="display:none;" value="{!usr.Region__c}" />
                     <apex:inputField value="{!usr.District__c}">
@@ -27,11 +27,11 @@
 
 
 
-    <apex:outputPanel rendered="{!usr.district__c!=null}">
+    <apex:outputPanel rendered="{!usr.District__c!=null}">
         <div class="container white-bg shadow">
             <h4><b>Last Weeks Encounter Audit Summary</b> {!dateRangeStr}</h4>
             <apex:outputPanel rendered="{!NOT(CONTAINS($Profile.Name, 'Associate') || CONTAINS($Profile.Name, 'PAC'))}">
-                <apex:form>
+                <apex:form >
                     <b style="padding-right:10px;">District</b>
                     <apex:inputField style="display:none;" value="{!usr.Region__c}" />
                     <apex:inputField value="{!usr.District__c}">

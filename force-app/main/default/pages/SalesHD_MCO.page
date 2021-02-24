@@ -1,0 +1,151 @@
+<apex:page showHeader="false" standardController="Account" extensions="SalesHD_MCOs" lightningStyleSheets="true" standardStylesheets="false"
+    sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>My MCOs</title>
+
+        <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/> -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+        <style>
+            body {
+                font-family: "Salesforce Sans", Arial, sans-serif !important;
+                margin: 0px;
+                background-color: #E0E2E7 !important;
+            }
+
+            li {
+                list-style: none;
+                border-bottom: 1px solid #E0E5E6;
+            }
+
+            .header-pad {
+                padding: 40px 0px;
+            }
+
+            .max-height-3,
+            .max-height-5 {
+                max-height: 300px;
+                overflow-y: auto;
+                overflow-x: hidden;
+            }
+
+            .max-height-5 {
+                max-height: 500px;
+            }
+
+            .header {
+                position: absolute;
+                width: 98%;
+                background-color: #fff;
+                border-radius: 10px;
+            }
+
+            .my-wrapper .rounded {
+                border-radius: 10px !important;
+            }
+
+            .my-wrapper .btn {
+                border-radius: 10px;
+            }
+
+            .row {
+                margin: 10px;
+            }
+        </style>
+    </head>
+
+
+    <body>
+        <div class="my-wrapper">
+            <c:SalesHD_ManagedCareNav />
+            <div class="row justify-content-md-center bg-primary">
+
+                <div class="col-md-12 text-white">
+                    <div class="text-center">
+
+                        <div>
+                            <h3 class="font-weight-light">
+                                <span class="pull-left;">
+                                    <c:SalesHD_Favorite />
+                                </span>
+                                {!account.name}
+                                <a onclick="window.location='/apex/saleshd_mcoedit?id={!account.Id}'">
+                                    <i style="margin-left:20px;" class="far fa-edit"></i>
+                                </a>
+                            </h3>
+                        </div>
+                        <div>
+                            <h4>
+                                <b>Payor Parent </b>
+                                <apex:outputText escape="false" rendered="{!account.Payor_Parent__c!=null}">
+                                    <span onclick="window.location.href='/apex/saleshd_payorparent?id={!account.Payor_Parent__c}'">
+                                        {!account.Payor_Parent__r.Name}
+                                    </span>
+                                </apex:outputText>
+                            </h4>
+                        </div>
+                        <div>
+                            <b>State </b>{!account.ShippingState}
+                        </div>
+                        <div>
+                            <b>Address </b>{!account.ShippingAddress__c}
+                        </div>
+                        <div>
+                            <b>Website </b>{!account.Website}
+                        </div>
+                        <div>
+                            <b>Payor Type </b>{!account.SalesHD_MCO_Payor_Type__c}
+                        </div>
+                        <div>
+                            <b>Phone </b>{!account.Phone}
+                        </div>
+                        <div>
+                            <b>Relationship </b>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="col-md-12 bg-white rounded p-0">
+                        <c:SalesHD_RelatedActivities />
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-5">
+                    <div class="col-md-12 bg-white rounded p-0">
+                        <c:SalesHD_RelatedContacts />
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="col-md-12 bg-white rounded p-0">
+                        <c:SalesHD_ManagedCareNotes />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+            crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    </body>
+
+    </html>
+
+
+
+</apex:page>

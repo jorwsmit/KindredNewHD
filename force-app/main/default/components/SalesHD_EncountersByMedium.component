@@ -67,7 +67,7 @@
     </body>
 
     </html>
-    <apex:form>
+    <apex:form >
         <apex:actionFunction name="encountersByMedium" action="{!eLastWeekMedium}" rerender="dataFunction" oncomplete="loadMedium();"></apex:actionFunction>
     </apex:form>
 </apex:component>

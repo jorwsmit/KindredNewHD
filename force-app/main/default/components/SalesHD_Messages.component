@@ -1,0 +1,78 @@
+<apex:component controller="SalesHD_ManagedCareComponents" allowDML="true">
+    <div class="row inner-container">
+        <div class="col-md-12 no-pad">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="thin italic">
+                        <i class="fas fa-bullhorn" style="margin-left:0px;padding:10px 8px 10px 8px;" aria-hidden="true"></i> Messages</h3>
+                </div>
+                <div class="col-md-6">
+                    <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                        <a style="float:right;" data-toggle="modal" data-target="#newMessage">Add new message</a>
+                    </apex:outputPanel>
+                </div>
+            </div>
+
+            <ul id="corporateMessages">
+                <apex:outputPanel rendered="{!messages.size<=0}">
+                    <div class="text-secondary" style="padding:10px;">
+                        <i class="fa fa-times-circle" aria-hidden="true"></i> You have no messages at this time.
+                    </div>
+                </apex:outputPanel>
+                <apex:repeat value="{!messages}" var="message">
+                    <li>
+                        <div>
+                            <h5>
+                                <b>{!message.author}</b> {!message.authorTitle}</h5>
+                        </div>
+                        <div>
+                            {!message.message}
+                        </div>
+                        <div>
+                            <apex:outputText value="{!message.attachment}" escape="false" />
+                        </div>
+                    </li>
+                </apex:repeat>
+            </ul>
+        </div>
+
+        <div class="modal fade" id="newMessage">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <apex:form>
+                        <div class="modal-header bg-primary">
+                            <h3 class="bold">
+                                <i aria-hidden="true" class="fa fa-bullhorn" style="padding-right:10px;"></i> Add New Message</h3>
+                        </div>
+                        <div class="modal-body">
+                            <p>This message will display to users under you in the Salesforce hierarchy.</p>
+                            <apex:inputTextarea styleClass="form-control" value="{!messageText}" html-placeholder="Message" />
+                            <p style="padding-top:10px">Feel free to upload an attachment to your message by uploading a file.</p>
+                            <div style="padding:10px; border:1px solid #ced4da; border-radius:.25rem;">
+                                <apex:inputFile value="{!file}" fileName="{!fileName}" />
+                            </div>
+                            <apex:actionStatus id="statusSpinner">
+                                <apex:facet name="start">
+
+                                    <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:170px;">
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+
+                                </apex:facet>
+                            </apex:actionStatus>
+
+                            <apex:pageMessages />
+                        </div>
+                        <div class="modal-footer">
+                            <apex:commandButton styleClass="btn btn-primary" style="margin-left:5px!important;" value="Save Message" status="statusSpinner"
+                             action="{!newMessage}" />
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding:2px 5px;">Cancel</button>
+                        </div>
+                    </apex:form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</apex:component>

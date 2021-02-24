@@ -1,0 +1,27 @@
+<apex:component controller="SalesHD_ManagedCareComponents">
+    <div class="header p-2">
+        <h3><b>Related MCOs</b></h3>
+    </div>
+    <div>
+        <ul class="header-pad">
+            <apex:repeat value="{!relatedAccounts}" var="a">
+                <li class="m-2 p-1" onclick="window.location.href='/apex/SalesHD_MCO?id={!a.Id}'">
+                    <div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <b>{!a.name}</b> {!a.ShippingState}
+                            </div>
+                            <div class="col-md-4 text-right">
+                                    <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
+                                        <b>Last Called</b>
+                                        <span class="font-weight-light"><apex:param value="{!a.lastActivityDate}" /></span>
+                                    </apex:outputText>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+            </apex:repeat>
+        </ul>
+    </div>
+</apex:component>

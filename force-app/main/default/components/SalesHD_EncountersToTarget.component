@@ -103,7 +103,7 @@
 
     </html>
 
-    <apex:form>
+    <apex:form >
         <apex:actionFunction name="encountersToTarget" action="{!eLastWeek}" rerender="dataFunction" oncomplete="loadTarget();"></apex:actionFunction>
     </apex:form>
 

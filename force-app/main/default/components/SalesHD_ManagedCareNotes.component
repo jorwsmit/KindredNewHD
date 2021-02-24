@@ -1,0 +1,104 @@
+<apex:component controller="SalesHD_ManagedCareComponents" allowDML="true">
+    <apex:form id="noteForm">
+
+        <div class="header p-2">
+            <h3><b>Notes</b>
+                <span style="position: absolute; right:0; top:0.5rem;">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#noteModal">
+                        New Note
+                    </button>
+                </span>
+            </h3>
+        </div>
+
+        <div class="max-height-5 header-pad">
+
+            <div class="modal fade" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="newNoteLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="newNoteLabel">New Note</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <apex:input required="true" styleClass="form-control" value="{!noteTitle}" html-placeholder="Note Title"></apex:input>
+                                <apex:inputTextarea style="margin-top:10px" styleClass="form-control" value="{!noteBody}" html-placeholder="Note Body" />
+                                <p style="padding-top:20px">
+                                    <b>Optional File Upload: </b>Use the button below to choose a file and upload it as an attachment to be assoicated
+                                    to the note.</p>
+                                <div style="padding:10px; border:1px solid #ced4da; border-radius:.25rem;">
+                                    <apex:inputFile value="{!file}" fileName="{!fileName}" />
+                                </div>
+                                <apex:actionStatus id="statusSpinner">
+                                    <apex:facet name="start">
+
+                                        <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:170px;">
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+
+                                    </apex:facet>
+                                </apex:actionStatus>
+
+                                <apex:pageMessages />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <apex:commandButton styleClass="btn btn-primary" style="margin-left:5px!important;" value="Save Note" status="statusSpinner"
+								 action="{!saveNote}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <apex:outputPanel rendered="{!myNotes.size>0}">
+                <div class="col-12 p-3 justify-content-md-center text-center mt-3" style="background-color: #E0E5E6;">
+                    <h4>My Notes</h4>
+                </div>
+                <ul>
+                    <apex:repeat value="{!myNotes}" var="n">
+                        <li class="m-2 p-1">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <b>{!n.title}</b>
+                                </div>
+                                <div class="col-md-12">
+                                    {!n.body}
+                                </div>
+                                <div class="col-md-12">
+                                    <apex:outputText value="{!n.fileLink}" escape="false"/>
+                                </div>
+                            </div>
+                        </li>
+                    </apex:repeat>
+                </ul>
+            </apex:outputPanel>
+            <apex:outputPanel rendered="{!notes.size>0}">
+                <div class="col-12 p-3 justify-content-md-center text-center mt-3"  style="background-color: #E0E5E6;">
+                    <h4>Others Notes</h4>
+                </div>
+                <ul>
+                    <apex:repeat value="{!notes}" var="n">
+                        <li class="m-2 p-1">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <b>{!n.title}</b> by {!n.createdBy}
+                                </div>
+                                <div class="col-md-12">
+                                    {!n.body}
+                                </div>
+                                <div class="col-md-12">
+                                    <apex:outputText value="{!n.fileLink}" escape="false"/>
+                                </div>
+                            </div>
+                        </li>
+                    </apex:repeat>
+                </ul>
+            </apex:outputPanel>
+        </div>
+    </apex:form>
+</apex:component>

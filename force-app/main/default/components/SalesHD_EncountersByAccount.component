@@ -66,7 +66,7 @@
 
     </html>
 
-    <apex:form>
+    <apex:form >
         <apex:actionFunction name="encountersByAccount" action="{!eLastWeekAccounts}" rerender="dataFunction" oncomplete="loadAccount();"></apex:actionFunction>
     </apex:form>
 
