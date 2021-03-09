@@ -97,7 +97,7 @@
                         <div class="col-md-5 rounded bg-white m-1">
 
                             <h3 class="thin italic">
-                                <i class="fas fa-hospital icon icon-account-purple" style="margin-left:0px;padding:10px 12px;" aria-hidden="true"></i> My Favorited Contacts</h3>
+                                <i class="fas fa-hospital icon bg-contact-blue" style="margin-left:0px;padding:10px 12px;" aria-hidden="true"></i> My Favorited Contacts</h3>
                             <table>
                                 <thead>
                                     <tr>
@@ -135,7 +135,7 @@
                         <div class="col-md-5 rounded bg-white m-1">
 
                             <h3 class="thin italic">
-                                <i class="fas fa-hospital icon icon-account-purple" style="margin-left:0px;padding:10px 12px;" aria-hidden="true"></i> Contacts</h3>
+                                <i class="fas fa-hospital icon bg-contact-blue" style="margin-left:0px;padding:10px 12px;" aria-hidden="true"></i> Contacts</h3>
 
                             <apex:outputPanel layout="block" style="text-align:center;">
                                 <apex:commandButton styleClass="btn btn-primary" disabled="{!!contactSSC.hasPrevious}" value="First" action="{!contactSSC.first}"

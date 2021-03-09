@@ -1,0 +1,145 @@
+<apex:component controller="SalesHD_ManagedCareComponents">
+    <!-- <div class="header p-2">
+        <h3><b>Related MCOs</b></h3>
+    </div> -->
+    <div>
+        <table style="width:100%; font-size:1.25rem;">
+
+            <thead>
+                <th colspan="1"></th>
+                <th>{!dataYoy.py}</th>
+                <th>{!dataYoy.cy}</th>
+                <th>Variance</th>
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>
+                        <b>Referrals</b>
+                    </td>
+                    <td>
+                        {!dataYoy.referralsPy}
+                    </td>
+                    <td>
+                        {!dataYoy.referralsCy}
+                    </td>
+                    <apex:variable value="{!dataYoy.referralsCy - dataYoy.referralsPy}" var="variance" />
+                    <apex:outputPanel rendered="{!variance<0}">
+                        <td class="text-danger">
+                            {!variance}
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!variance=0}">
+                        <td class="text-secondary">
+                            {!variance}
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!variance>0}">
+                        <td class="text-success">
+                            +{!variance}
+                        </td>
+                    </apex:outputPanel>
+                    
+                </tr>
+                
+                <tr>
+                    <td>
+                        <b>Admits</b>
+                    </td>
+                    <td>
+                        {!dataYoy.admitsPy}
+                    </td>
+                    <td>
+                        {!dataYoy.admitsCy}
+                    </td>
+                    <apex:variable value="{!dataYoy.admitsCy - dataYoy.admitsPy}" var="variance" />
+                    <apex:outputPanel rendered="{!variance<0}">
+                        <td class="text-danger">
+                            {!variance}
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!variance=0}">
+                        <td class="text-secondary">
+                            {!variance}
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!variance>0}">
+                        <td class="text-success">
+                            +{!variance}
+                        </td>
+                    </apex:outputPanel>
+                </tr>
+
+                <tr>
+                    <td>
+                        <b>Conversion</b>
+                    </td>
+                    <td>
+                        {!dataYoy.conversionPy}
+                    </td>
+                    <td>
+                        {!dataYoy.conversionCy}
+                    </td>
+                    <apex:variable value="{!dataYoy.conversionCy - dataYoy.conversionPy}" var="variance" />
+                    <apex:outputPanel rendered="{!variance<0}">
+                        <td class="text-danger">
+                            {!variance}
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!variance=0}">
+                        <td class="text-secondary">
+                            {!variance}
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!variance>0}">
+                        <td class="text-success">
+                            +{!variance}
+                        </td>
+                    </apex:outputPanel>
+                </tr>
+
+                <tr>
+                    <td>
+                        <b>Revenue</b>
+                    </td>
+                    <td>
+                        <apex:outputText value="${0, number, ###,###,###,###.00}">
+                            <apex:param value="{!dataYoy.revenuePy}" />
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="${0, number, ###,###,###,###.00}">
+                            <apex:param value="{!dataYoy.revenueCy}" />
+                        </apex:outputText>
+                        
+                    </td>
+                    <apex:variable value="{!dataYoy.revenueCy - dataYoy.revenuePy}" var="variance" />
+                    <apex:outputPanel rendered="{!variance<0}">
+                        <td class="text-danger">
+                            <apex:outputText value="${0, number, ###,###,###,###.00}">
+                                <apex:param value="{!variance}" />
+                            </apex:outputText>
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!variance=0}">
+                        <td class="text-secondary">
+                            <apex:outputText value="${0, number, ###,###,###,###.00}">
+                                <apex:param value="{!variance}" />
+                            </apex:outputText>
+                        </td>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!variance>0}">
+                        <td class="text-success">
+                            <apex:outputText value="$+ {0, number, ###,###,###,###.00}">
+                                <apex:param value="{!variance}" />
+                            </apex:outputText>
+                        </td>
+                    </apex:outputPanel>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+</apex:component>

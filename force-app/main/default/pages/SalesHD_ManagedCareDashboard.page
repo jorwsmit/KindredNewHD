@@ -1,0 +1,129 @@
+<apex:page showHeader="false" lightningStyleSheets="true" standardStylesheets="false" sidebar="false" applyHtmlTag="false"
+    applyBodyTag="false" docType="html-5.0" controller="SalesHD_ReportingClass">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>DOMCR Dashboard</title>
+        <style>
+            #dashboard-body {
+                background-color: #E0E2E7;
+            }
+
+            .report-container {
+                background-color: #fff;
+                border-radius: 7px;
+                margin: 10px;
+            }
+
+            .col-md-6 {
+                padding: 10px !important;
+            }
+
+            h2 {
+                font-size: 16px !important;
+                font-weight: bold !important;
+                padding: 10px 0px !important;
+            }
+
+            .btn {
+                margin: 10px 0px !important;
+            }
+
+            select {
+                color: #000 !important;
+                width: 100% !important;
+            }
+
+            body input[type="submit"] {
+                color: #fff;
+                background-color: #6c757d;
+                border-color: #6c757d;
+            }
+
+            body input[type="submit"]:hover {
+                color: #fff;
+                background-color: #5a6268;
+                border-color: #545b62;
+            }
+        </style>
+    </head>
+
+    <apex:outputPanel id="dashboard-output">
+
+        <body id="dashboard-body">
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+                crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+            <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+            <script>
+                google.load('visualization', '1', { packages: ['corechart'] });
+            </script>
+            <div class="slds-scope">
+                <c:SalesHD_ManagedCareNav />
+                <apex:form>
+                    <div class="row" style="background-color:#007bff; margin-top:-40px;">
+                        <div class="col-md-12" style="color:#fff;">
+                            <h2 class="text-center ">{!dateRange}</h2>
+                        </div>
+                        <div class="col-md-6 offset-md-3">
+                            <apex:selectList size="1" value="{!dateOption}">
+                                <apex:selectOptions value="{!dateOptionPicklist}" />
+                                <apex:actionsupport event="onchange" action="{!selectDateOption}" />
+                            </apex:selectList>
+                        </div>
+                    </div>
+                </apex:form>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByAccount/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <!-- ENCOUNTERS BY MCO NEXT 30 DAYS -->
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByContact/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <!-- ENCOUNTERS BY MCO NEXT 30 DAYS -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByObjective/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <!-- ENCOUNTERS BY PAYOR TYPE -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </body>
+    </apex:outputPanel>
+
+    </html>
+
+
+</apex:page>

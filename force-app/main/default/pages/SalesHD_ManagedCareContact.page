@@ -65,7 +65,7 @@
     <body>
         <div class="my-wrapper">
             <c:SalesHD_ManagedCareNav />
-            <div class="row justify-content-md-center bg-primary">
+            <div class="row justify-content-md-center bg-contact-blue">
 
                 <div class="col-md-12 text-white">
                     <div class="text-center">

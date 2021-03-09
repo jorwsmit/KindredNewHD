@@ -1,7 +1,10 @@
 <apex:component controller="SalesHD_ManagedCareComponents">
 
     <div class="header p-2">
-        <h3><b>Activities</b></h3> <span style="position: absolute; right:0; top:0.5rem;">
+        <h3>
+            <i class="fas fa-phone blue"></i>
+            <b>Activities</b>
+        </h3> <span style="position: absolute; right:0; top:0.5rem;">
             <apex:outputText escape="false" rendered="{!objectType='account'}">
                 <button type="button" class="btn btn-primary" onclick="window.location.href='/apex/saleshd_managedcarenewencounter?accountId={!recordId}'">New Encounter</button>
             </apex:outputText>
@@ -24,6 +27,9 @@
                             </span>
 
                         </h5>
+                    </div>
+                    <div>
+                        <b>{!e.SalesHD_Call_Objective__c}: {!e.Who.Name} at {!e.Account.Name}</b>
                     </div>
                     <div>
                         {!e.SalesHD_Open_Ended_Questions__c}

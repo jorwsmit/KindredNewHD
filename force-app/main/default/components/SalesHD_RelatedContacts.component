@@ -1,6 +1,7 @@
 <apex:component controller="SalesHD_ManagedCareComponents" allowDML="true">
     <div class="header p-2">
         <h3>
+            <i class="fas fa-user contact-blue"></i>
             <b>Related Contacts</b>
             <span style="position: absolute; right:0; top:0.5rem;">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#relateContactModal">

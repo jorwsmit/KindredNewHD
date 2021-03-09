@@ -71,6 +71,7 @@ public ApexPages.StandardSetController accountSSC {get; private set;}
 
 
 public SalesHD_Homepage() {
+
 	parentUsers.add(UserInfo.getUserRoleId());
 
 	messagesJSON = getMessages();
@@ -117,6 +118,15 @@ public SalesHD_Homepage() {
 
 
 	setupAccountStandardSetSetup();
+}
+
+public Pagereference managedCareRedirect(){
+	if([select Profile.name from user where Id=:currentUser][0].Profile.name.contains('Managed Care')){
+		PageReference page = new PageReference('/apex/SalesHD_ManagedCareHome');
+		page.setRedirect(true);
+		return page;
+	}
+	return null;
 }
 
 @RemoteAction global static String getDirectory() {

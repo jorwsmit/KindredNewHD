@@ -1,4 +1,4 @@
-public with sharing class SalesHD_ManagedCareComponents {
+public without sharing class SalesHD_ManagedCareComponents {
 
 public String objectType {get; set;}
 public String recordId {get; set;}
@@ -44,7 +44,8 @@ private List<Id> getDocumentIds(String rId){
 public List<Event> getRelatedEvents(){
 	if(recordId!=null && objectType!=null) {
 		// String objectType = objectKeys.get(String.valueOf(recordId).substring(0,3));
-		String query = 'select Id, owner.Name, SalesHD_Open_ended_questions__c, ActivityDate from event ';
+		String query = 'select Id, owner.Name, SalesHD_Open_ended_questions__c, ActivityDate,'
+		+'SalesHD_Call_Objective__c, Who.Name, Account.Name from event ';
 		if(objectType == 'Account') query += ' where accountId =: recordId';
 		else if(objectType == 'Contact') query += ' where whoId =: recordId';
 		query += ' order by activityDate desc limit 200';
@@ -544,5 +545,117 @@ public List<Notification> getNotifications() {
 	return notifications;
 }
 
+public String getEncountersByAccount(){
+	String currentUserId = UserInfo.getUserId();
+	String query = 'select count(id) total, account.name accountName from event where accountId in '+
+	               '(select accountid from accountTeamMember where userId=:currentUserId) '+
+	               'and activityDate=Last_Week and account.status__c=\'Active\' group by account.name';
+	if(getIsManager()) {
+		query = 'select count(id) total, account.name accountName from event where '+
+		        'activityDate=Last_Week and account.status__c=\'Active\' group by account.name order by count(id) desc limit 10';
+	}
+
+	String res = '{ "cols" : [{"id":"","label":"Account","pattern":"","type":"string"}, ' +
+	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
+	             '"rows": [';
+
+	for(AggregateResult ar : database.query(query)) {
+		Integer totalEncounters = Integer.valueOf(ar.get('total'));
+		String accountName = '-';
+		if(ar.get('accountName')!=null) accountName = String.valueOf(ar.get('accountName'));
+		res += '{"c":[{"v":"'+accountName+'","f":null},{"v":'+totalEncounters+',"f":null}] },';
+	}
+	if(res.right(1) == ',') res = res.left(res.length()-1);
+	res += ']}';
+	return res;
+
+}
+
+
+private String currentUserProfileName(){
+	User u = [select profile.name from user where id=:UserInfo.getUserId()];
+	return u.profile.name;
+}
+
+public boolean getIsManager(){
+	String profileName = currentUserProfileName();
+	if(profileName.contains('Manager')) return true;
+	if(profileName.contains('Admin')) return true;
+	if(profileName.contains('Leader')) return true;
+	return false;
+}
+
+
+public class directoryObject {
+
+public String name {get; set;}
+public Id directoryId {get; set;}
+public String type {get; set;}
+public String title {get; set;}
+public boolean isPhysician {get; set;}
+public String lastCalled {get; set;}
+
+public directoryObject(String name, Id directoryId, String type){
+	this.name = name;
+	this.directoryId = directoryId;
+	this.type = type;
+	this.title = '';
+	this.isPhysician = false;
+	this.lastCalled ='';
+}
+}
+
+
+public List<directoryObject> getDirectory() {
+	List<directoryObject> directory = new List<directoryObject>();
+	Id currentUser = UserInfo.getUserId();
+	for(Contact_team__c c : [select Contact__r.Id, Contact__r.Name, Contact__r.RecordType.Name, Contact__r.Title__c from Contact_Team__c where User__c =: currentUser]) {
+		directoryObject temp = new directoryObject(c.Contact__r.Name, c.Contact__r.Id, 'Contact');
+		if(c.Contact__r.RecordType.Name=='HD Physicians') temp.isPhysician=true;
+		if(c.Contact__r.Title__c!=null) temp.title= ' - ' + String.valueOf(c.Contact__r.Title__c);
+		directory.add(temp);
+	}
+
+	for(AccountTeamMember a : [select AccountId, Account.Name from AccountTeamMember where Account.Status__c='Active' and UserId =: currentUser 
+	and (Account.RecordType.Name='HD Accounts' or Account.RecordType.Name='HD MCOs')]) {
+		directoryObject temp = new directoryObject(a.Account.Name, a.AccountId, 'Account');
+		directory.add(temp);
+	}
+
+	return directory;
+}
+
+
+
+public class DataYOY{
+	public Integer py {get; set;}
+	public Integer referralsPy {get; set;}
+	public Integer admitsPy {get; set;}
+	public Integer conversionPy {get; set;}
+	public Integer revenuePy {get; set;}
+
+	public Integer cy {get; set;}
+	public Integer referralsCy {get; set;}
+	public Integer admitsCy {get; set;}
+	public Integer conversionCy {get; set;}
+	public Integer revenueCy {get; set;}
+}
+
+public DataYOY getDataYoy(){
+	DataYOY data = new DataYOY();
+	data.py = 2019;
+	data.referralsPy = Integer.valueOf(Math.random()*500);
+	data.admitsPy = Integer.valueOf(data.referralsPy * 0.734);
+	data.conversionPy = Integer.valueOf(data.referralsPy * 0.215);
+	data.revenuePy = Integer.valueOf(Math.random()*1000000);
+
+	data.cy = 2020;
+	data.referralsCy = Integer.valueOf(Math.random()*600);
+	data.admitsCy = Integer.valueOf(data.referralsCy * 0.734);
+	data.conversionCy = Integer.valueOf(data.referralsCy * 0.215);
+	data.revenueCy = Integer.valueOf(Math.random()*1500000);
+	
+	return data;
+}
 
 }

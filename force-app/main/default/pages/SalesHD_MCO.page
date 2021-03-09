@@ -58,6 +58,26 @@
             .row {
                 margin: 10px;
             }
+
+            table {
+                overflow: hidden;
+            }
+
+            table td,
+            table th {
+                border: 1px solid #ddd;
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+            }
+
+            table thead th {
+                text-align: center !important;
+            }
+
+            table tbody td {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
         </style>
     </head>
 
@@ -65,7 +85,7 @@
     <body>
         <div class="my-wrapper">
             <c:SalesHD_ManagedCareNav />
-            <div class="row justify-content-md-center bg-primary">
+            <div class="row justify-content-md-center bg-purple">
 
                 <div class="col-md-12 text-white">
                     <div class="text-center">
@@ -115,11 +135,19 @@
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-md-10">
+
+                <div class="col-md-5">
+                    <div class="col-md-12 bg-white rounded p-0">
+                        <c:SalesHD_MCODataYOY />
+                    </div>
+                </div>
+
+                <div class="col-md-5">
                     <div class="col-md-12 bg-white rounded p-0">
                         <c:SalesHD_RelatedActivities />
                     </div>
                 </div>
+                
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-5">

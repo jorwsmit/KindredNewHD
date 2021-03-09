@@ -12,6 +12,10 @@
         <apex:slds />
 
         <style>
+            body {
+                background-color: #E0E2E7 !important;
+            }
+
             .navbar-toggler {
                 color: #FFFFFF !important;
                 outline: none !important;
@@ -47,6 +51,49 @@
                 background-color: #FFFFFF !important;
                 color: #157DFA !important;
             }
+            .icon{
+                width: 50px;
+                height: 50px;
+                color: #FFFFFF;
+                background-color: #157DFA;
+                border-radius: 7px;
+            }
+            .blue{
+                color: #157DFA;
+            }
+            .bg-red{
+                background-color: #ff0036;
+            }
+            .bg-lightblue{
+                background-color: #37d5ec;
+            }
+            .bg-pink{
+                background-color: #ff74c0;
+            }
+            .bg-purple{
+                background-color: #817fe1;
+            }
+            .bg-yellow{
+                background-color: #ffd000;
+            }
+            .bg-contact-blue{
+                background-color: #00a6ff;
+            }
+            .yellow{
+                color: #ffd000;
+            }
+            .red{
+                color: #ff0036;
+            }
+            .purple{
+                color: #817fe1;
+            }
+            .contact-blue{
+                color: #00a6ff;
+            }
+            .header{
+                z-index: 10000;
+            }
         </style>
 
     </head>
@@ -67,6 +114,8 @@
                             <i class="fas fa-home"></i> Home</a>
                         <a class="nav-item nav-link" href="/apex/SalesHD_MCOs">
                             <i class="fas fa-hospital"></i> MCOs</a>
+                            <a class="nav-item nav-link" href="/apex/SalesHD_Accounts">
+                                <i class="fas fa-hospital"></i> STACHs</a>
                         <a class="nav-item nav-link" href="/apex/SalesHD_ManagedCareContacts">
                             <i class="fas fa-user-md"></i> My Contacts</a>
                         <a class="nav-item nav-link" href="/apex/SalesHD_Encounters">

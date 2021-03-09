@@ -1,0 +1,48 @@
+<apex:component controller="SalesHD_ManagedCareComponents">
+    <div class="container">
+        <div class="row inner-container">
+            <div class="col-md-12 no-pad">
+                <h3 class="thin italic">
+                    <i class="fas fa-address-book icon bg-pink" style="margin-left:0px;padding:10px 12px 10px 12px;" aria-hidden="true"></i> Directory</h3>
+                <ul id="directory">
+                    <apex:outputPanel rendered="{!directory.size<=0}">
+                        <div class="text-secondary" style="padding:10px;">
+                            <i class="fa fa-times-circle" aria-hidden="true"></i> You have no favorited MCOs, STACHs, or contacts.
+                        </div>
+                    </apex:outputPanel>
+                    <apex:repeat value="{!directory}" var="d">
+                        <apex:variable value="" var="type_link" />
+                        <apex:variable value="" var="type_icon" />
+
+
+                        <apex:outputText rendered="{!d.type='Contact' && d.directoryId!=''}">
+                            <apex:variable value="window.location.href='/apex/SalesHD_ManagedCareContact?id={!d.directoryId}'" var="type_link" />
+                            <apex:variable value="fas fa-user contact-blue" var="type_icon" />
+                            <apex:outputText rendered="{!d.isPhysician}">
+                                <apex:variable value="fas fa-user-md contact-blue" var="type_icon" />
+                            </apex:outputText>
+                        </apex:outputText>
+
+                        <apex:outputText rendered="{!d.type='Account' && d.directoryId!=''}">
+                            <apex:variable value="window.location.href='/apex/SalesHD_MCO?id={!d.directoryId}'" var="type_link" />
+                            <apex:variable value="fas fa-hospital purple" var="type_icon" />
+                        </apex:outputText>
+
+                        <li onclick="{!type_link}">
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <i class="{!type_icon}"></i>
+                                </div>
+                                <div class="col-md-11 directory-name">
+                                    <div>
+                                        <b class="name-search">{!d.name}</b> {!d.title}</div>
+                                    <div style="font-size:14px;font-weight:bold;">{!d.lastCalled}</div>
+                                </div>
+                            </div>
+                        </li>
+                    </apex:repeat>
+                </ul>
+            </div>
+        </div>
+    </div>
+</apex:component>

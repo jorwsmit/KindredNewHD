@@ -2,7 +2,9 @@
     <apex:form id="noteForm">
 
         <div class="header p-2">
-            <h3><b>Notes</b>
+            <h3>
+                <i class="fas fa-clipboard-list yellow"></i>
+                <b>Notes</b>
                 <span style="position: absolute; right:0; top:0.5rem;">
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#noteModal">
                         New Note

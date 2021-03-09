@@ -640,7 +640,8 @@
 
         <div class="slds-scope">
 
-            <c:SalesHD_RedesignNav />
+            <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
+			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/>
 
             <div class="container shadow white-bg">
                 <div class="row blue">

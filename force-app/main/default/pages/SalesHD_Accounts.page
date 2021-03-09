@@ -683,8 +683,9 @@
 			</ul>
 		</div>
 	</div> -->
-
-			<c:SalesHD_RedesignNav/>
+	
+			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
+			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/>
 
 			<!-- <div class="container no-pad" style="margin-top:60px!important;">
 				<div class="row inner-container">

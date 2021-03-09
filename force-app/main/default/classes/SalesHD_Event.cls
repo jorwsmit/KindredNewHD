@@ -207,7 +207,7 @@ public SalesHD_Event(ApexPages.StandardController stdController) {
 }
 
 @RemoteAction global static String getAccounts() {
-	return JSON.serializePretty([select AccountId, Account.Name from AccountTeamMember where UserId =: currentUser and Account.RecordType.Name='HD Accounts' order by Account.LastActivityDate desc nulls last, Account.Name asc]);
+	return JSON.serializePretty([select AccountId, Account.Name from AccountTeamMember where UserId =: currentUser and (Account.RecordType.Name='HD Accounts' or Account.RecordType.Name='HD MCOs') order by Account.LastActivityDate desc nulls last, Account.Name asc]);
 }
 
 @RemoteAction global static String getUnits(Id accountId) {

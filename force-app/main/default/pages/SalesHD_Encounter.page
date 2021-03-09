@@ -670,7 +670,7 @@
 				display: none;
 			}
 
-			.audit{
+			.audit {
 				border-radius: 25px;
 				margin: 5px 2px;
 				padding: 5px 10px;
@@ -703,7 +703,8 @@
 				</div>
 			</div> -->
 
-			<c:SalesHD_RedesignNav/>
+			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
+			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/>
 
 			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
 
@@ -764,13 +765,15 @@
 									<a href="/apex/SalesHD_account?id={!event.WhatId}">{!event.What.Name}</a>
 								</p>
 							</div>
-							<div>
-								<label style="display:inline-block;">Unit:</label>
-								<!-- <p style="display:inline-block;"><a href="/apex/SalesHD_unit?id={!event.SalesHD_Account_Unit__c}">{!event.SalesHD_Account_Unit__r.Unit__r.Name}</a></p> -->
-								<p style="display:inline-block;">
-									<a href="/apex/SalesHD_unit?id={!event.SalesHD_Account_Unit__c}">{!if(event.SalesHD_Account_Unit__r.Unit__r.Name="Administrative", "Global / Director", event.SalesHD_Account_Unit__r.Unit__r.Name)}</a>
-								</p>
-							</div>
+							<apex:outputPanel rendered="{!NOT(CONTAINS(event.RecordType.Name,'Managed Care'))}">
+								<div>
+									<label style="display:inline-block;">Unit:</label>
+									<!-- <p style="display:inline-block;"><a href="/apex/SalesHD_unit?id={!event.SalesHD_Account_Unit__c}">{!event.SalesHD_Account_Unit__r.Unit__r.Name}</a></p> -->
+									<p style="display:inline-block;">
+										<a href="/apex/SalesHD_unit?id={!event.SalesHD_Account_Unit__c}">{!if(event.SalesHD_Account_Unit__r.Unit__r.Name="Administrative", "Global / Director", event.SalesHD_Account_Unit__r.Unit__r.Name)}</a>
+									</p>
+								</div>
+							</apex:outputPanel>
 							<!-- <div>
 								<label style="display:inline-block;">Encounter Type:</label>
 								<p style="display:inline-block;">{!event.Type}</p>
@@ -780,6 +783,16 @@
 								<label style="display:inline-block;">Contact Method:</label>
 								<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
 							</div>
+
+							<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
+
+								<div>
+									<label style="display:inline-block;">Purpose:</label>
+									<p style="display:inline-block;">{!event.Subject__c}</p>
+								</div>
+
+							</apex:outputPanel>
+							
 
 							<div>
 								<label style="display:inline-block;">Objective:</label>
@@ -908,7 +921,7 @@
 									</div>
 								</apex:outputPanel>
 							</apex:outputPanel>
-							
+
 
 							<div style="margin-top:20px;">
 								<div class="alert alert-primary" role="alert" id="emailSent">
@@ -941,22 +954,46 @@
 
 
 							<apex:outputPanel rendered="{!IF(event.OwnerId=$User.Id, true, false)}">
-								<div style="margin-top:20px;">
-									<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}';"
-									 style="margin-top:-7px!important" />
-									 <apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Relate to Sales Plan"
-									 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_RelateToSalesPlan?eid={!event.Id}';"
-									/>
-									<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
-									 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}&duplicate=true';"
-									/>
-									<div class="btn btn-danger" style="margin-left:5px!important; margin-top:-7px!important; padding-top:3px!important;  padding-bottom:3px!important;"
-									 data-toggle="modal" data-target="#deleteModal">Delete</div>
-									<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete"
-									 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';" />
-									<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
-									 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
-								</div>
+
+								<apex:outputPanel rendered="{!NOT(CONTAINS(event.RecordType.Name,'Managed Care'))}">
+
+									<div style="margin-top:20px;">
+										<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}';"
+										 style="margin-top:-7px!important" />
+										<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Relate to Sales Plan"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_RelateToSalesPlan?eid={!event.Id}';" />
+										<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_NewEncounter?id={!event.Id}&duplicate=true';"
+										/>
+										<div class="btn btn-danger" style="margin-left:5px!important; margin-top:-7px!important; padding-top:3px!important;  padding-bottom:3px!important;"
+										 data-toggle="modal" data-target="#deleteModal">Delete</div>
+										<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';" />
+										<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
+										 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
+									</div>
+
+								</apex:outputPanel>
+
+								<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
+									
+									<div style="margin-top:20px;">
+										<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_ManagedCareNewEncounter?id={!event.Id}';"
+										 style="margin-top:-7px!important" />
+										<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_ManagedCareNewEncounter?id={!event.Id}&duplicate=true';"
+										/>
+										<div class="btn btn-danger" style="margin-left:5px!important; margin-top:-7px!important; padding-top:3px!important;  padding-bottom:3px!important;"
+										 data-toggle="modal" data-target="#deleteModal">Delete</div>
+										<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';" />
+										<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
+										 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
+									</div>
+
+								</apex:outputPanel>
+
+								
 							</apex:outputPanel>
 
 							<!-- <apex:outputPanel rendered="{!isManager && event.Encounter_Audit__r.Audit_Result__c==null}">
