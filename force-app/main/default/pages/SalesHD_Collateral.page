@@ -3,7 +3,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        <title>Collateral</title>
+        <title>Marketing Tool</title>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
@@ -671,7 +671,7 @@
 
                 <div class="row" id="previewError" style="display:none;">
                     <p class="red" style="margin:auto;">
-                        <i style="margin-right:10px;margin-top:2px;font-size:25px;" class="fas fa-times"></i> Unable to preview collateral. Try downloading the file.</p>
+                        <i style="margin-right:10px;margin-top:2px;font-size:25px;" class="fas fa-times"></i> Unable to preview marketing tool. Try downloading the file.</p>
                 </div>
                 <div class="row">
 
@@ -697,7 +697,7 @@
                     <div class="modal-content">
                         <div class="modal-header bg-primary">
                             <h3 class="bold">
-                                <i style="padding-right:10px;" aria-hidden="true" class="fas fa-envelope-open-text"></i> Email Collateral</h3>
+                                <i style="padding-right:10px;" aria-hidden="true" class="fas fa-envelope-open-text"></i> Email Marketing Tool</h3>
                         </div>
                         <apex:outputPanel id="emailBlock">
                             <apex:form id="emailForm">
@@ -717,7 +717,7 @@
                                             </ul>
                                             <apex:inputTextarea styleClass="form-control" style="margin-top:10px;" rows="6" value="{!emailBody}" id="emailBody" required="true"
                                                 html-placeholder="Email"/>
-                                            <p class="red" style="font-size:14px;margin-bottom:10px;">*A link to the collateral will automatically be added to the end of the email.</p>
+                                            <p class="red" style="font-size:14px;margin-bottom:10px;">*A link to the marketing tool will automatically be added to the end of the email.</p>
                                         </div>
                                     </form>
                                 </div>
