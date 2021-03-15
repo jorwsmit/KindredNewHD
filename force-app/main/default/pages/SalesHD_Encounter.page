@@ -703,8 +703,8 @@
 				</div>
 			</div> -->
 
-			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
-			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/>
+			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
+			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" />
 
 			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
 
@@ -768,21 +768,15 @@
 							<apex:outputPanel rendered="{!NOT(CONTAINS(event.RecordType.Name,'Managed Care'))}">
 								<div>
 									<label style="display:inline-block;">Unit:</label>
-									<!-- <p style="display:inline-block;"><a href="/apex/SalesHD_unit?id={!event.SalesHD_Account_Unit__c}">{!event.SalesHD_Account_Unit__r.Unit__r.Name}</a></p> -->
 									<p style="display:inline-block;">
 										<a href="/apex/SalesHD_unit?id={!event.SalesHD_Account_Unit__c}">{!if(event.SalesHD_Account_Unit__r.Unit__r.Name="Administrative", "Global / Director", event.SalesHD_Account_Unit__r.Unit__r.Name)}</a>
 									</p>
 								</div>
+								<div>
+									<label style="display:inline-block;">Contact Method:</label>
+									<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
+								</div>
 							</apex:outputPanel>
-							<!-- <div>
-								<label style="display:inline-block;">Encounter Type:</label>
-								<p style="display:inline-block;">{!event.Type}</p>
-							</div> -->
-
-							<div>
-								<label style="display:inline-block;">Contact Method:</label>
-								<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
-							</div>
 
 							<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
 
@@ -792,7 +786,7 @@
 								</div>
 
 							</apex:outputPanel>
-							
+
 
 							<div>
 								<label style="display:inline-block;">Objective:</label>
@@ -976,7 +970,7 @@
 								</apex:outputPanel>
 
 								<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
-									
+
 									<div style="margin-top:20px;">
 										<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_ManagedCareNewEncounter?id={!event.Id}';"
 										 style="margin-top:-7px!important" />
@@ -993,7 +987,7 @@
 
 								</apex:outputPanel>
 
-								
+
 							</apex:outputPanel>
 
 							<!-- <apex:outputPanel rendered="{!isManager && event.Encounter_Audit__r.Audit_Result__c==null}">

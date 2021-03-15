@@ -14,11 +14,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
         <apex:slds />
         <style>
-            body{
+            body {
                 font-family: "Salesforce Sans", Arial, sans-serif !important;
                 margin: 0px;
                 background-color: #E0E2E7 !important;
             }
+
             table {
                 width: 100%;
             }
@@ -46,11 +47,15 @@
                 border-bottom: none;
             }
 
-            .slds-scope .rounded{
+            .slds-scope .rounded {
                 border-radius: 10px !important;
             }
-            h3{
+
+            h3 {
                 font-size: 2rem !important;
+            }
+            .button-link{
+                background-color: #007bff !important;
             }
         </style>
     </head>
@@ -69,7 +74,7 @@
                         <div class="col-md-6">
                             <div class="input-group">
                                 <apex:input styleClass="form-control" value="{!searchString}" html-placeholder="Search by name or street address"></apex:input>
-                                <apex:commandButton styleClass="btn btn-primary" action="{!searchContacts}" reRender="contactSearch" />
+                                <apex:commandButton styleClass="btn btn-primary text-white" action="{!searchContacts}" reRender="contactSearch" value="Search" />
                             </div>
 
 
@@ -89,6 +94,11 @@
                                     <apex:actionsupport event="onchange" action="{!searchContacts}" reRender="contactSearch" />
                                 </apex:selectList>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-md-center m-1">
+                        <div class="col-md-6">
+                            <a class="btn btn-primary text-white button-link" onclick="window.location.href='/apex/SalesHD_NewContact'">Create New Contact</a>
                         </div>
                     </div>
 

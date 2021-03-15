@@ -95,8 +95,8 @@ public List<collateral> getCollateralList(){
 	for(ContentWorkspaceDoc cwd : [select ContentDocument.Title, ContentDocument.FileType,
 	                               ContentDocument.LatestPublishedVersion.HD_Collateral_Type__c,
 	                               ContentDocument.LatestPublishedVersionId, ContentDocument.Description,
-								   ContentDocument.LatestPublishedVersion.Audience_Tag__c, ContentDocumentId,
-								   ContentDocument.LatestPublishedVersion.LastModifiedDate
+	                               ContentDocument.LatestPublishedVersion.Audience_Tag__c, ContentDocumentId,
+	                               ContentDocument.LatestPublishedVersion.LastModifiedDate
 	                               from ContentWorkspaceDoc where ContentWorkspace.Name='HD Collaterals'
 	                                                                                     and ContentDocument.LatestPublishedVersionId!=null]) {
 		collateral c = new collateral(cwd.ContentDocument.LatestPublishedVersionId);
@@ -284,6 +284,62 @@ private static String getPublicUrl(collateral c){
 	cd = [select DistributionPublicUrl
 	      from ContentDistribution where Id = :cd.Id];
 	return cd.DistributionPublicUrl;
+}
+
+public List<EmailTemplate> getEmailTemplates(){
+	List<EmailTemplate> templates = [select id, name, htmlValue, description from EmailTemplate where folderId in (select id from folder where name='Hospital Division Email Templates')];
+	return templates;
+}
+
+// public List<Selectoption> getFavoritedContactEmailAddress(){
+// 	List<Selectoption> picklist = new List<selectoption>();
+// 	picklist.add(new selectOption('', 'Favorited Contact Email Addresses'));
+// 	for(Contact_Team__c ct : [select contact__r.email from contact_team__c where contact__r.email!=null and user__c=:UserInfo.getUserId()]){
+// 		String email = ct.contact__r.email;
+// 		picklist.add(new selectOption(email, email));
+// 	}
+// 	return picklist;
+// }
+
+public String templateId {get; set;}
+public String favoritedEmail {get; set;}
+
+public PageReference populateEmail() {
+	if(favoritedEmail!=null && favoritedEmail!='') {
+		contactEmail = favoritedEmail;
+	}
+	return null;
+}
+
+public PageReference sendEmailTemplate(){
+
+	emailSent = false;
+	if(isValidEmail(contactEmail)) {
+		Messaging.SingleEmailMessage email = Messaging.renderStoredEmailTemplate(templateId, null, null);
+		List<Contact> contacts = [select Id from contact where email=:contactEmail limit 1];
+		if(!contacts.isEmpty()) email = Messaging.renderStoredEmailTemplate(templateId, contacts[0].Id, null);
+		String subject = email.getSubject();
+		String body = email.gethtmlBody();
+		email.setSubject(subject);
+		email.sethtmlBody(body);
+		email.saveAsActivity = false;
+		email.toAddresses = new String[] {contactEmail};
+		try{
+			Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email});
+			List<EmailTemplate> templates = [select id, name from EmailTemplate where id=:templateId];
+			String templateName = '';
+			if(!templates.isEmpty()) templateName = templates[0].name;
+			logEmail(UserInfo.getUserEmail(), UserInfo.getUserId(), contactEmail, System.URL.getSalesforceBaseUrl().toExternalForm()+'/'+templateId, 'Email Template: '+templateName);
+			emailSent = true;
+		} catch(Exception ex) {
+			ApexPages.addMessages(ex);
+		}
+	} else {
+		ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, contactEmail+' is not a valid email address. Please enter a valid email address and try again.'));
+	}
+	contactEmail = '';
+	return null;
+
 }
 
 }

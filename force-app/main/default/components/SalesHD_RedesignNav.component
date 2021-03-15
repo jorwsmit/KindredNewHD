@@ -12,74 +12,666 @@
         <apex:slds />
 
         <style>
-            #star {
-                z-index: 50;
+            a {
+                color: #208FFF !important;
+                text-decoration: underline !important;
+            }
+
+            a:hover {
+                color: #1773d1 !important;
+            }
+
+            div {
+                font-size: 20px;
+            }
+
+            body {
+                font-family: "Salesforce Sans", Arial, sans-serif !important;
+                margin: 0px;
+                background-color: #E0E2E7 !important;
+            }
+
+            input {
+                display: block;
+            }
+
+            form {
+                width: 100%;
+            }
+
+            form label {
+                font-size: 24px !important;
+                font-weight: bold !important;
+            }
+
+            textarea,
+            input {
+                color: #3E3E3C !important;
+                font-size: 18px !important;
+            }
+
+            textarea::placeholder,
+            input::placeholder {
+                font-size: 18px !important;
+            }
+
+            .LightningDesign {
+                color: #3E3E3C !important;
+            }
+
+            .LightningDesign::selection {
+                color: #3E3E3C !important;
+            }
+
+            .reassignButton {
+                position: fixed;
+                bottom: 0px;
+                left: 50%;
+                margin-left: -250px;
+            }
+
+            .reassignButton button {
+                width: 500px !important;
+            }
+
+            .l-space {
+                margin: 20px;
+            }
+
+            .s-space {
+                margin: 10px;
+            }
+
+            .spinner {
+                text-align: center;
+                color: #157DFA;
+                position: relative;
+                left: 50%;
+            }
+
+            .tableCheck {
+                position: relative;
+                left: 45%;
+            }
+
+            .btn {
+                border: none !important;
+                border-radius: 7px;
+                color: #FFFFFF !important;
+            }
+
+            .row {
+                margin-left: 0px !important;
+                margin-right: 0px !important;
+            }
+
+            table {
+                overflow: hidden;
+            }
+
+            table td,
+            table th {
+                border: 1px solid #ddd;
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+            }
+
+            table thead th {
+                text-align: center !important;
+            }
+
+            table tbody td {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+
+            .userList {
+                border: 1px solid #ced4da !important;
+                border-radius: 7px;
+                max-height: 450px;
+                overflow: auto;
+                display: none;
+            }
+
+            .userList li {
+                cursor: pointer;
+                padding-left: 5px;
+                padding-right: 5px;
+                border-bottom: 1px solid #ced4da !important;
+            }
+
+            .shadow {
+                -webkit-box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, 0.25);
+                -moz-box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, 0.25);
+                box-shadow: 0px 3px 7px 0px rgba(0, 0, 0, 0.25);
+            }
+
+            .header {
+                padding-top: 80px;
+                padding-bottom: 20px;
+                width: 100vw;
+                color: white;
+                text-align: center;
+                background-color: #817FE1;
+            }
+
+            .header h1 {
+                z-index: 10;
+                position: fixed;
+                background-color: #817FE1;
+                padding-top: 10px;
+                padding-bottom: 10px;
+                top: 39px;
+                width: 100%;
+            }
+
+            .header a{
+                color: #fff !important;
+            }
+
+            .back-btn {
+                z-index: 100;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                font-size: 48px !important;
+                cursor: pointer;
+            }
+
+            .modal {
+                font-family: "Salesforce Sans", Arial, sans-serif !important;
+                color: #3E3E3C !important;
+            }
+
+            .modal ul li {
+                border-bottom: 1px solid #e9ecef;
+                padding: 10px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .modal-body {
+                max-height: 375px;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .modal-title {
+                font-weight: normal !important;
+                color: #157DFA !important;
+            }
+
+            .modal-subtitle {
+                font-weight: lighter !important;
+            }
+
+            .btn-primary {
+                background-color: #157DFA !important;
+            }
+
+            .btn-primary:active {
+                background-color: #1f6bc6 !important;
+            }
+
+            .btn-secondary {
+                background-color: #808285 !important;
+            }
+
+            .btn-secondary:active {
+                background-color: #6c6e70 !important;
+            }
+
+            #profilePhoto,
+            #profilePhoto img {
+                z-index: 200;
+                position: fixed;
+                right: 10px;
+                top: 10px;
+                width: 58px;
+                height: 58px;
+                border-radius: 100%;
+                border: 2px solid #FFFFFF;
+                background-color: #E0E2E7;
+                cursor: pointer;
+            }
+
+            h1 {
+                font-size: 48px !important;
+                font-weight: bold !important;
+            }
+
+            .name {
+                font-weight: lighter !important;
+            }
+
+            h2 {
+                font-size: 36px !important;
+                font-weight: lighter !important;
+            }
+
+            h3 {
+                font-size: 29px !important;
+                font-weight: bold !important;
+            }
+
+            h4 {
+                font-size: 22px !important;
+                font-weight: normal !important;
+            }
+
+            h5 {
+                font-size: 18px !important;
+                font-weight: lighter !important;
+            }
+
+            .thin {
+                font-weight: lighter !important;
+            }
+
+            .italic {
+                font-style: italic !important;
+            }
+
+            .icon {
+                color: white;
+                margin-left: 10px;
+                border-radius: 7px;
+            }
+
+            .icon-green {
+                background-color: #2BC100;
+            }
+
+            .icon-purple {
+                background-color: #A644D2;
+            }
+
+            .icon-account-purple {
+                background-color: #817FE1 !important;
+            }
+
+            .icon-pink {
+                background-color: #FF74C0;
+            }
+
+            .icon-lightblue {
+                background-color: #37D5EC;
+            }
+
+            .icon-blue {
+                background-color: #157DFA;
+            }
+
+            .icon-yellow {
+                background-color: #FFD000;
+            }
+
+            .yellow {
+                color: #FFD000;
+            }
+
+            .icon-red {
+                background-color: #FF0036;
+            }
+
+            .icon-grey {
+                background-color: #808285;
+            }
+
+            .bg-danger {
+                background-color: #FF3B39 !important;
+            }
+
+            .card {
+                border-radius: 7px;
+                cursor: pointer;
+            }
+
+            .card-header i {
+                font-size: 50px;
+            }
+
+            .card-body {
+                height: 200px;
+                overflow: auto;
+            }
+
+            .ppt {
+                color: #FF6600;
+            }
+
+            .col-md-4 {
+                padding: 0px 10px 0px 10px;
+                margin-bottom: 20px;
+            }
+
+            .white-bg {
+                background-color: #FFFFFF !important;
+            }
+
+            .blue-bg {
+                background-color: #157DFA !important;
+            }
+
+            .rounded {
+                padding: 15px 0px 15px 0px !important;
+                border-radius: 7px !important;
+            }
+
+            .inner-container {
+                padding: 0px !important;
+            }
+
+            .inner-container div:not(:last-child) {
+                padding-right: 10px !important;
+            }
+
+            .container {
+                padding: 10px !important;
+                margin-top: 10px !important;
+                margin-bottom: 10px !important;
+                border-radius: 7px;
+            }
+
+            .container:last-of-type {
+                margin-top: 10px;
+                margin-bottom: 20px;
+            }
+
+            .no-bg-container {
+                background-color: transparent !important;
+            }
+
+            .action-item-label {
+                font-size: 20px !important;
+                font-weight: bold !important;
+            }
+
+            .action-items,
+            .action-items div {
+                font-size: 18px !important;
+                padding: 5px !important;
+            }
+
+            .action-items .row {
+                border: 1px solid #d8dde6;
+            }
+
+            .action-items .row:first-child {
+                border-radius: .25rem .25rem 0px 0px;
+                border-bottom: 0px;
+            }
+
+            .action-items .row:not(:first-child):not(:last-child) {
+                border-top: 1px solid #d8dde6;
+                border-bottom: 0px;
+            }
+
+            .action-items .row:last-child {
+                border-radius: 0px 0px .25rem .25rem;
+            }
+
+            .action-items .row:only-child {
+                border: 1px solid #d8dde6;
+                border-radius: .25rem;
+            }
+
+            .no-padding {
+                padding: 0px !important;
+            }
+
+            .no-margin {
+                margin: 0px !important;
+            }
+
+            .incomplete {
+                text-decoration: underline;
+                cursor: pointer;
+                color: #FF3B39 !important;
+            }
+
+            .complete {
+                text-decoration: underline;
+                cursor: pointer;
+                color: #25D96B !important;
+            }
+
+            .red {
+                color: #FF3B39 !important;
+            }
+
+            .grey {
+                color: #808285 !important;
+            }
+
+            .green {
+                color: #4CD964 !important;
+            }
+
+            .blue {
+                color: #208FFF !important;
+            }
+
+            .purple {
+                color: #817FE1 !important;
+            }
+
+            .no-pad {
+                padding: 0px !important;
+            }
+
+            @media (min-width: 768px) {
+                .ui-autocomplete {
+                    max-width: 720px;
+                }
+            }
+
+            @media (min-width: 992px) {
+                .ui-autocomplete {
+                    max-width: 960px;
+                }
+            }
+
+            @media (min-width: 1200px) {
+                .ui-autocomplete {
+                    max-width: 1140px;
+                }
+            }
+
+
+            @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation: landscape) {
+                .container {
+                    max-width: 1004px !important;
+                    margin: 20px 10px 20px 10px;
+                }
+                .ui-autocomplete {
+                    max-width: 1004px;
+                }
+                .container:nth-of-type(2) {
+                    margin: 20px 10px 10px 10px;
+                }
+                .container:last-of-type {
+                    margin: 10px 10px 20px 10px;
+                }
+            }
+
+            .upcoming-events {
+                display: inline-block !important;
+            }
+
+            #new-event {
+                width: 200px;
+                padding: 5px !important;
+                display: inline-block;
+                float: right;
+            }
+
+            @media (max-width:499px) {
+                .upcoming-events {
+                    display: block;
+                }
+                #new-event {
+                    margin-top: 10px;
+                    margin-left: 10px;
+                    float: none;
+                }
+
+                .inner-container div:not(:last-child) {
+                    padding-right: 0px !important;
+                }
+
+                .container {
+                    padding: 2px !important;
+                }
+
+            }
+
+            /* Calendar styling */
+
+            #ui-datepicker-div {
+                border-radius: 0.25rem;
+            }
+
+            .ui-datepicker-calendar,
+            .ui-datepicker-header {
+                background-color: white;
+                padding: 5px;
+                border: 1px solid #d8dde6;
+            }
+
+            .ui-datepicker-header {
+                margin-top: 5px;
+                border-radius: 0.25rem 0.25rem 0 0;
+            }
+
+            .ui-datepicker-calendar {
+                border-radius: 0 0 0.25rem 0.25rem;
+            }
+
+            .ui-datepicker-next {
+                position: relative;
+                left: 90px;
+            }
+
+            .ui-datepicker-calendar th,
+            .ui-datepicker-calendar td {
+                padding: 2px 5px 2px 5px;
+            }
+
+            /* End calendar styling */
+
+            .round-border {
+                border: 1px solid #ddd;
+                padding: 5px 7px 5px 7px;
+                border-radius: 100%;
+            }
+
+            .border-blue {
+                border-color: #208FFF !important;
+            }
+
+            ul {
+                padding-left: 0px;
+            }
+
+            ul li {
+                font-size: 15px;
+                line-height: 23px;
+                padding: 10px 0px 10px 0px;
+                margin-left: 10px !important;
+                margin-right: 10px !important;
+                border-bottom: 1px solid #ddd;
+                cursor: pointer;
+                list-style: none;
+            }
+
+            .cursor-default {
+                cursor: default;
+            }
+
+            ul li:hover {
+                border-bottom: 1px solid #afafaf;
+            }
+
+            .progress {
+                margin-top: 10px;
+                margin-left: 10px;
+                height: 50px;
+                border-radius: 7px;
+            }
+
+            #accountSearchInput {
+                border: 1px solid #ddd;
+                width: 100%;
+                border-radius: 25px;
+            }
+
+            .ui-autocomplete {
+                background-color: #FFFFFF;
+                margin-right: 20px;
+                margin-top: 10px;
+                border-radius: 7px;
+                max-height: 510px;
+                overflow: auto;
+            }
+
+            .ui-helper-hidden-accessible {
+                display: none;
+            }
+
+            #stateChoices {
+                max-height: 400px;
+                overflow: auto;
+            }
+
+            #searchSpinner {
+                display: none;
+                float: right;
+                position: relative;
+                top: -18px;
+                right: 25px;
+            }
+
+            .btn {
+                border-radius: 25px !important;
             }
 
             body {
                 background-color: #E0E2E7 !important;
             }
 
-            .navbar-toggler {
-                color: #FFFFFF !important;
-                outline: none !important;
-                border: none !important;
-                font-size: 20px !important;
+            .back-btn {
+                display: none;
             }
 
             .navbar {
                 position: fixed;
                 width: 100%;
                 top: 0px;
-                background-color: #157DFA !important;
-                padding: .25rem 1rem !important;
                 z-index: 99;
                 text-align: center;
             }
 
-            .navbar a {
-                font-size: 20px;
-                color: #FFFFFF !important;
-                font-style: italic;
-                padding: .15rem 1rem !important;
-                border-radius: 25px;
+            nav a {
                 text-decoration: none !important;
-                text-transform: uppercase;
-                margin: 0rem .15rem !important;
             }
 
-            .navbar a:hover:not(.active) {
-                background-color: #afafaf !important;
+            nav a:not(.dropdown-item) {
+                color: white !important;
             }
 
-            .navbar .active {
-                background-color: #FFFFFF !important;
-                color: #157DFA !important;
+            .nav-item {
+                border-bottom: none;
+                padding: 0px;
             }
 
-            .header h1 {
-                top: 43px;
-                padding-bottom: 16px;
+            .nav-item:hover {
+                border-bottom: none;
             }
-
-            .back-btn {
-                font-size: 42px !important;
-            }
-
-            @media only screen and (max-width: 600px) {
-                #star {
-                    font-size: 25px !important;
-                    left: 0px !important;
-                    top: 50px !important;
-                }
-                .header {
-                    padding-top: 50px !important;
-                }
-                .name {
-                    padding-left: 50px !important;
-                    padding-right: 50px !important;
-                    font-size: 25px !important;
-                }
+            .navbar-toggler{
+                margin: 5px !important;
+                border: none;
+                outline: none;
             }
         </style>
 
@@ -108,7 +700,7 @@
                 </div>
             </div> -->
 
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
                     aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fas fa-bars"></i>
@@ -124,7 +716,7 @@
                             <i class="fas fa-user-md"></i> My Contacts</a>
                         <a class="nav-item nav-link" href="/apex/saleshd_encounters">
                             <i class="fas fa-phone"></i> Encounters</a>
-                        <a class="nav-item nav-link" href="/apex/saleshd_collaterals">
+                        a class="nav-item nav-link" href="/apex/saleshd_collaterals">
                             <i class="fas fa-mail-bulk"></i> Collaterals</a>
                         <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
                             <a class="nav-item nav-link" href="/apex/saleshd_salesplansmanager">
@@ -135,15 +727,127 @@
                                 <i class="fas fa-notes-medical"></i> Sales Plans</a>
                         </apex:outputPanel>
 
-                        <!-- <apex:outputPanel rendered="{!hasSalesPlanAccess}">
-                            <a class="nav-item nav-link" href="{!salesPlanView}">
-                                <i class="fas fa-notes-medical"></i> Sales Plans</a>
-                        </apex:outputPanel> -->
-
 
                     </div>
                 </div>
+            </nav> -->
+
+
+            <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="#">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">STACHs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Contacts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">Encounters</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Marketing Tools
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="#">Collaterals</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#">Email Templates</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Sales Plans</a>
+                                </li>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Sales Plans</a>
+                                </li>
+                            </apex:outputPanel>
+                        </ul>
+                    </div>
+                </div>
+            </nav> -->
+
+            <nav class="navbar navbar-expand-lg navbar-dark bg-primary p-0">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/apex/SalesHD_Homepage">
+                                <i class="fas fa-home"></i> Home</a>
+                        </li>
+                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/apex/SalesHD_DashboardManager" target="_blank">
+                                    <i class="fas fa-chart-pie"></i> Dashboard</a>
+                            </li>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/apex/SalesHD_DashboardCL" target="_blank">
+                                    <i class="fas fa-chart-pie"></i> Dashboard</a>
+                            </li>
+                        </apex:outputPanel>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/apex/SalesHD_Accounts">
+                                <i class="fas fa-hospital"></i> STACHs</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/apex/SalesHD_Contacts">
+                                <i class="fas fa-user-md"></i> Contacts</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/apex/SalesHD_Encounters">
+                                <i class="fas fa-phone"></i> Encounters</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                <i class="fas fa-mail-bulk"></i> Marketing Tools
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item text-primary" href="/apex/SalesHD_Collaterals">Collaterals</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-primary" href="/apex/SalesHD_EmailTemplates">Email Templates</a>
+                            </div>
+                        </li>
+                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/apex/SalesHD_SalesPlansManager">
+                                    <i class="fas fa-notes-medical"></i> Sales Plans</a>
+                            </li>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/apex/SalesHD_SalesPlans">
+                                    <i class="fas fa-notes-medical"></i> Sales Plans</a>
+                            </li>
+                        </apex:outputPanel>
+                    </ul>
+                </div>
             </nav>
+
             <div style="margin:50px;"></div>
 
         </div>

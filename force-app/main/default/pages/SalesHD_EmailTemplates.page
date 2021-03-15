@@ -1,0 +1,144 @@
+<apex:page showHeader="false" controller="SalesHD_Collaterals" lightningStyleSheets="true" standardStylesheets="false" sidebar="false"
+    applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+    <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <head>
+        <title>Email Templates</title>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+            crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
+        <apex:slds />
+        <style>
+        </style>
+    </head>
+
+    <body>
+
+        <div class="slds-scope">
+
+            <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
+            <!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" /> -->
+
+
+            <div class="container white-bg shadow">
+
+
+
+                <div class="row inner-container">
+                    <div class="col-md-12 no-pad bg-white rounded">
+                        <h3>
+                            <i class="fas fa-mail-bulk icon icon-blue" style="margin-left:0px;padding:9px 8px;" aria-hidden="true"></i> Email Templates</h3>
+                        <p>Select and email template below to email to a favorited contact or any customer.</p>
+
+                        <apex:variable var="i" value="{!0}" />
+
+                        <ul id="templates">
+                            <apex:repeat value="{!emailTemplates}" var="e">
+                                <li id="{!e.Id}">
+                                    <h3>{!e.name}</h3>
+                                    <p>{!e.description}</p>
+                                    <a href="/{!e.Id}?isdtp=vw" target="_blank">Click here to preview the email template</a>
+                                </li>
+                            </apex:repeat>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <apex:form id="emailForm">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="emailModalLabel">Email Template</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+
+                                <apex:inputHidden value="{!templateId}" id="templateId" required="true" />
+                                <apex:input styleClass="form-control" value="{!contactEmail}" id="email" html-placeholder="Email" required="true" />
+                                <a id="pasteEmail">Prepopulate from Favorited Contact Emails</a>
+                                <ul id="contactList" style="display:none;">
+                                    <apex:repeat value="{!favoritedContactList}" var="con">
+                                        <li data-contactemail="{!con.Contact__r.Email}">
+                                            <b>{!con.Contact__r.Name}</b> - {!con.Contact__r.Email}</li>
+                                    </apex:repeat>
+                                </ul>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <!-- <button type="button" class="btn btn-primary">Send</button> -->
+                                <apex:commandButton styleClass="btn btn-primary" action="{!sendEmailTemplate}" value="Send" status="statusSpinner" rerender="emailForm"
+                                    style="font-size:20px !important; vertical-align:bottom; margin-top:0px!important; width:100px; padding:11.5px 15px;"
+                                    oncomplete="if({!emailSent})$('#emailModal').modal('hide');" />
+                            </div>
+
+                            <apex:actionStatus id="statusSpinner">
+                                <apex:facet name="start">
+
+                                    <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:80px;">
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </apex:facet>
+                            </apex:actionStatus>
+                            <apex:pageMessages />
+                        </apex:form>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- Lightning Wrapper -->
+
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+            crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+        <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+                $("#templates li").on('click', function () {
+                    document.getElementById('{!$Component.emailForm.templateId}').value = this.id;
+                    $('#emailModal').modal('show');
+                });
+
+
+                $(document).on("click", '#contactList li', function () {
+                    $('#email').val($(this).text());
+                    document.getElementById('{!$Component.emailForm.email}').value = $(this).data('contactemail');
+                    $('#contactList').slideUp();
+                });
+
+                $(document).on("click", '#pasteEmail', function () {
+                    $('#contactList').slideDown();
+                });
+
+                $(document).on('click', function (e) {
+                    if ((!$('#pasteEmail').is(e.target) && $('#pasteEmail').has(e.target).length === 0)) {
+                        $('#contactList').slideUp();
+                    }
+                });
+
+            });
+
+        </script>
+
+    </body>
+
+    </html>
+</apex:page>

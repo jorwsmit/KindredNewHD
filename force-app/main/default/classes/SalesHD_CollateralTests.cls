@@ -82,5 +82,28 @@ public class SalesHD_CollateralTests {
 
 }
 
+@isTest static void emailTemplate(){
+
+	Test.startTest();
+	PageReference pageRef = Page.SalesHD_EmailTemplates;
+	Test.setCurrentPage(pageRef);
+	SalesHD_Collaterals controller = new SalesHD_Collaterals();
+	List<EmailTemplate>  emailTemplates = controller.getEmailTemplates();
+	controller.templateId = emailTemplates[0].Id;
+	controller.contactEmail = 'test@test.com';
+	controller.sendEmailTemplate();
+	Test.stopTest();
+
+}
+
+@isTest static void collateralList(){
+	Test.startTest();
+	PageReference pageRef = Page.SalesHD_Collaterals;
+	Test.setCurrentPage(pageRef);
+	SalesHD_Collaterals controller = new SalesHD_Collaterals();
+	List<SalesHD_Collaterals.Collateral>  collaterals = controller.getCollateralList();
+	Test.stopTest();
+}
+
 
 }

@@ -147,12 +147,19 @@ global without sharing class SalesHD_Contact {
 		PageReference contactPage;
 		try{
 			List<RecordType> hdContactsRecordType = [select Id from RecordType where sobjecttype='Contact' and Name='HD Contacts' limit 1];
+			String userProfileName = [select Profile.name from user where Id=:currentUser][0].Profile.name;
+			if(userProfileName.contains('Managed Care')){
+				hdContactsRecordType = [select Id from RecordType where sobjecttype='Contact' and Name='Managed Care Contacts' limit 1];
+			}
 			List<Account> unassignHdAccount = [select Id from Account where name ='Unassigned HD Accounts - Admin Maintenance' limit 1];
 			if(!hdContactsRecordType.isEmpty()) cont.RecordTypeId = hdContactsRecordType[0].Id;
 			if(!unassignHdAccount.isEmpty()) cont.AccountId = unassignHdAccount[0].Id;
 			insert cont;
 			insert new Contact_Team__c(Contact__c=cont.Id, User__c=currentUser);
 			contactPage = new PageReference('/apex/SalesHD_Contact?id='+cont.Id);
+			if(userProfileName.contains('Managed Care')){
+				contactPage = new PageReference('/apex/SalesHD_ManagedCareContact?id='+cont.Id);
+			}
 			if(ApexPages.currentPage().getParameters().get('accountId')!=''){
 				List<Account_Unit__c> au = [select Id from Account_Unit__c where Account__c=:ApexPages.currentPage().getParameters().get('accountId') and Unit__r.Name='Administrative' limit 1];
 				List<Account_Unit_Contact__c> auc = [select id from Account_Unit_Contact__c where Account_Unit__c in :au and Contact__c=:cont.Id];

@@ -641,7 +641,7 @@
         <div class="slds-scope">
 
             <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
-			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/>
+			<!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/> -->
 
             <div class="container shadow white-bg">
                 <div class="row blue">
@@ -732,7 +732,7 @@
                                 <apex:actionStatus id="statusSpinner">
                                     <apex:facet name="start">
 
-                                        <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:180px;">
+                                        <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:220px; margin-left:-20px;">
                                             <div class="slds-spinner__dot-a"></div>
                                             <div class="slds-spinner__dot-b"></div>
                                         </div>

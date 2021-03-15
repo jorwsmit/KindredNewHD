@@ -52,6 +52,8 @@ public String encounters {get; set;}
 
 public String ownerPhotoUrl {get; set;}
 
+private String profileName = '';
+
 
 
 
@@ -59,6 +61,8 @@ private static Id currentUser = UserInfo.getUserId();
 
 public SalesHD_Event(ApexPages.StandardController stdController) {
 	isManager = false;
+
+	profileName = [select profile.name from user where Id=:currentUser][0].profile.name;
 
 	if(ApexPages.CurrentPage().getparameters().get('id')!=null) {
 		List<Id> fileIds = new List<Id>();
@@ -495,6 +499,7 @@ public PageReference completeEvent() {
 public PageReference completeAndNew() {
 	saveCompleteEvent();
 	PageReference eventPage = new PageReference('/apex/SalesHD_NewEncounter');
+	if(profileName.contains('Managed Care')) eventPage = new PageReference('/apex/SalesHD_ManagedCareNewEncounter');
 	eventPage.setRedirect(true);
 	return eventPage;
 }
@@ -520,6 +525,7 @@ public PageReference completeAndNext() {
 		additionalTeam.clear();
 		additionalRelatedTeamMembers(tempEvent);
 		eventPage = new PageReference('/apex/SalesHD_NewEncounter?id='+tempEvent.Id);
+		if(profileName.contains('Managed Care')) eventPage = new PageReference('/apex/SalesHD_ManagedCareNewEncounter?id='+tempEvent.Id);
 	}
 	catch(DmlException ex) {
 		ApexPages.addMessages(ex);
@@ -573,6 +579,7 @@ public PageReference saveAndNext() {
 				removeRelatedTeamMembers(tempEvent2);
 
 				eventPage = new PageReference('/apex/SalesHD_NewEncounter?id='+tempEvent2.Id);
+				if(profileName.contains('Managed Care')) eventPage = new PageReference('/apex/SalesHD_ManagedCareNewEncounter?id='+tempEvent2.Id);
 			} else {
 				upsert thisEvent;
 				removeRelatedContacts(thisEvent);
@@ -595,6 +602,7 @@ public PageReference saveAndNext() {
 				additionalRelatedTeamMembers(tempEvent);
 				removeRelatedTeamMembers(tempEvent);
 				eventPage = new PageReference('/apex/SalesHD_NewEncounter?id='+tempEvent.Id);
+				if(profileName.contains('Managed Care')) eventPage = new PageReference('/apex/SalesHD_ManagedCareNewEncounter?id='+tempEvent.Id);
 			}
 		}
 	} catch(DmlException ex) {
@@ -610,6 +618,7 @@ public PageReference saveAndNew() {
 	eventPage = saveEvent();
 	if(eventPage!=null) {
 		eventPage = new PageReference('/apex/SalesHD_NewEncounter');
+		if(profileName.contains('Managed Care')) eventPage = new PageReference('/apex/SalesHD_ManagedCareNewEncounter');
 		eventPage.setRedirect(true);
 	}
 	return eventPage;
@@ -869,5 +878,6 @@ private static Blob invite(Event e, String location) {
 // 	}
 // 	return page;
 // }
+
 
 }

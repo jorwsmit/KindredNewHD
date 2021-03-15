@@ -154,6 +154,12 @@
                     <div class="col-md-12 bg-white rounded p-0">
                         <c:SalesHD_RelatedContacts />
                     </div>
+                    <div class="col-md-12 p-0">
+                        <button type="button" class="btn btn-success btn-block" onclick="window.location.href='apex/SalesHD_NewContact?accountId={!account.Id}'">
+                            Create New Contact
+                        </button>
+                    </div>
+                    
                 </div>
                 <div class="col-md-5">
                     <div class="col-md-12 bg-white rounded p-0">

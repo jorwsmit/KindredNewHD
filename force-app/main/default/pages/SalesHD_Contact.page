@@ -124,12 +124,12 @@
 		width: 100vw;
 		color: white;
 		text-align: center;
-		background-color: #00A6FF;
+		background-color: #00A6FF !important;
 	}
 	.header h1{
 		z-index: 10;
 		position: fixed;
-		background-color: #00A6FF;
+		background-color: #00A6FF !important;
 		padding-top: 10px;
 		padding-bottom: 10px;
 		top: 49px;
