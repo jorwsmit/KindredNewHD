@@ -16,6 +16,7 @@ private static Map<String, String> unitBuckets = new Map<String, String> {
 	'ICU - TRANSPLANT' => 'ICU',
 	'ICU - BURN' => 'ICU',
 	'ICU - TRAUMA' => 'ICU',
+	'ICU - MEDICAL' => 'ICU',
 
 	'SDU - CARDIAC' => 'SDU',
 	'SDU - SURGICAL' => 'SDU',
