@@ -14,7 +14,8 @@ private static Map<String, String> fileIcons = new Map<String, String> {'PDF' =>
 	                                                                'POWER_POINT' => '<i class="fa fa-file-powerpoint-o resource-icon" aria-hidden="true"></i>',
 	                                                                'POWER_POINT_X' => '<i class="fa fa-file-powerpoint-o resource-icon" aria-hidden="true"></i>',
 	                                                                'WORD' => '<i class="fa fa-file-word-o resource-icon" aria-hidden="true"></i>',
-	                                                                'WORD_X' => '<i class="fa fa-file-word-o resource-icon" aria-hidden="true"></i>',
+																	'WORD_X' => '<i class="fa fa-file-word-o resource-icon" aria-hidden="true"></i>',
+																	'EMAIL' => '<i class="fa fa-envelope resource-icon" aria-hidden="true"></i>',
 	                                                                'UNKNOWN' => '<i class="fa fa-file-o resource-icon" aria-hidden="true"></i>'};
 
 
@@ -59,6 +60,7 @@ public List<String> collateralTypes {get; set;}
 
 public String contactEmail {get; set;}
 public String emailBody {get; set;}
+public String emailSubject {get; set;}
 
 public String collateralId {get; set;}
 
@@ -66,9 +68,12 @@ public Boolean emailSent {get; set;}
 
 public SalesHD_Collaterals() {
 	// collaterals = getCollaterals();
-	if(ApexPages.CurrentPage().getparameters().get('id')!=null) {
+	if(ApexPages.CurrentPage().getparameters().get('id')!=null && ApexPages.currentPage().getUrl().contains('SalesHD_Collateral')) {
 		getCollateral(ApexPages.CurrentPage().getparameters().get('id'));
 		isFavorited(ApexPages.CurrentPage().getparameters().get('id'));
+	}
+	if(ApexPages.CurrentPage().getparameters().get('id')!=null && ApexPages.currentPage().getUrl().contains('SalesHD_EmailTemplate')){
+		getEmailTemplate(ApexPages.CurrentPage().getparameters().get('id'));
 	}
 
 	favoritedContactList = getContacts1();
@@ -113,6 +118,34 @@ public List<collateral> getCollateralList(){
 		if(cwd.ContentDocument.LatestPublishedVersion.LastModifiedDate!=null) c.lastModifiedDate = Date.valueOf(cwd.ContentDocument.LatestPublishedVersion.LastModifiedDate).format();
 		cList.add(c);
 	}
+
+
+	// public collateral(String collateralId){
+	// 	this.collateralId = collateralId;
+	// 	this.documentId = '';
+	// 	this.title = '';
+	// 	this.description = '';
+	// 	this.icon = null;
+	// 	this.audience_professional = false;
+	// 	this.audience_patient = false;
+	// 	this.favorited = false;
+	// 	this.type = '';
+	// 	this.lastModifiedDate = '';
+	// }
+
+
+	for(EmailTemplate et : getEmailTemplates()){
+		collateral c = new collateral(et.Id);
+		c.title = et.name;
+		c.description = et.description;
+		c.icon = fileIcons.get('EMAIL');
+		//favorited??
+		c.type = 'Email Templates';
+		cList.add(c);
+	}
+	
+
+
 	return cList;
 }
 
@@ -183,6 +216,7 @@ private static List<String> getCollateralTypes(){
 	for( Schema.PicklistEntry pickListVal : ple) {
 		pickListValuesList.add(pickListVal.getLabel());
 	}
+	pickListValuesList.add('Email Templates');
 	return pickListValuesList;
 }
 
@@ -340,6 +374,54 @@ public PageReference sendEmailTemplate(){
 	contactEmail = '';
 	return null;
 
+}
+
+public PageReference sendTemplateEmail(){
+	emailSent = false;
+	Messaging.reserveSingleEmailCapacity(2);
+	Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+	if(isValidEmail(contactEmail)) {
+		try{
+			String[] toAddresses = new String[] {contactEmail};
+			mail.setToAddresses(toAddresses);
+			mail.setReplyTo(UserInfo.getUserEmail());
+			mail.setSenderDisplayName(UserInfo.getName());
+			// Messaging.SingleEmailMessage email = Messaging.renderStoredEmailTemplate(templateId, null, null);
+			// String subject = email.getSubject();
+			// mail.setSubject(subject);
+			mail.setSubject(emailSubject);
+			String plainText = emailBody.replaceAll('<a"', '');
+			plainText = plainText.replaceAll('href="', '');
+			plainText = plainText.replaceAll('">', ' - ');
+			plainText = plainText.replaceAll('</a>', '');
+
+			emailBody.replace('/(?:\r\n|\r|\n)/g', '<br/>');
+			mail.setPlainTextBody(plainText);
+			mail.setHtmlBody(emailBody);
+			Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+			emailSent = true;
+			// logEmail(UserInfo.getUserEmail(), UserInfo.getUserId(), contactEmail, publicUrl, thisCollateral.title);
+		} catch(Exception ex) {
+			ApexPages.addMessages(ex);
+		}
+	} else{
+		ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, contactEmail+' is not a valid email address. Please enter a valid email address and try again.'));
+	}
+
+	contactEmail = '';
+	return null;
+}
+
+private PageReference getEmailTemplate(String emailTemplateId){
+
+	for(EmailTemplate et : [select id, name, htmlValue, description from EmailTemplate where id=:emailTemplateId and 
+	folderId in (select id from folder where name='Hospital Division Email Templates')]) {
+		templateId = et.Id;
+		emailSubject = Messaging.renderStoredEmailTemplate(emailTemplateId, null, null).getSubject();
+		emailBody = Messaging.renderStoredEmailTemplate(emailTemplateId, null, null).gethtmlBody();
+		
+	}
+	return null;
 }
 
 }

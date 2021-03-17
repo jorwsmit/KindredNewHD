@@ -84,6 +84,13 @@
                                 </apex:selectList>
                             </div>
 
+                            <div class="col-md-6 offset-md-3">
+                                <apex:selectList size="1" value="{!userType}">
+                                    <apex:selectOptions value="{!employeeTypePicklist}" />
+                                    <apex:actionsupport event="onchange" action="{!selectUserType}" />
+                                </apex:selectList>
+                            </div>
+
                             <!-- <c:SalesHD_MarketDashboardDrilldown/> -->
                             <div class="col-md-6 offset-md-3">
                                 <apex:inputField style="display:none;" value="{!usr.Region__c}" />

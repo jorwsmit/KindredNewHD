@@ -806,7 +806,7 @@
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
 							 required="true" />
-							<label style="width: 100%;">Marketing Collateral
+							<label style="width: 100%;">Marketing Tool
 
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"

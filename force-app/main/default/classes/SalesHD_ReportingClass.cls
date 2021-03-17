@@ -137,6 +137,7 @@ public Integer encounterTarget;
 
 public String district = '%%';
 public String area = '%%';
+public String userType {get;set;}
 
 public List<User> users {get; set;}
 
@@ -152,8 +153,10 @@ public SalesHD_ReportingClass() {
 	usr.Region__c='HD';
 	if(ApexPages.currentPage().getParameters().get('district')!=null) usr.District__c=ApexPages.currentPage().getParameters().get('district');
 	if(ApexPages.currentPage().getParameters().get('area')!=null) usr.Area__c=ApexPages.currentPage().getParameters().get('area');
+	if(ApexPages.currentPage().getParameters().get('user_type')!=null) userType=ApexPages.currentPage().getParameters().get('user_type');
 	if(usr.District__c!=null) district = '%'+usr.District__c+'%';
 	if(usr.Area__c!=null) area = '%'+usr.Area__c+'%';
+	// if(usr.ProfileId!=null) userType = usr.ProfileId;
 
 	// setWeeks();
 	setDates();
@@ -166,20 +169,29 @@ public SalesHD_ReportingClass() {
 
 	if(ApexPages.currentPage().getParameters().get('cl')!=null) {
 
-		for(User u : [select id, name, userRoleId, Region__c, Area__c, District__c from User where id=:ApexPages.currentPage().getParameters().get('cl')]) {
+		for(User u : [select id, name, userRoleId, Region__c, Area__c, District__c, ProfileId from User where id=:ApexPages.currentPage().getParameters().get('cl')]) {
 			if(allSubRoleIds.contains(u.userRoleId) || u.Id==UserInfo.getUserId()) {
 				selectedCL = u.id;
 				clName = u.Name;
 				if(u.Region__c!=null) usr.Region__c = u.Region__c;
 				if(u.District__c!=null) usr.District__c = u.District__c;
 				if(u.Area__c!=null) usr.Area__c = u.Area__c;
+				userType = u.ProfileId;
 			}
 		}
 	} else{
 		allSubRoleIds.add(UserInfo.getUserRoleId());
-		users = [select id from user where (userRoleId in :allSubRoleIds or Id=:UserInfo.getUserId())
+		if(userType==null || userType==''){
+			users = [select id from user where (userRoleId in :allSubRoleIds or Id=:UserInfo.getUserId())
 		         and Area__c like :area and
-		         District__c like :district];
+				 District__c like :district];
+		} else {
+			users = [select id from user where (userRoleId in :allSubRoleIds or Id=:UserInfo.getUserId())
+		         and Area__c like :area and
+				 District__c like :district and profileId=:userType];
+		}
+		
+				 
 	}
 
 	if(selectedCL!=null) getKpi(selectedCL);
@@ -294,14 +306,39 @@ public void dateOptionSetup(){
 	dateOption = String.valueOf(ApexPages.currentPage().getParameters().get('date_option'));
 }
 
+
+
+public List<SelectOption> getEmployeeTypePicklist(){
+	List<Selectoption> picklist = new List<selectoption>();
+	picklist.add(new selectOption('', '- Select an Employee Type -'));
+	for(Profile p : [select name from profile where name like '%HD Associate Redesign%' or name like '%HD PAC Redesign%' 
+	or name like '%HD Manager Redesign%'  or name like '%HD CEO Manager Redesign%'  or name like '%HD DVP Manager Redesign%']){
+		String name = p.name;
+		if(name.contains('HD Manager')) name = 'Manager';
+		if(name.contains('CEO')) name = 'CEO';
+		if(name.contains('DVP')) name = 'DVP';
+		if(name.contains('Associate')) name = 'CL';
+		if(name.contains('PAC')) name = 'PAC';
+		picklist.add(new selectOption(p.id, name));
+	}
+	return picklist;
+}
+
 public List<Selectoption> getCLPicklist(){
 
 	allSubRoleIds.add(UserInfo.getUserRoleId());
 
 	List<Selectoption> picklist = new List<selectoption>();
 	picklist.add(new selectOption('', '- Select an Employee -'));
-	for(User u : [select id, name from user where userRoleId in :allSubRoleIds and
-	              District__c like :district and Area__c like :area order by name]) {
+	List<User> userList = new List<User>();
+	if(userType==null || userType==''){
+		userList = [select id, name from user where userRoleId in :allSubRoleIds and
+	              District__c like :district and Area__c like :area order by name];
+	} else{
+		userList = [select id, name from user where userRoleId in :allSubRoleIds and
+	              District__c like :district and Area__c like :area and profileId=:userType order by name];
+	}
+	for(User u : userList) {
 		picklist.add(new selectOption(u.id, u.name));
 	}
 	return picklist;
@@ -827,6 +864,15 @@ public PageReference selectCL(){
 	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
 	page.getParameters().remove('account');
 	page.getParameters().put('cl', String.valueOf(selectedCL));
+	page.setRedirect(true);
+	return page;
+}
+
+public PageReference selectUserType(){
+	PageReference page = new PageReference(ApexPages.currentPage().getUrl());
+	page.getParameters().remove('cl');
+	page.getParameters().remove('account');
+	page.getParameters().put('user_type', String.valueOf(userType));
 	page.setRedirect(true);
 	return page;
 }

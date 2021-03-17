@@ -1,8 +1,11 @@
-<apex:component controller="SalesHD_RedesignNavController">
+<apex:page showHeader="false" controller="SalesHD_Collaterals" lightningStyleSheets="true" standardStylesheets="false" sidebar="false"
+    applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
+        <title>Email Template</title>
 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
             crossorigin="anonymous" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
@@ -10,7 +13,6 @@
         <link rel="stylesheet" href="https://cdn.linearicons.com/free/1.0.0/icon-font.min.css" />
         <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1, maximum-scale=1, user-scalable=no" />
         <apex:slds />
-
         <style>
             a {
                 color: #208FFF !important;
@@ -96,7 +98,6 @@
 
             .btn {
                 border: none !important;
-                border-radius: 7px;
                 color: #FFFFFF !important;
             }
 
@@ -161,12 +162,8 @@
                 background-color: #817FE1;
                 padding-top: 10px;
                 padding-bottom: 10px;
-                top: 39px;
+                top: 0px;
                 width: 100%;
-            }
-
-            .header a{
-                color: #fff !important;
             }
 
             .back-btn {
@@ -246,7 +243,8 @@
 
             h2 {
                 font-size: 36px !important;
-                font-weight: lighter !important;
+                font-weight: bold !important;
+                color:
             }
 
             h3 {
@@ -449,7 +447,7 @@
             }
 
             .blue {
-                color: #208FFF !important;
+                color: #157DFA !important;
             }
 
             .purple {
@@ -458,6 +456,10 @@
 
             .no-pad {
                 padding: 0px !important;
+            }
+
+            .modal-header {
+                color: #FFFFFF;
             }
 
             @media (min-width: 768px) {
@@ -631,243 +633,174 @@
                 top: -18px;
                 right: 25px;
             }
-
-            .btn {
-                border-radius: 25px !important;
-            }
-
-            body {
-                background-color: #E0E2E7 !important;
-            }
-
-            .back-btn {
-                display: none;
-            }
-
-            .navbar {
-                position: fixed;
-                width: 100%;
-                top: 0px;
-                z-index: 99;
-                text-align: center;
-            }
-
-            nav a {
-                text-decoration: none !important;
-            }
-
-            nav a:not(.dropdown-item) {
-                color: white !important;
-            }
-
-            .nav-item {
-                border-bottom: none;
-                padding: 0px;
-            }
-
-            .nav-item:hover {
-                border-bottom: none;
-            }
-            .navbar-toggler{
-                margin: 5px !important;
-                border: none;
-                outline: none;
-            }
+            
         </style>
-
     </head>
 
     <body>
 
         <div class="slds-scope">
 
-            <!-- <div class="nav-container blue-bg">
+            <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
+			<!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/> -->
+
+            <div class="container shadow white-bg">
+                <div class="row blue">
+                    <h2>
+                        <apex:form id="favorited">
+                            <apex:outputPanel rendered="{!IF(favorited, false, true)}">
+                                <apex:commandLink action="{!favoriteCollateral}" rerender="favorited">
+                                    <i class='far fa-star yellow'></i>
+                                </apex:commandLink>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(favorited, true, false)}">
+                                <apex:commandLink action="{!favoriteCollateral}" rerender="favorited">
+                                    <i class="fas fa-star yellow"></i>
+                                </apex:commandLink>
+                            </apex:outputPanel>
+                        </apex:form>
+
+                    </h2>
+                    <h2 style="margin:auto;" id="title"></h2>
+                </div>
+                <div class="row" style="margin-top:10px; border-bottom:1px solid #ddd;">
+                    <p style="margin:auto; margin-bottom:10px;" id="description"></p>
+                </div>
                 <div class="row">
-                    <ul class="nav-list">
-                        <li class="selected">
-                            <i class="fas fa-home"></i> HOME
-                        </li>
-                        <li onclick="window.location.href='/apex/saleshd_accounts'">
-                            <i class="fas fa-hospital"></i> MY ACCOUNTS
-                        </li>
-                        <li onclick="window.location.href='/apex/saleshd_contacts'">
-                            <i class="fas fa-user-md"></i> MY CONTACTS
-                        </li>
-                        <li onclick="window.location.href='/apex/saleshd_encounters'">
-                            <i class="fas fa-phone"></i> ENCOUNTERS
-                        </li>
-                    </ul>
-                </div>
-            </div> -->
-
-            <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <div style="margin-left:40px;"></div>
-                        <a class="nav-item nav-link" href="/apex/saleshd_homepage">
-                            <i class="fas fa-home"></i> Home</a>
-                        <a class="nav-item nav-link" href="/apex/saleshd_accounts">
-                            <i class="fas fa-hospital"></i> My Accounts</a>
-                        <a class="nav-item nav-link" href="/apex/saleshd_contacts">
-                            <i class="fas fa-user-md"></i> My Contacts</a>
-                        <a class="nav-item nav-link" href="/apex/saleshd_encounters">
-                            <i class="fas fa-phone"></i> Encounters</a>
-                        a class="nav-item nav-link" href="/apex/saleshd_collaterals">
-                            <i class="fas fa-mail-bulk"></i> Collaterals</a>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
-                            <a class="nav-item nav-link" href="/apex/saleshd_salesplansmanager">
-                                <i class="fas fa-notes-medical"></i> Sales Plans</a>
-                        </apex:outputPanel>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
-                            <a class="nav-item nav-link" href="/apex/saleshd_salesplans">
-                                <i class="fas fa-notes-medical"></i> Sales Plans</a>
-                        </apex:outputPanel>
-
-
+                    <div class="col-md-12">
+                        <h3>Preview Email</h3>
+                    </div>
+                    <div class="col-md-12">
+                        <apex:outputText value="{!emailBody}" escape="false"></apex:outputText>
                     </div>
                 </div>
-            </nav> -->
+                <div class="row">
+
+                    <div style="margin:auto;">
+                        <button class="btn btn-primary" style="font-size:19px;padding:5px 10px; width:150px;margin-right:5px;margin-top:10px;" data-toggle="modal"
+                            data-target="#emailCollateral" onclick="prepareEmailPreview();">Email</button>
+                    </div>
+
+                </div>
+
+            </div>
 
 
-            <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="#">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">STACHs</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Contacts</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">Encounters</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Marketing Tools
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li>
-                                        <a class="dropdown-item" href="#">Collaterals</a>
-                                    </li>
-                                    <li>
-                                        <hr class="dropdown-divider" />
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">Email Templates</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Sales Plans</a>
-                                </li>
-                            </apex:outputPanel>
-                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="#">Sales Plans</a>
-                                </li>
-                            </apex:outputPanel>
-                        </ul>
+            <div class="modal fade" id="emailCollateral">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary">
+                            <h3 class="bold">
+                                <i style="padding-right:10px;" aria-hidden="true" class="fas fa-envelope-open-text"></i> Email Marketing Tool</h3>
+                        </div>
+                        <apex:outputPanel id="emailBlock">
+                            <apex:form id="emailForm">
+                                <div class="modal-body">
+
+                                    <form>
+                                        <div class="form-group">
+                                            <label style="margin-bottom:0px;">Select a contact from your favorited list.</label>
+                                            <p class="red" style="font-size:14px;margin-bottom:10px;"></p>
+                                            <!-- <apex:inputHidden value="{!contactEmail}" id="email" required="true" /> -->
+                                            <apex:input styleClass="form-control" value="{!contactEmail}" id="email" html-placeholder="Email" required="true"/>
+                                            <a id="pasteEmail">Prepopulate from Favorited Contact Emails</a>
+                                            <ul id="contactList" style="display:none;">
+                                                <apex:repeat value="{!favoritedContactList}" var="con">
+                                                    <li data-contactemail="{!con.Contact__r.Email}"><b>{!con.Contact__r.Name}</b> - {!con.Contact__r.Email}</li>
+                                                </apex:repeat>
+                                            </ul>
+                                            <label style="margin-top:10px;">Email Subject</label>
+                                            <apex:inputText styleClass="form-control" value="{!emailSubject}" id="emailSubject" required="true"
+                                            html-placeholder="Subject" html-autocomplete="chrome-off"/>
+                                            <label style="margin-top:5px;">Email Body</label>
+                                            <apex:inputTextarea styleClass="form-control" rows="6" value="{!emailBody}" id="emailBody" required="true"
+                                                html-placeholder="Email"/>
+                                            <!-- <p class="red" style="font-size:14px;margin-bottom:10px;">*A link to the marketing tool will automatically be added to the end of the email.</p> -->
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" style="width:100px; padding:9px 15px;" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <!-- <button type="button" class="btn btn-primary" id="saveNote">Send</button> -->
+                                    <apex:commandButton styleClass="btn btn-primary" action="{!sendTemplateEmail}" value="Send" status="statusSpinner" rerender="emailBlock"
+                                        style="font-size:20px !important; vertical-align:bottom; margin-top:0px!important; width:100px; padding:11.5px 15px;"
+                                    oncomplete="if({!emailSent})$('#emailCollateral').modal('hide');" />
+                                </div>
+
+                                <apex:actionStatus id="statusSpinner">
+                                    <apex:facet name="start">
+
+                                        <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:220px; margin-left:-20px;">
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </apex:facet>
+                                </apex:actionStatus>
+                                <apex:pageMessages />
+                            </apex:form>
+                        </apex:outputPanel>
                     </div>
                 </div>
-            </nav> -->
+            </div>
 
-            <nav class="navbar navbar-expand-lg navbar-dark bg-primary p-0">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/apex/SalesHD_Homepage">
-                                <i class="fas fa-home"></i> Home</a>
-                        </li>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/apex/SalesHD_DashboardManager" target="_blank">
-                                    <i class="fas fa-chart-pie"></i> Dashboard</a>
-                            </li>
-                        </apex:outputPanel>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/apex/SalesHD_DashboardCL" target="_blank">
-                                    <i class="fas fa-chart-pie"></i> Dashboard</a>
-                            </li>
-                        </apex:outputPanel>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="/apex/SalesHD_Accounts">
-                                <i class="fas fa-hospital"></i> STACHs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/apex/SalesHD_Contacts">
-                                <i class="fas fa-user-md"></i> Contacts</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/apex/SalesHD_Encounters">
-                                <i class="fas fa-phone"></i> Encounters</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/apex/SalesHD_Collaterals">
-                                <i class="fas fa-mail-bulk"></i> Marketing Tools</a>
-                        </li>
-                        <!-- <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <i class="fas fa-mail-bulk"></i> Marketing Tools
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item text-primary" href="/apex/SalesHD_Collaterals">Collaterals</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-primary" href="/apex/SalesHD_EmailTemplates">Email Templates</a>
-                            </div>
-                        </li> -->
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/apex/SalesHD_SalesPlansManager">
-                                    <i class="fas fa-notes-medical"></i> Sales Plans</a>
-                            </li>
-                        </apex:outputPanel>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/apex/SalesHD_SalesPlans">
-                                    <i class="fas fa-notes-medical"></i> Sales Plans</a>
-                            </li>
-                        </apex:outputPanel>
-                    </ul>
-                </div>
-            </nav>
-
-            <div style="margin:50px;"></div>
 
         </div>
+        <!-- Lightning Wrapper -->
 
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
             crossorigin="anonymous"></script>
-        <script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
+            crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+        <script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+
+        <script type="text/javascript">
             $(document).ready(function () {
-                $(function () {
-                    var url = location.pathname.substring(location.pathname.indexOf('/')).toLowerCase();
-                    $('nav a[href="' + url + '"]').addClass('active');
-                });
+                //let collateral = {!collateralJSON};
+            // $("#title").html(collateral.title + ' ' + collateral.icon);
+            // $("#description").text(collateral.description);
+
+        });
+
+        function prepareEmailPreview(){
+            document.getElementById('{!$Component.emailForm.emailBody}').value =
+                document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/<br>/g, '\n');
+        }
+        
+        function replaceLinesBreaks(){
+            document.getElementById('{!$Component.emailForm.emailBody}').value =
+                document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+            }
+        
+        function replaceBreaksLines(){
+            document.getElementById('{!$Component.emailForm.emailBody}').value =
+                document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/<br\/>/g, '\n');
+            }
+
+            // for (let contacts of {favoritedContacts}) {
+            //     let contact = contacts.Contact__r;
+            //     $("#contactList").append('<li data-contactemail="' + contact.Email + '"><b>' + contact.Name + '</b> - ' + contact.Email + '</li>');
+            // }
+
+            $(document).on("click", '#contactList li', function () {
+                $('#email').val($(this).text());
+                document.getElementById('{!$Component.emailForm.email}').value = $(this).data('contactemail');
+                $('#contactList').slideUp();
             });
+
+            $(document).on("click", '#pasteEmail', function () {
+                $('#contactList').slideDown();
+            });
+
+            $(document).click(function (e) {
+                if ((!$('#pasteEmail').is(e.target) && $('#pasteEmail').has(e.target).length === 0)) {
+                    $('#contactList').slideUp();
+                }
+            });
+
         </script>
     </body>
 
     </html>
-
-</apex:component>
+</apex:page>

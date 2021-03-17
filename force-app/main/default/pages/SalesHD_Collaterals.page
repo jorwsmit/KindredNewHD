@@ -639,8 +639,8 @@
 
         <div class="slds-scope">
 
-            <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
-			<!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/> -->
+            <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
+            <!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/> -->
 
 
             <div class="container white-bg shadow">
@@ -675,7 +675,7 @@
                         <button class="btn btn-secondary" id="favoriteToggle" style="width:100%;">
                             <i class="fas fa-star yellow"></i> Show Favorited</button>
                     </div>
-                    
+
 
                     <!-- <div class="col-md-4" style="text-align:center;">
                         <div class="dropdown" id="audienceDropdown">
@@ -700,46 +700,57 @@
                             <apex:repeat value="{!CollateralList}" var="collateral">
                                 <!-- <li>{!collateral.title}</li> -->
 
-                                <a href="/apex/SalesHD_Collateral?id={!collateral.collateralId}" style="text-decoration:none!important;color:rgb(8, 7, 7)!important;">
+                                <apex:variable value="/apex/SalesHD_Collateral?id={!collateral.collateralId}" var="link" />
 
-                                    <li data-favorited="{!collateral.favorited}" data-type="{!LOWER(SUBSTITUTE(collateral.type, ' ', ''))}" data-professional="{!collateral.audience_professional}"
-                                        data-patient="{!collateral.audience_patient}">
+                                <apex:outputText rendered="{!collateral.type='Email Templates'}">
+                                    <apex:variable value="/apex/SalesHD_EmailTemplate?id={!collateral.collateralId}" var="link" />      
+                                </apex:outputText>
 
-                                        <div class="row">
-                                            <apex:outputPanel rendered="{!collateral.favorited}">
-                                                <i style="position:absolute;margin-top:10px;" class="fas fa-star yellow"></i>
-                                            </apex:outputPanel>
+                                    <a href="{!link}" style="text-decoration:none!important;color:rgb(8, 7, 7)!important;">
 
-                                            <div class="col-md-1 blue" style="font-size:40px;text-align:center;width:100%;">
-                                                <apex:outputText value="{!collateral.icon}" escape="false" /> </div>
-                                            <div class="col-md-11">
-                                                <div class="collateral-title">{!collateral.title}</div>
-                                                <div style="font-size:14px;">
-                                                    <apex:outputText rendered="{!collateral.type!=''}">
-                                                        <b>Type</b> - {!collateral.type} <span style="padding:0px 10px;"></span>
-                                                    </apex:outputText>
-                                                    <apex:outputText rendered="{!collateral.lastModifiedDate!=''}">
-                                                        <b>Last Modified</b> - {!collateral.lastModifiedDate} <span style="padding:0px 10px;"></span>
-                                                    </apex:outputText>
-                                                    <apex:outputText rendered="{!collateral.audience_patient && collateral.audience_professional}">
-                                                        <b>Audience</b> - Patient and Professional <span style="padding:0px 10px;"></span>
-                                                    </apex:outputText>
-                                                    <apex:outputText rendered="{!collateral.audience_patient && collateral.audience_professional==false}">
-                                                        <b>Audience</b> - Patient <span style="padding:0px 10px;"></span>
-                                                    </apex:outputText>
-                                                    <apex:outputText rendered="{!collateral.audience_patient==false && collateral.audience_professional}">
-                                                        <b>Audience</b> - Professional <span style="padding:0px 10px;"></span>
-                                                    </apex:outputText>
-                                                    
-                                                </div>
-                                                <div style="font-size:14px;">
-                                                    {!collateral.description}
+                                        <li data-favorited="{!collateral.favorited}" data-type="{!LOWER(SUBSTITUTE(collateral.type, ' ', ''))}" data-professional="{!collateral.audience_professional}"
+                                            data-patient="{!collateral.audience_patient}">
+
+                                            <div class="row">
+                                                <apex:outputPanel rendered="{!collateral.favorited}">
+                                                    <i style="position:absolute;margin-top:10px;" class="fas fa-star yellow"></i>
+                                                </apex:outputPanel>
+
+                                                <div class="col-md-1 blue" style="font-size:40px;text-align:center;width:100%;">
+                                                    <apex:outputText value="{!collateral.icon}" escape="false" /> </div>
+                                                <div class="col-md-11">
+                                                    <div class="collateral-title">{!collateral.title}</div>
+                                                    <!-- <div style="font-size:14px;">
+                                                        <apex:outputText rendered="{!collateral.type!=''}">
+                                                            <b>Type</b> - {!collateral.type}
+                                                            <span style="padding:0px 10px;"></span>
+                                                        </apex:outputText>
+                                                        <apex:outputText rendered="{!collateral.lastModifiedDate!=''}">
+                                                            <b>Last Modified</b> - {!collateral.lastModifiedDate}
+                                                            <span style="padding:0px 10px;"></span>
+                                                        </apex:outputText>
+                                                        <apex:outputText rendered="{!collateral.audience_patient && collateral.audience_professional}">
+                                                            <b>Audience</b> - Patient and Professional
+                                                            <span style="padding:0px 10px;"></span>
+                                                        </apex:outputText>
+                                                        <apex:outputText rendered="{!collateral.audience_patient && collateral.audience_professional==false}">
+                                                            <b>Audience</b> - Patient
+                                                            <span style="padding:0px 10px;"></span>
+                                                        </apex:outputText>
+                                                        <apex:outputText rendered="{!collateral.audience_patient==false && collateral.audience_professional}">
+                                                            <b>Audience</b> - Professional
+                                                            <span style="padding:0px 10px;"></span>
+                                                        </apex:outputText>
+
+                                                    </div> -->
+                                                    <div style="font-size:14px;">
+                                                        {!collateral.description}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </li>
+                                        </li>
 
-                                </a>
+                                    </a>
 
                             </apex:repeat>
                         </ul>

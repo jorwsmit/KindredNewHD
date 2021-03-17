@@ -808,7 +808,7 @@
 								<p style="display:inline-block;">{!event.SalesHD_Open_Ended_Questions__c}</p>
 							</div>
 							<div>
-								<label style="display:inline-block;">Marketing Collateral:</label>
+								<label style="display:inline-block;">Marketing Tool:</label>
 								<p style="display:inline-block;">{!event.SalesHD_Marketing_Collateral__c}</p>
 							</div>
 							<div>
