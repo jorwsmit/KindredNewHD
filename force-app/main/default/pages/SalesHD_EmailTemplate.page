@@ -188,7 +188,7 @@
             }
 
             .modal-body {
-                max-height: 375px;
+                max-height: 80vh !important;
                 overflow-y: auto;
                 -webkit-overflow-scrolling: touch;
             }
@@ -633,7 +633,6 @@
                 top: -18px;
                 right: 25px;
             }
-            
         </style>
     </head>
 
@@ -641,34 +640,46 @@
 
         <div class="slds-scope">
 
-            <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
-			<!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/> -->
+            <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
+            <!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/> -->
 
             <div class="container shadow white-bg">
                 <div class="row blue">
                     <h2>
                         <apex:form id="favorited">
                             <apex:outputPanel rendered="{!IF(favorited, false, true)}">
-                                <apex:commandLink action="{!favoriteCollateral}" rerender="favorited">
+                                <apex:commandLink action="{!favoriteEmailTemplate}" rerender="favorited" status="statusSpinner">
                                     <i class='far fa-star yellow'></i>
                                 </apex:commandLink>
                             </apex:outputPanel>
                             <apex:outputPanel rendered="{!IF(favorited, true, false)}">
-                                <apex:commandLink action="{!favoriteCollateral}" rerender="favorited">
+                                <apex:commandLink action="{!favoriteEmailTemplate}" rerender="favorited" status="statusSpinner">
                                     <i class="fas fa-star yellow"></i>
                                 </apex:commandLink>
                             </apex:outputPanel>
+                            <apex:actionStatus id="statusSpinner">
+                                <apex:facet name="start">
+
+                                    <div class="slds-spinner_container" style="position:fixed; width:100vw; height:100vh;">
+                                        <div class="slds-spinner slds-spinner--large slds-spinner--brand">
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </div>
+
+                                </apex:facet>
+                            </apex:actionStatus>
                         </apex:form>
 
                     </h2>
-                    <h2 style="margin:auto;" id="title"></h2>
+                    <h2 style="margin:auto;" id="title">{!emailTemp.name}</h2>
                 </div>
                 <div class="row" style="margin-top:10px; border-bottom:1px solid #ddd;">
-                    <p style="margin:auto; margin-bottom:10px;" id="description"></p>
+                    <p style="margin:auto; margin-bottom:10px;" id="description">{!emailTemp.description}</p>
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <h3>Preview Email</h3>
+                        <h3>Email Preview</h3>
                     </div>
                     <div class="col-md-12">
                         <apex:outputText value="{!emailBody}" escape="false"></apex:outputText>
@@ -702,41 +713,47 @@
                                             <label style="margin-bottom:0px;">Select a contact from your favorited list.</label>
                                             <p class="red" style="font-size:14px;margin-bottom:10px;"></p>
                                             <!-- <apex:inputHidden value="{!contactEmail}" id="email" required="true" /> -->
-                                            <apex:input styleClass="form-control" value="{!contactEmail}" id="email" html-placeholder="Email" required="true"/>
+                                            <apex:input styleClass="form-control" value="{!contactEmail}" id="email" html-placeholder="Email" required="true" />
                                             <a id="pasteEmail">Prepopulate from Favorited Contact Emails</a>
                                             <ul id="contactList" style="display:none;">
                                                 <apex:repeat value="{!favoritedContactList}" var="con">
-                                                    <li data-contactemail="{!con.Contact__r.Email}"><b>{!con.Contact__r.Name}</b> - {!con.Contact__r.Email}</li>
+                                                    <li data-contactemail="{!con.Contact__r.Email}">
+                                                        <b>{!con.Contact__r.Name}</b> - {!con.Contact__r.Email}</li>
                                                 </apex:repeat>
                                             </ul>
                                             <label style="margin-top:10px;">Email Subject</label>
-                                            <apex:inputText styleClass="form-control" value="{!emailSubject}" id="emailSubject" required="true"
-                                            html-placeholder="Subject" html-autocomplete="chrome-off"/>
+                                            <apex:inputText styleClass="form-control" value="{!emailSubject}" id="emailSubject" required="true" html-placeholder="Subject"
+                                                html-autocomplete="chrome-off" />
                                             <label style="margin-top:5px;">Email Body</label>
-                                            <apex:inputTextarea styleClass="form-control" rows="6" value="{!emailBody}" id="emailBody" required="true"
-                                                html-placeholder="Email"/>
+                                            <apex:inputTextarea styleClass="form-control" rows="20" value="{!emailBody}" id="emailBody" required="true" html-placeholder="Email"
+                                            />
                                             <!-- <p class="red" style="font-size:14px;margin-bottom:10px;">*A link to the marketing tool will automatically be added to the end of the email.</p> -->
                                         </div>
                                     </form>
                                 </div>
                                 <div class="modal-footer">
+
+                                    <apex:actionStatus id="statusSpinner">
+                                        <apex:facet name="start">
+
+                                            <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="position: relative; right:20px;">
+                                                <div class="slds-spinner__dot-a"></div>
+                                                <div class="slds-spinner__dot-b"></div>
+                                            </div>
+                                        </apex:facet>
+                                    </apex:actionStatus>
+                                    <div id="errorMessage"></div>
+                                    <apex:pageMessages />
+
                                     <button type="button" style="width:100px; padding:9px 15px;" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                     <!-- <button type="button" class="btn btn-primary" id="saveNote">Send</button> -->
                                     <apex:commandButton styleClass="btn btn-primary" action="{!sendTemplateEmail}" value="Send" status="statusSpinner" rerender="emailBlock"
                                         style="font-size:20px !important; vertical-align:bottom; margin-top:0px!important; width:100px; padding:11.5px 15px;"
-                                    oncomplete="if({!emailSent})$('#emailCollateral').modal('hide');" />
+                                        oncomplete="if({!emailSent})$('#emailCollateral').modal('hide'); replaceBreaksLines();"
+                                        onclick="replaceLinesBreaks();" />
                                 </div>
 
-                                <apex:actionStatus id="statusSpinner">
-                                    <apex:facet name="start">
 
-                                        <div class="slds-spinner slds-spinner--medium slds-spinner--brand" style="margin-top:220px; margin-left:-20px;">
-                                            <div class="slds-spinner__dot-a"></div>
-                                            <div class="slds-spinner__dot-b"></div>
-                                        </div>
-                                    </apex:facet>
-                                </apex:actionStatus>
-                                <apex:pageMessages />
                             </apex:form>
                         </apex:outputPanel>
                     </div>
@@ -758,24 +775,30 @@
         <script type="text/javascript">
             $(document).ready(function () {
                 //let collateral = {!collateralJSON};
-            // $("#title").html(collateral.title + ' ' + collateral.icon);
-            // $("#description").text(collateral.description);
+                // $("#title").html(collateral.title + ' ' + collateral.icon);
+                // $("#description").text(collateral.description);
 
-        });
+            });
 
-        function prepareEmailPreview(){
-            document.getElementById('{!$Component.emailForm.emailBody}').value =
-                document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/<br>/g, '\n');
-        }
-        
-        function replaceLinesBreaks(){
-            document.getElementById('{!$Component.emailForm.emailBody}').value =
-                document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+            function prepareEmailPreview() {
+                document.getElementById('{!$Component.emailForm.emailBody}').value =
+                    document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/<br>/g, '\n');
             }
-        
-        function replaceBreaksLines(){
-            document.getElementById('{!$Component.emailForm.emailBody}').value =
-                document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/<br\/>/g, '\n');
+
+            function replaceLinesBreaks() {
+                $("#errorMessage").html('');
+                if(!document.getElementById('{!$Component.emailForm.email}').value){
+                    $("#errorMessage").html('<span style="color:#cc0000;">Error:</span> Please enter a valid email address and try again.');
+                } else {
+                    document.getElementById('{!$Component.emailForm.emailBody}').value =
+                    document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/(?:\r\n|\r|\n)/g, '<br/>');
+                }
+                
+            }
+
+            function replaceBreaksLines() {
+                document.getElementById('{!$Component.emailForm.emailBody}').value =
+                    document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/<br\/>/g, '\n');
             }
 
             // for (let contacts of {favoritedContacts}) {

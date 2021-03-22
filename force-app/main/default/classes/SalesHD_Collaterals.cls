@@ -74,6 +74,7 @@ public SalesHD_Collaterals() {
 	}
 	if(ApexPages.CurrentPage().getparameters().get('id')!=null && ApexPages.currentPage().getUrl().contains('SalesHD_EmailTemplate')){
 		getEmailTemplate(ApexPages.CurrentPage().getparameters().get('id'));
+		isFavoritedEmail(ApexPages.CurrentPage().getparameters().get('id'));
 	}
 
 	favoritedContactList = getContacts1();
@@ -139,7 +140,7 @@ public List<collateral> getCollateralList(){
 		c.title = et.name;
 		c.description = et.description;
 		c.icon = fileIcons.get('EMAIL');
-		//favorited??
+		if(favoriteCollaterals.contains(et.Id)) c.favorited = true;
 		c.type = 'Email Templates';
 		cList.add(c);
 	}
@@ -228,6 +229,14 @@ private PageReference isFavorited(String collateralId){
 	return null;
 }
 
+private PageReference isFavoritedEmail(String emailTemplateId){
+	for(Favorite_Collateral__c fc : [select ContentDocumentId__c from
+	                                 Favorite_Collateral__c where User__c =: currentUser and ContentDocumentId__c=:emailTemplateId]) {
+		favorited = true;
+	}
+	return null;
+}
+
 private static String getContacts() {
 	return JSON.serializePretty([select Contact__r.Id, Contact__r.Name, Contact__r.Email from Contact_Team__c
 	                             where User__c =: currentUser and Contact__r.email!=null order by Contact__r.LastActivityDate desc nulls last, Contact__r.name asc]);
@@ -245,6 +254,21 @@ public PageReference favoriteCollateral(){
 	fav.ContentDocumentId__c = thisCollateral.documentId;
 	for(Favorite_Collateral__c fc : [select Id from
 	                                 Favorite_Collateral__c where User__c =: currentUser and ContentDocumentId__c=:thisCollateral.documentId]) {
+		favorited = false;
+		fav = fc;
+	}
+	if(favorited) insert fav;
+	else delete fav;
+	return null;
+}
+
+public PageReference favoriteEmailTemplate(){
+	Favorite_Collateral__c fav = new Favorite_Collateral__c();
+	favorited = true;
+	fav.User__c = currentUser;
+	fav.ContentDocumentId__c = templateId;
+	for(Favorite_Collateral__c fc : [select Id from
+	                                 Favorite_Collateral__c where User__c =: currentUser and ContentDocumentId__c=:templateId]) {
 		favorited = false;
 		fav = fc;
 	}
@@ -412,10 +436,13 @@ public PageReference sendTemplateEmail(){
 	return null;
 }
 
+public EmailTemplate emailTemp {get; set;}
+
 private PageReference getEmailTemplate(String emailTemplateId){
 
 	for(EmailTemplate et : [select id, name, htmlValue, description from EmailTemplate where id=:emailTemplateId and 
 	folderId in (select id from folder where name='Hospital Division Email Templates')]) {
+		emailTemp = et;
 		templateId = et.Id;
 		emailSubject = Messaging.renderStoredEmailTemplate(emailTemplateId, null, null).getSubject();
 		emailBody = Messaging.renderStoredEmailTemplate(emailTemplateId, null, null).gethtmlBody();
