@@ -400,41 +400,41 @@ public PageReference sendEmailTemplate(){
 
 }
 
-public PageReference sendTemplateEmail(){
-	emailSent = false;
-	Messaging.reserveSingleEmailCapacity(2);
-	Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-	if(isValidEmail(contactEmail)) {
-		try{
-			String[] toAddresses = new String[] {contactEmail};
-			mail.setToAddresses(toAddresses);
-			mail.setReplyTo(UserInfo.getUserEmail());
-			mail.setSenderDisplayName(UserInfo.getName());
-			// Messaging.SingleEmailMessage email = Messaging.renderStoredEmailTemplate(templateId, null, null);
-			// String subject = email.getSubject();
-			// mail.setSubject(subject);
-			mail.setSubject(emailSubject);
-			String plainText = emailBody.replaceAll('<a"', '');
-			plainText = plainText.replaceAll('href="', '');
-			plainText = plainText.replaceAll('">', ' - ');
-			plainText = plainText.replaceAll('</a>', '');
+// public PageReference sendTemplateEmail(){
+// 	emailSent = false;
+// 	Messaging.reserveSingleEmailCapacity(2);
+// 	Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+// 	if(isValidEmail(contactEmail)) {
+// 		try{
+// 			String[] toAddresses = new String[] {contactEmail};
+// 			mail.setToAddresses(toAddresses);
+// 			mail.setReplyTo(UserInfo.getUserEmail());
+// 			mail.setSenderDisplayName(UserInfo.getName());
+// 			// Messaging.SingleEmailMessage email = Messaging.renderStoredEmailTemplate(templateId, null, null);
+// 			// String subject = email.getSubject();
+// 			// mail.setSubject(subject);
+// 			mail.setSubject(emailSubject);
+// 			String plainText = emailBody.replaceAll('<a"', '');
+// 			plainText = plainText.replaceAll('href="', '');
+// 			plainText = plainText.replaceAll('">', ' - ');
+// 			plainText = plainText.replaceAll('</a>', '');
 
-			emailBody.replace('/(?:\r\n|\r|\n)/g', '<br/>');
-			mail.setPlainTextBody(plainText);
-			mail.setHtmlBody(emailBody);
-			Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-			emailSent = true;
-			// logEmail(UserInfo.getUserEmail(), UserInfo.getUserId(), contactEmail, publicUrl, thisCollateral.title);
-		} catch(Exception ex) {
-			ApexPages.addMessages(ex);
-		}
-	} else{
-		ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, contactEmail+' is not a valid email address. Please enter a valid email address and try again.'));
-	}
+// 			emailBody.replace('/(?:\r\n|\r|\n)/g', '<br/>');
+// 			mail.setPlainTextBody(plainText);
+// 			mail.setHtmlBody(emailBody);
+// 			Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
+// 			emailSent = true;
+// 			// logEmail(UserInfo.getUserEmail(), UserInfo.getUserId(), contactEmail, publicUrl, thisCollateral.title);
+// 		} catch(Exception ex) {
+// 			ApexPages.addMessages(ex);
+// 		}
+// 	} else{
+// 		ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, contactEmail+' is not a valid email address. Please enter a valid email address and try again.'));
+// 	}
 
-	contactEmail = '';
-	return null;
-}
+// 	contactEmail = '';
+// 	return null;
+// }
 
 public EmailTemplate emailTemp {get; set;}
 

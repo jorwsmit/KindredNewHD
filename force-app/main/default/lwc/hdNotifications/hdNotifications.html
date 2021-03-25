@@ -1,0 +1,46 @@
+<template>
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <!-- put icon here -->
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span>Notifications</span>
+                    </h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <!-- {messages.data} -->
+            <ul class="slds-has-dividers_top-space">
+                <template if:true={messages.data}>
+                    <template for:each={messages.data} for:item="m">
+                        <li key={m.key} class="slds-item">
+                            <div>
+                                <div><b>{m.author}</b> {m.authorTitle}</div>
+                                <div>
+                                    <p>{m.message}</p>
+                                </div>
+                                <template if:true={m.link}>
+                                    <div><a href={m.link}>{m.linkTitle}</a></div>
+                                </template>
+                            </div>
+                        </li>
+                    </template>
+                </template>
+                <template if:true={messages.error}>
+                    <p>You have no messages at this time.</p>
+                </template>
+            </ul>
+
+        </div>
+    </article>
+
+    <!-- <div class="slds-grid slds-wrap">
+        <div class="slds-col slds-size_1-of-12">
+            <span><i class="fas fa-bullhorn" aria-hidden="true"></i> Messages</h3></span>
+        </div>
+    </div> -->
+</template>

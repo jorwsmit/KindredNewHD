@@ -703,8 +703,9 @@
 				</div>
 			</div> -->
 
-			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
-			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" />
+			<c:SalesHD_RedesignNav />
+			<!-- <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" /> -->
+			<!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" /> -->
 
 			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
 

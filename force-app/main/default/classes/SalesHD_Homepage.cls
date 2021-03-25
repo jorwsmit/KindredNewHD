@@ -50,11 +50,25 @@ public Integer ranking;
 }
 
 public class message {
-public String author = '';
-public String authorTitle = '';
-public String message = '';
-public String sentDate = '';
-public String attachment = '';
+@AuraEnabled public String author {get; set;}
+@AuraEnabled public String authorTitle {get; set;}
+@AuraEnabled public String message {get; set;}
+@AuraEnabled public String sentDate {get; set;}
+@AuraEnabled public String attachment {get; set;}
+@AuraEnabled public String link {get; set;}
+@AuraEnabled public String linkTitle {get; set;}
+@AuraEnabled public String key {get; set;}
+
+public message () {
+	this.author = '';
+	this.authorTitle = '';
+	this.message = '';
+	this.sentDate = '';
+	this.attachment = '';
+	this.link = '';
+	this.linkTitle = '';
+	this.key = '';
+}
 }
 
 public class notification {
@@ -121,7 +135,7 @@ public SalesHD_Homepage() {
 }
 
 public Pagereference managedCareRedirect(){
-	if([select Profile.name from user where Id=:currentUser][0].Profile.name.contains('Managed Care')){
+	if([select Profile.name from user where Id=: currentUser][0].Profile.name.contains('Managed Care')) {
 		PageReference page = new PageReference('/apex/SalesHD_ManagedCareHome');
 		page.setRedirect(true);
 		return page;
@@ -225,7 +239,7 @@ private static set<Id> getSubRoleIds(set<Id> roleIds) {
 
 public List<AccountTeamMember> getAccounts(){
 	return [select AccountId, Account.Name, Account.ShippingAddress__c from AccountTeamMember where
-	Account.Status__c='Active' and UserId =: currentUser and Account.RecordType.Name='HD Accounts'];
+	        Account.Status__c='Active' and UserId =: currentUser and Account.RecordType.Name='HD Accounts'];
 }
 
 
@@ -233,7 +247,7 @@ public Integer getNumberToAudit(){
 	Set<Id> roleIds  = getSubRoleIds(new set<ID> {UserInfo.getUserRoleId()});
 	Date auditStartDate = Date.newInstance(2020, 6, 1);
 	List<AggregateResult> ar = [select Count(id) total from event where owner.userRoleId in :roleIds
-	and startDateTime>=:auditStartDate and startDateTime<=last_week and Encounter_Audit__r.Audit_Result__c=null];
+	                            and startDateTime>=:auditStartDate and startDateTime<=last_week and Encounter_Audit__r.Audit_Result__c=null];
 	Integer num = 0;
 	if(ar.size()>0 && Integer.valueOf(ar[0].get('total'))>0) num = Integer.valueOf(ar[0].get('total'));
 	return num;
@@ -284,6 +298,40 @@ private static String getMessages() {
 	return JSON.serializePretty(messages);
 }
 
+
+// copied from above for LWC use
+@AuraEnabled(cacheable=true)
+public static List<message> getMessagesLWC() {
+
+	List<Alert_and_Comment__c> acs = [select Id, Comment__c, Comment_By__r.Name, Comment_By__r.Title, Datetime__c
+	                                  from Alert_and_Comment__c where Type__c='HD Corporate Message' and Comment_By__r.UserRoleId in: parentUsers
+	                                                                           and (Datetime__c=last_n_days:15 or Datetime__c=this_month) order by createdDate desc];
+
+	Map<Id, ContentDocumentLink> fileLinks = new Map<Id, ContentDocumentLink>();
+	for(ContentDocumentLink cdl : [select LinkedEntityId, ContentDocument.Title, ContentDocument.LatestPublishedVersionId from ContentDocumentLink where LinkedEntityId in
+	                                       (select Id from Alert_and_Comment__c where Type__c='HD Corporate Message' and Comment_By__r.UserRoleId in: parentUsers
+	                                                                                           and (Datetime__c=last_n_days:15 or Datetime__c=this_month))]) {
+		fileLinks.put(cdl.LinkedEntityId, cdl);
+	}
+
+	List<message> messages = new List<message>();
+	for(Alert_and_Comment__c ac : acs) {
+		message temp = new message();
+		if(ac.Comment__c!=null) temp.message=ac.Comment__c;
+		if(ac.Comment_By__r.Name!=null) temp.author=ac.Comment_By__r.Name;
+		if(ac.Comment_By__r.Title!=null) temp.authorTitle=ac.Comment_By__r.Title;
+		if(ac.Datetime__c!=null) temp.sentDate=Date.valueOf(ac.Datetime__c).format();
+		if(fileLinks.containsKey(ac.Id)){
+			temp.link = '/sfc/servlet.shepherd/version/download/'+
+			                                           fileLinks.get(ac.Id).ContentDocument.LatestPublishedVersionId;
+													   temp.linkTitle = fileLinks.get(ac.Id).ContentDocument.Title;
+		}
+		temp.key = ac.Id;
+													   messages.add(temp);
+	}
+	return messages;
+}
+
 @RemoteAction global static String getNotifications() {
 	List<notification> notifications = new List<notification>();
 
@@ -312,7 +360,7 @@ private static String getMessages() {
 	// 	temp.body = 'All of your encounters last week have been audited.';
 	// 	notifications.add(temp);
 	// }
-	
+
 
 	for(Contact pr : [select FirstName, LastName, Id, HD_Physician_Request_Completed_Date__c from Contact
 	                  where (HD_Physician_Request_Completed_Date__c=null or HD_Physician_Request_Completed_Date__c>=last_n_weeks:2
@@ -344,7 +392,7 @@ private static String getMessages() {
 		notifications.add(temp);
 	}
 
-	
+
 	return JSON.serializePretty(notifications);
 }
 
@@ -455,7 +503,7 @@ private static ContentVersion prepareFile(blob file, String fileName){
 
 
 
-public List<Account> getAllAccounts (){	
+public List<Account> getAllAccounts (){
 	return accountSSC.getRecords();
 }
 
@@ -465,14 +513,14 @@ private void setupAccountStandardSetSetup(){
 	// if(accountSearch==null) accountSearch='';
 	String query = 'select id, name, shippingAddress__c, type from account where recordtype.name=\'HD Accounts\' and status__c=\'Active\'';
 	if(accountSearch!=null)
-	query += ' and (name like \'%'+accountSearch+'%\' or shippingAddress__c like \'%'+accountSearch+'%\')';
+		query += ' and (name like \'%'+accountSearch+'%\' or shippingAddress__c like \'%'+accountSearch+'%\')';
 
 	if(selectedState!=null) query += ' and ShippingState like \''+selectedState+'\'';
 	query += ' order by name asc';
 
 	accountSSC = new ApexPages.StandardSetController(Database.getQueryLocator(
-		query
-	));
+								 query
+								 ));
 	accountSSC.setPageSize(20);
 }
 
@@ -488,7 +536,7 @@ public List<Selectoption> getStatePicklist(){
 	List<Selectoption> picklist = new List<selectoption>();
 	picklist.add(new selectOption('', 'State'));
 	for(AggregateResult ar : [select ShippingState state from account where ShippingState!=null
-	and status__c='Active' and recordType.name='HD Accounts' group by ShippingState order by ShippingState ]){
+	                          and status__c='Active' and recordType.name='HD Accounts' group by ShippingState order by ShippingState ]) {
 		String state = String.valueOf(ar.get('state'));
 		picklist.add(new selectOption(state, state));
 	}

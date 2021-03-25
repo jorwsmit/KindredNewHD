@@ -853,6 +853,7 @@
                                                     <th class="text-primary">Manager Comment</th>
                                                     <th>CL</th>
                                                     <th>Contact Method</th>
+                                                    <th>Objective</th>
                                                     <th>Topic</th>
                                                     <th>Date</th>
                                                     <th>Open Ended Questions</th>
@@ -925,6 +926,7 @@
 
                                                         <td style="white-space:nowrap;">{!e.Owner.Name}</td>
                                                         <td>{!e.SalesHD_Contact_Method__c}</td>
+                                                        <td>{!e.SalesHD_Call_Objective__c}</td>
                                                         <td>{!e.SalesHD_Topic__c}</td>
                                                         <td style="white-space:nowrap;">
                                                             <apex:outputText value="{0,date,MM-dd-yyyy}">

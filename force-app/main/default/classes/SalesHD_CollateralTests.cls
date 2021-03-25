@@ -44,11 +44,17 @@ public class SalesHD_CollateralTests {
 	ContentworkspaceDoc cwd = new ContentworkspaceDoc(ContentDocumentId=cd.Id, ContentWorkspaceId = cw.Id);
 	insert cwd;
 
+	SalesHD_Collaterals.collateral c = new SalesHD_Collaterals.collateral(cv.Id);
+	c.documentId = cd.Id;
+
 	Test.startTest();
-	PageReference pageRef = Page.SalesHD_Collateral;
-	pageRef.getParameters().put('id', cv.Id);
-	Test.setCurrentPage(pageRef);
+	// PageReference pageRef = Page.SalesHD_Collateral;
+	// pageRef.getParameters().put('id', cv.Id);
+	// Test.setCurrentPage(pageRef);
+	Test.setCurrentPageReference(new PageReference('Page.SalesHD_Collateral')); 
+	System.currentPageReference().getParameters().put('id', cv.Id);
 	SalesHD_Collaterals controller = new SalesHD_Collaterals();
+	controller.thisCollateral = c;
 	controller.favoriteCollateral();
 	controller.favoriteCollateral();
 	Test.stopTest();
@@ -71,27 +77,50 @@ public class SalesHD_CollateralTests {
 	ContentworkspaceDoc cwd = new ContentworkspaceDoc(ContentDocumentId=cd.Id, ContentWorkspaceId = cw.Id);
 	insert cwd;
 
+	SalesHD_Collaterals.collateral c = new SalesHD_Collaterals.collateral(cv.Id);
+	c.documentId = cd.Id;
+
 	Test.startTest();
 	PageReference pageRef = Page.SalesHD_Collateral;
 	pageRef.getParameters().put('id', cv.Id);
 	Test.setCurrentPage(pageRef);
 	SalesHD_Collaterals controller = new SalesHD_Collaterals();
+	controller.thisCollateral = c;
 	controller.favoriteCollateral();
 	controller = new SalesHD_Collaterals();
 	Test.stopTest();
 
 }
 
+// @isTest static void emailTemplate(){
+
+// 	Test.startTest();
+// 	PageReference pageRef = Page.SalesHD_EmailTemplates;
+// 	Test.setCurrentPage(pageRef);
+// 	SalesHD_Collaterals controller = new SalesHD_Collaterals();
+// 	List<EmailTemplate>  emailTemplates = controller.getEmailTemplates();
+// 	controller.templateId = emailTemplates[0].Id;
+// 	controller.contactEmail = 'test@test.com';
+// 	controller.sendEmailTemplate();
+// 	Test.stopTest();
+
+// }
+
 @isTest static void emailTemplate(){
 
 	Test.startTest();
-	PageReference pageRef = Page.SalesHD_EmailTemplates;
-	Test.setCurrentPage(pageRef);
+	// PageReference pageRef = Page.SalesHD_EmailTemplates;
+	// Test.setCurrentPage(pageRef);
+
 	SalesHD_Collaterals controller = new SalesHD_Collaterals();
 	List<EmailTemplate>  emailTemplates = controller.getEmailTemplates();
+	Test.setCurrentPageReference(new PageReference('Page.SalesHD_EmailTemplate')); 
+	System.currentPageReference().getParameters().put('id', emailTemplates[0].Id);
+	controller = new SalesHD_Collaterals();
 	controller.templateId = emailTemplates[0].Id;
 	controller.contactEmail = 'test@test.com';
-	controller.sendEmailTemplate();
+	controller.sendTemplateEmail();
+	controller.favoriteEmailTemplate();
 	Test.stopTest();
 
 }
