@@ -774,8 +774,6 @@
             $(document).ready(function () {
 
 
-
-
             });
 
             $(document).on("click", '#favoriteToggle', function () {
@@ -788,11 +786,6 @@
                 collateralFilter();
             });
 
-            // $(document).on("click", '#audienceDropdown .dropdown-menu .dropdown-item', function () {
-            //     $("#audienceDropdownButton").text($(this).text());
-            //     collateralFilter();
-            // });
-
             $('#collateralSearch').keyup(function () {
                 collateralFilter();
             });
@@ -800,54 +793,22 @@
             function collateralFilter() {
 
                 let selectedType = $("#typeDropdownButton").text().replace(/\s/g, '').toLowerCase();
-                // let selectedAudience = $("#audienceDropdownButton").text().replace(/\s/g, '').toLowerCase();
 
                 $('#collaterals a li').hide().filter(function () {
                     let searchFilter = $(this).find(".collateral-title").text().toUpperCase().replace(/\s/g, '').indexOf($("#collateralSearch").val().toUpperCase().replace(/\s/g, '')) > -1;
 
                     if ($('#favoriteToggle').hasClass('btn-primary')) {
-                        if (selectedType == 'showalltypes') return $(this).data("favorited") && searchFilter;
+                        if (selectedType == 'showalltypes' || selectedType == 'selectacategory') return $(this).data("favorited") && searchFilter;
                         else if (selectedType != 'showalltypes') return $(this).data("favorited") && searchFilter && $(this).data("type") === selectedType;
-
-                        // if (selectedType == 'showalltypes' && selectedAudience == 'showallaudiences') return $(this).data("favorited") && searchFilter;
-                        // else if (selectedAudience == 'showallaudiences') return $(this).data("favorited") && searchFilter && $(this).data("type") === selectedType;
-                        // else if (selectedType == 'showalltypes' && selectedAudience == 'patient') return $(this).data("favorited") && searchFilter && $(this).data("patient");
-                        // else if (selectedType == 'showalltypes' && selectedAudience == 'professional') return $(this).data("favorited") && searchFilter && $(this).data("professional");
-                        // else if (selectedType != 'showalltypes' && selectedAudience == 'patient') return $(this).data("favorited") && searchFilter && $(this).data("patient") && $(this).data("type") === selectedType;
-                        // else if (selectedType != 'showalltypes' && selectedAudience == 'professional') return $(this).data("favorited") && searchFilter && $(this).data("professional") && $(this).data("type") === selectedType;
                     } else {
-                        if (selectedType == 'showalltypes') return searchFilter;
+                        if (selectedType == 'showalltypes' || selectedType == 'selectacategory') return searchFilter;
                         else if (selectedType != 'showalltypes') return searchFilter && $(this).data("type") === selectedType;
-                        // if (selectedType == 'showalltypes' && selectedAudience == 'showallaudiences') return searchFilter;
-                        // else if (selectedAudience == 'showallaudiences') return searchFilter && $(this).data("type") === selectedType;
-                        // else if (selectedType == 'showalltypes' && selectedAudience == 'patient') return searchFilter && $(this).data("patient");
-                        // else if (selectedType == 'showalltypes' && selectedAudience == 'professional') return searchFilter && $(this).data("professional");
-                        // else if (selectedType != 'showalltypes' && selectedAudience == 'patient') return searchFilter && $(this).data("patient") && $(this).data("type") === selectedType;
-                        // else if (selectedType != 'showalltypes' && selectedAudience == 'professional') return searchFilter && $(this).data("professional") && $(this).data("type") === selectedType;
                     }
 
 
                 }).show();
 
             }
-
-
-            // function fillList(collateral) {
-            //     var link = 'onclick="window.location=\'/apex/SalesHD_Collateral?id=' + collateral.collateralId + '\'"';
-            //     let type = '';
-            //     if (collateral.type != '') type = 'data-type="' + collateral.type.replace(/\s/g, '').toLowerCase() + '"';
-
-            //     var html = '<li ' + link + ' data-favorited="' + collateral.favorited + '"' + type +
-            //         ' data-professional=' + collateral.audience_professional + ' data-patient=' + collateral.audience_patient + '><div class="row">';
-
-            //     if (collateral.favorited) html += '<i style="position:absolute;margin-top:10px;" class="fas fa-star yellow"></i>';
-            //     html += '<div class="col-md-1 blue" style="font-size:40px;text-align:center;width:100%;">' + collateral.icon + '</div>' +
-            //         '<div class="col-md-11"><div class="collateral-title">' + collateral.title + '</div>' +
-            //         '<div style="font-size:14px;"><b>' + collateral.type + '</b> ' + collateral.description + '</div>' +
-            //         '</div></div></li>';
-
-            //     $("#collaterals").append(html);
-            // }
         </script>
 
     </body>
