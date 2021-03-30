@@ -660,7 +660,7 @@
                         <div class="dropdown" id="typeDropdown">
                             <button class="btn btn-primary dropdown-toggle" type="button" id="typeDropdownButton" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false" style="width:100%;">
-                                Show All Types
+                                Select a Category
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <apex:repeat value="{!collateralTypes}" var="type">

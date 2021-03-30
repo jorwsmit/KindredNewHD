@@ -789,7 +789,9 @@
                 $("#errorMessage").html('');
                 if(!document.getElementById('{!$Component.emailForm.email}').value){
                     $("#errorMessage").html('<span style="color:#cc0000;">Error:</span> Please enter a valid email address and try again.');
-                } else {
+                } else if(!document.getElementById('{!$Component.emailForm.emailSubject}').value){
+                    $("#errorMessage").html('<span style="color:#cc0000;">Error:</span> Please enter a valid email subject and try again.');
+                }else {
                     document.getElementById('{!$Component.emailForm.emailBody}').value =
                     document.getElementById('{!$Component.emailForm.emailBody}').value.replace(/(?:\r\n|\r|\n)/g, '<br/>');
                 }

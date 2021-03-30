@@ -369,72 +369,76 @@ public PageReference populateEmail() {
 	return null;
 }
 
-public PageReference sendEmailTemplate(){
+// public PageReference sendEmailTemplate(){
 
+// 	emailSent = false;
+// 	if(isValidEmail(contactEmail)) {
+// 		Messaging.SingleEmailMessage email = Messaging.renderStoredEmailTemplate(templateId, null, null);
+// 		List<Contact> contacts = [select Id from contact where email=:contactEmail limit 1];
+// 		if(!contacts.isEmpty()) email = Messaging.renderStoredEmailTemplate(templateId, contacts[0].Id, null);
+// 		String subject = email.getSubject();
+// 		String body = email.gethtmlBody();
+// 		email.setSubject(subject);
+// 		email.sethtmlBody(body);
+// 		email.saveAsActivity = false;
+// 		email.toAddresses = new String[] {contactEmail};
+// 		try{
+// 			Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email});
+// 			List<EmailTemplate> templates = [select id, name from EmailTemplate where id=:templateId];
+// 			String templateName = '';
+// 			if(!templates.isEmpty()) templateName = templates[0].name;
+// 			logEmail(UserInfo.getUserEmail(), UserInfo.getUserId(), contactEmail, System.URL.getSalesforceBaseUrl().toExternalForm()+'/'+templateId, 'Email Template: '+templateName);
+// 			emailSent = true;
+// 		} catch(Exception ex) {
+// 			ApexPages.addMessages(ex);
+// 		}
+// 	} else {
+// 		ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, contactEmail+' is not a valid email address. Please enter a valid email address and try again.'));
+// 	}
+// 	contactEmail = '';
+// 	return null;
+
+// }
+
+public PageReference sendTemplateEmail(){
 	emailSent = false;
+	Messaging.reserveSingleEmailCapacity(2);
+	Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
 	if(isValidEmail(contactEmail)) {
-		Messaging.SingleEmailMessage email = Messaging.renderStoredEmailTemplate(templateId, null, null);
-		List<Contact> contacts = [select Id from contact where email=:contactEmail limit 1];
-		if(!contacts.isEmpty()) email = Messaging.renderStoredEmailTemplate(templateId, contacts[0].Id, null);
-		String subject = email.getSubject();
-		String body = email.gethtmlBody();
-		email.setSubject(subject);
-		email.sethtmlBody(body);
-		email.saveAsActivity = false;
-		email.toAddresses = new String[] {contactEmail};
 		try{
-			Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email});
-			List<EmailTemplate> templates = [select id, name from EmailTemplate where id=:templateId];
+			String[] toAddresses = new String[] {contactEmail};
+			mail.setToAddresses(toAddresses);
+			mail.setReplyTo(UserInfo.getUserEmail());
+			mail.setSenderDisplayName(UserInfo.getName());
+			// Messaging.SingleEmailMessage email = Messaging.renderStoredEmailTemplate(templateId, null, null);
+			// String subject = email.getSubject();
+			// mail.setSubject(subject);
+			mail.setSubject(emailSubject);
+			String plainText = emailBody.replaceAll('<a"', '');
+			plainText = plainText.replaceAll('href="', '');
+			plainText = plainText.replaceAll('">', ' - ');
+			plainText = plainText.replaceAll('</a>', '');
+
+			emailBody.replace('/(?:\r\n|\r|\n)/g', '<br/>');
+			mail.setPlainTextBody(plainText);
+			mail.setHtmlBody(emailBody);
+			Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
 			String templateName = '';
+			List<EmailTemplate> templates = [select id, name from EmailTemplate where id=:templateId];
 			if(!templates.isEmpty()) templateName = templates[0].name;
 			logEmail(UserInfo.getUserEmail(), UserInfo.getUserId(), contactEmail, System.URL.getSalesforceBaseUrl().toExternalForm()+'/'+templateId, 'Email Template: '+templateName);
 			emailSent = true;
 		} catch(Exception ex) {
 			ApexPages.addMessages(ex);
 		}
-	} else {
+	} else{
 		ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, contactEmail+' is not a valid email address. Please enter a valid email address and try again.'));
 	}
+
 	contactEmail = '';
+	emailSubject = '';
 	return null;
-
 }
-
-// public PageReference sendTemplateEmail(){
-// 	emailSent = false;
-// 	Messaging.reserveSingleEmailCapacity(2);
-// 	Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-// 	if(isValidEmail(contactEmail)) {
-// 		try{
-// 			String[] toAddresses = new String[] {contactEmail};
-// 			mail.setToAddresses(toAddresses);
-// 			mail.setReplyTo(UserInfo.getUserEmail());
-// 			mail.setSenderDisplayName(UserInfo.getName());
-// 			// Messaging.SingleEmailMessage email = Messaging.renderStoredEmailTemplate(templateId, null, null);
-// 			// String subject = email.getSubject();
-// 			// mail.setSubject(subject);
-// 			mail.setSubject(emailSubject);
-// 			String plainText = emailBody.replaceAll('<a"', '');
-// 			plainText = plainText.replaceAll('href="', '');
-// 			plainText = plainText.replaceAll('">', ' - ');
-// 			plainText = plainText.replaceAll('</a>', '');
-
-// 			emailBody.replace('/(?:\r\n|\r|\n)/g', '<br/>');
-// 			mail.setPlainTextBody(plainText);
-// 			mail.setHtmlBody(emailBody);
-// 			Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-// 			emailSent = true;
-// 			// logEmail(UserInfo.getUserEmail(), UserInfo.getUserId(), contactEmail, publicUrl, thisCollateral.title);
-// 		} catch(Exception ex) {
-// 			ApexPages.addMessages(ex);
-// 		}
-// 	} else{
-// 		ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.ERROR, contactEmail+' is not a valid email address. Please enter a valid email address and try again.'));
-// 	}
-
-// 	contactEmail = '';
-// 	return null;
-// }
 
 public EmailTemplate emailTemp {get; set;}
 
@@ -444,7 +448,7 @@ private PageReference getEmailTemplate(String emailTemplateId){
 	folderId in (select id from folder where name='Hospital Division Email Templates')]) {
 		emailTemp = et;
 		templateId = et.Id;
-		emailSubject = Messaging.renderStoredEmailTemplate(emailTemplateId, null, null).getSubject();
+		// emailSubject = Messaging.renderStoredEmailTemplate(emailTemplateId, null, null).getSubject();
 		emailBody = Messaging.renderStoredEmailTemplate(emailTemplateId, null, null).gethtmlBody();
 		
 	}
