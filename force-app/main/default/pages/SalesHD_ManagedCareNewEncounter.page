@@ -776,6 +776,11 @@
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Contact_Method__c}" html-placeholder="Medium"
 							 required="true" /> -->
 
+							<label class="required">*Payor Type
+							</label>
+							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Managed_Care_Payor__c}" html-placeholder="Payor Type" id="payorType"
+							 required="true" />
+							 <script>replaceMultiselectButtons();</script>
 							 <label class="required">*Purpose
 							</label>
 							<apex:inputField styleClass="form-control" value="{!event.Subject__c}" html-placeholder="Purpose"
@@ -804,13 +809,12 @@
 							<label class="required" style="width: 100%; {!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}">Last Encounter</label>
 							<apex:inputField styleClass="form-control" style="{!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}"
 							 value="{!event.SalesHD_Last_Encounter__c}" html-placeholder="Last Encounter" html-disabled="true" />
-							<label class="required" style="width: 100%;">*Open Ended Questions
+							<label style="width: 100%;">Open Ended Questions
 								<span class="educationtip" id="question">
 									<i class="fas fa-question-circle blue pointer"></i>
 								</span>
 							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
-							 required="true" />
+							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions" />
 							<label style="width: 100%;">Marketing Collateral
 
 							</label>
@@ -838,10 +842,10 @@
 									*This section is requried after you complete the call.
 								</p>
 
-								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Close / Customer Commitment', 'Close / Customer Commitment')}</label>
+								<!-- <label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Close / Customer Commitment', 'Close / Customer Commitment')}</label>
 								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Close_Customer_Commitment__c}" html-placeholder="Close / Customer Commitment"
-								 id="closeCustomer" />
-								<script>replaceMultiselectButtons();</script>
+								 id="closeCustomer" /> -->
+								<!-- <script>replaceMultiselectButtons();</script> -->
 
 								<!-- <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, false)}" style="display:inline-block;"> -->
 
@@ -1015,6 +1019,15 @@
 			}
 
 			function replaceMultiselectButtons() {
+				var payorTypeButtonR = '{!$Component.encounterForm.payorType}'+'_right_arrow';
+				payorTypeButtonR = payorTypeButtonR.replaceAll(':', '\\:');
+				$('#'+payorTypeButtonR).replaceWith('<i style="font-size:50px;" class="fas fa-arrow-circle-right blue"></i>');
+
+				var payorTypeButtonL = '{!$Component.encounterForm.payorType}'+'_left_arrow';
+				payorTypeButtonL = payorTypeButtonL.replaceAll(':', '\\:');
+				$('#'+payorTypeButtonL).replaceWith('<i style="font-size:50px;" class="fas fa-arrow-circle-left blue"></i>');
+
+
 				$("#j_id0\\:encounterForm\\:closeCustomer_right_arrow").replaceWith('<i style="font-size:50px;" class="fas fa-arrow-circle-right blue"></i>');
 				$("#j_id0\\:encounterForm\\:closeCustomer_left_arrow").replaceWith('<i style="font-size:50px;" class="fas fa-arrow-circle-left blue"></i>');
 			}

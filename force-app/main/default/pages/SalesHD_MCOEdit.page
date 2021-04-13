@@ -67,10 +67,10 @@
                                 </div>
                                 <div>
                                     <label class="text-danger float-left">*Address</label>
-                                    <apex:inputField styleClass="form-control" value="{!account.ShippingStreet}" html-placeholder="Street" required="true" />
-                                    <apex:inputField styleClass="form-control" value="{!account.ShippingCity}" html-placeholder="City" required="true" />
+                                    <apex:inputField styleClass="form-control" value="{!account.ShippingStreet}" html-placeholder="Street" />
+                                    <apex:inputField styleClass="form-control" value="{!account.ShippingCity}" html-placeholder="City" />
                                     <apex:inputField styleClass="form-control" value="{!account.ShippingState}" html-placeholder="State" required="true" />
-                                    <apex:inputField styleClass="form-control" value="{!account.ShippingPostalCode}" html-placeholder="Zip" required="true" />
+                                    <apex:inputField styleClass="form-control" value="{!account.ShippingPostalCode}" html-placeholder="Zip" />
                                 </div>
                                 <div>
                                     <label class="float-left">Website</label>

@@ -86,6 +86,9 @@
                             <b>Phone </b>{!contact.Phone}
                         </div>
                         <div>
+                            <b>Title </b>{!contact.Title__c}
+                        </div>
+                        <div>
                             <b>Relationship </b> {!contact.SalesHD_Managed_Care_Relationship__c}
                         </div>
                     </div>

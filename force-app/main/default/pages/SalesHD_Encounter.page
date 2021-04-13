@@ -703,9 +703,9 @@
 				</div>
 			</div> -->
 
-			<c:SalesHD_RedesignNav />
-			<!-- <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" /> -->
-			<!-- <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" /> -->
+			<!-- <c:SalesHD_RedesignNav /> -->
+			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
+			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" />
 
 			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
 
@@ -778,9 +778,14 @@
 									<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
 								</div>
 							</apex:outputPanel>
+							
 
 							<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
-
+								<div>
+									<label style="display:inline-block;">Payor Type:</label>
+									<p style="display:inline-block;">{!event.SalesHD_Managed_Care_Payor__c}</p>
+								</div>
+								
 								<div>
 									<label style="display:inline-block;">Purpose:</label>
 									<p style="display:inline-block;">{!event.Subject__c}</p>
@@ -855,10 +860,13 @@
 
 							<label style="width:100%; border-top:1px solid #ddd;">POST CALL</label>
 
-							<div>
-								<label style="display:inline-block;">Close / Customer Commitment: </label>
-								<p style="display:inline-block;">{!event.SalesHD_Close_Customer_Commitment__c}</p>
-							</div>
+							<apex:outputPanel rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}">
+								<div>
+									<label style="display:inline-block;">Close / Customer Commitment: </label>
+									<p style="display:inline-block;">{!event.SalesHD_Close_Customer_Commitment__c}</p>
+								</div>
+							</apex:outputPanel>
+							
 							<div>
 								<label style="display:inline-block;">Summary and Results:</label>
 								<p style="display:inline-block;">{!event.Result__c}</p>

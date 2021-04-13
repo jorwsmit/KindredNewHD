@@ -809,7 +809,7 @@
 							<label style="width: 100%;">Marketing Tool
 
 							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
+							<apex:inputField styleClass="form-control collateral-picklist" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
 							/>
 							<label style="width: 100%;">Agenda
 								<span class="educationtip" id="agenda">
@@ -983,6 +983,32 @@
 			var unitListHtml = '';
 
 			$(document).ready(function () {
+
+
+			// 	var auditResultColorMap = {
+            //     'Approved': green,
+            //     'Asking for business only': red,
+            //     'Duplicate encounter': red,
+            //     'Improper use of field': yellow,
+            //     'Info in summary or agenda does not match objective': yellow,
+            //     'Lacking detail': yellow,
+            //     'Lacking strategy': yellow,
+            //     'Missing agenda': yellow,
+            //     'Missing next steps': yellow,
+            //     'Missing summary': yellow,
+            //     'No data/metrics/collateral used when needed': yellow,
+            //     'Not a sales call': red,
+            //     'Referral managing': red
+            // };
+
+            $(".collateral-picklist").on('click', function () {
+                $(this).find("option").each(function (index, value) {
+					if($(value).val().indexOf('FLYER -')<0 && $(value).val().indexOf('WHITEPAPER -')<0){
+						$(value).css('font-weight', 'bold');
+					}
+                });
+            });
+
 
 				replaceMultiselectButtons();
 				loadPage();
