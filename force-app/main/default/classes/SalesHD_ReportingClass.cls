@@ -93,9 +93,16 @@ private static Map<String, String> contactTitleBuckets = new Map<String, String>
 public String encountersLastWeek {get; set;}
 public String encountersByContact {get; set;}
 public String encountersByMedium {get; set;}
+public String encountersByPurpose {get; set;}
+public String encountersByPayorType {get; set;}
 public String encountersByObjective {get; set;}
 public String encountersByUnit {get; set;}
 public String encountersByAccount {get; set;}
+public String encountersByUsers {get; set;}
+public String encountersByAccount20 {get; set;}
+public String encountersByPayorParent10 {get; set;}
+public String encountersByAccountUpcoming {get; set;}
+public String encountersByPayorParentUpcoming {get; set;}
 public String upcomingEncounters {get; set;}
 
 public String clPerformanceTrend {get; set;}
@@ -471,12 +478,40 @@ public void eLastWeekMedium(){
 	encountersByMedium = JSON.serializePretty(getEncountersMedium(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
 }
 
+public void eLastWeekPurpose(){
+	encountersByPurpose = JSON.serializePretty(getEncountersPurpose(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
+}
+
+public void eLastWeekPayorType(){
+	encountersByPayorType = JSON.serializePretty(getEncountersPayorType(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
+}
+
 public void eLastWeekObjective(){
 	encountersByObjective = JSON.serializePretty(getEncountersObjective(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
 }
 
 public void eLastWeekAccounts(){
 	encountersByAccount = JSON.serializePretty(getEncountersAccount(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
+}
+
+public void eLastWeekUsers(){
+	encountersByUsers = JSON.serializePretty(getEncountersUsers(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
+}
+
+public void eLastWeekAccounts20(){
+	encountersByAccount20 = JSON.serializePretty(getEncountersAccount20(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
+}
+
+public void eLastWeekPayorParent10(){
+	encountersByPayorParent10 = JSON.serializePretty(getEncountersPayorParent10(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
+}
+
+public void eUpcomingAccounts(){
+	encountersByAccountUpcoming = JSON.serializePretty(getEncountersAccountUpcoming(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
+}
+
+public void eUpcomingPayorParent(){
+	encountersByPayorParentUpcoming = JSON.serializePretty(getEncountersPayorParentUpcoming(UserInfo.getUserRoleId(), selectedCL, selectedAccount, users));
 }
 
 public void eUpcoming(){
@@ -641,6 +676,78 @@ public static String getEncountersMedium(Id rId, Id cl, Id accountId, List<User>
 	return res;
 }
 
+public static String getEncountersPurpose(Id rId, Id cl, Id accountId, List<User> usrs){
+
+	String res = '{ "cols" : [{"id":"","label":"Contact Title","pattern":"","type":"string"}, ' +
+	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
+	             '"rows": [';
+	// setWeeks();
+	setDates();
+
+	List<AggregateResult> ars = new List<AggregateResult>();
+	if(cl!=null) {
+		ars = [select count(id) totalByPurpose, Subject__c
+		       from event where ownerId=:cl
+		                                 and startDateTime>=:lowDate and startDateTime<=:highDate group by Subject__c];
+	} else if(accountId!=null) {
+		ars = [select count(id) totalByPurpose, Subject__c
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId group by Subject__c];
+	} else{
+		ars = [select count(id) totalByPurpose, Subject__c
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate group by Subject__c];
+	}
+
+	for(AggregateResult ar : ars) {
+		Integer totalByPurpose = Integer.valueOf(ar.get('totalByPurpose'));
+		String purpose = '-';
+		if(ar.get('Subject__c')!=null) purpose = String.valueOf(ar.get('Subject__c'));
+		res += '{"c":[{"v":"'+purpose+'","f":null},{"v":'+totalByPurpose+',"f":null}] },';
+	}
+	if(res.right(1) == ',') res = res.left(res.length()-1);
+	res += ']}';
+	return res;
+}
+
+public static String getEncountersPayorType(Id rId, Id cl, Id accountId, List<User> usrs){
+
+	String res = '{ "cols" : [{"id":"","label":"Contact Title","pattern":"","type":"string"}, ' +
+	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
+	             '"rows": [';
+	// setWeeks();
+	setDates();
+
+	List<AggregateResult> ars = new List<AggregateResult>();
+	if(cl!=null) {
+		ars = [select count(id) totalByPayorType, SalesHD_Managed_Care_Payor__c
+		       from event where ownerId=:cl
+		                                 and startDateTime>=:lowDate and startDateTime<=:highDate group by SalesHD_Managed_Care_Payor__c];
+	} else if(accountId!=null) {
+		ars = [select count(id) totalByPayorType, SalesHD_Managed_Care_Payor__c
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId group by SalesHD_Managed_Care_Payor__c];
+	} else{
+		ars = [select count(id) totalByPayorType, SalesHD_Managed_Care_Payor__c
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate group by SalesHD_Managed_Care_Payor__c];
+	}
+
+	for(AggregateResult ar : ars) {
+		Integer totalByPayorType = Integer.valueOf(ar.get('totalByPayorType'));
+		String payorType = '-';
+		if(ar.get('SalesHD_Managed_Care_Payor__c')!=null) payorType = String.valueOf(ar.get('SalesHD_Managed_Care_Payor__c'));
+		res += '{"c":[{"v":"'+payorType+'","f":null},{"v":'+totalByPayorType+',"f":null}] },';
+	}
+	if(res.right(1) == ',') res = res.left(res.length()-1);
+	res += ']}';
+	return res;
+}
+
 public static String getEncountersObjective(Id rId, Id cl, Id accountId, List<User> usrs){
 
 	String res = '{ "cols" : [{"id":"","label":"Objective","pattern":"","type":"string"}, ' +
@@ -744,6 +851,194 @@ public static String getEncountersAccount(Id rId, Id cl, Id accountId, List<User
 		       and ownerId in :usrs
 		       and startDateTime>=:lowDate and startDateTime<=:highDate
 		       group by Account.Name];
+	}
+
+	for(AggregateResult ar : ars) {
+		Integer totalEncounters = Integer.valueOf(ar.get('totalEncounters'));
+		String accountName = '-';
+		if(ar.get('accountName')!=null) accountName = String.valueOf(ar.get('accountName'));
+		res += '{"c":[{"v":"'+accountName+'","f":null},{"v":'+totalEncounters+',"f":null}] },';
+	}
+	if(res.right(1) == ',') res = res.left(res.length()-1);
+	res += ']}';
+	return res;
+}
+
+public static String getEncountersUsers(Id rId, Id cl, Id accountId, List<User> usrs){
+	String res = '{ "cols" : [{"id":"","label":"Account","pattern":"","type":"string"}, ' +
+	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
+	             '"rows": [';
+	// setWeeks();
+	setDates();
+
+	List<AggregateResult> ars = new List<AggregateResult>();
+	if(cl!=null) {
+		ars = [select count(id) totalEncounters, Owner.Name accountName
+		       from event where ownerId=:cl and startDateTime>=:lowDate and startDateTime<=:highDate
+		                                 group by Owner.Name];
+	} else if(accountId!=null) {
+		ars = [select count(id) totalEncounters, Owner.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
+		                                                                               group by Owner.Name];
+	} else{
+		ars = [select count(id) totalEncounters, Owner.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate
+		       group by Owner.Name];
+	}
+
+	for(AggregateResult ar : ars) {
+		Integer totalEncounters = Integer.valueOf(ar.get('totalEncounters'));
+		String accountName = '-';
+		if(ar.get('accountName')!=null) accountName = String.valueOf(ar.get('accountName'));
+		res += '{"c":[{"v":"'+accountName+'","f":null},{"v":'+totalEncounters+',"f":null}] },';
+	}
+	if(res.right(1) == ',') res = res.left(res.length()-1);
+	res += ']}';
+	return res;
+}
+
+public static String getEncountersAccount20(Id rId, Id cl, Id accountId, List<User> usrs){
+	String res = '{ "cols" : [{"id":"","label":"Account","pattern":"","type":"string"}, ' +
+	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
+	             '"rows": [';
+	// setWeeks();
+	setDates();
+
+	List<AggregateResult> ars = new List<AggregateResult>();
+	if(cl!=null) {
+		ars = [select count(id) totalEncounters, Account.Name accountName
+		       from event where ownerId=:cl and startDateTime>=:lowDate and startDateTime<=:highDate
+		                                 group by Account.Name order by count(id) desc limit 20];
+	} else if(accountId!=null) {
+		ars = [select count(id) totalEncounters, Account.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
+		                                                                               group by Account.Name order by count(id) desc limit 20];
+	} else{
+		ars = [select count(id) totalEncounters, Account.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate
+		       group by Account.Name order by count(id) desc limit 20];
+	}
+
+	for(AggregateResult ar : ars) {
+		Integer totalEncounters = Integer.valueOf(ar.get('totalEncounters'));
+		String accountName = '-';
+		if(ar.get('accountName')!=null) accountName = String.valueOf(ar.get('accountName'));
+		res += '{"c":[{"v":"'+accountName+'","f":null},{"v":'+totalEncounters+',"f":null}] },';
+	}
+	if(res.right(1) == ',') res = res.left(res.length()-1);
+	res += ']}';
+	return res;
+}
+
+
+public static String getEncountersPayorParent10(Id rId, Id cl, Id accountId, List<User> usrs){
+	String res = '{ "cols" : [{"id":"","label":"Account","pattern":"","type":"string"}, ' +
+	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
+	             '"rows": [';
+	// setWeeks();
+	setDates();
+
+	List<AggregateResult> ars = new List<AggregateResult>();
+	if(cl!=null) {
+		ars = [select count(id) totalEncounters, Account.Payor_Parent__r.Name accountName
+		       from event where ownerId=:cl and startDateTime>=:lowDate and startDateTime<=:highDate
+		                                 group by Account.Payor_Parent__r.Name order by count(id) desc limit 20];
+	} else if(accountId!=null) {
+		ars = [select count(id) totalEncounters, Account.Payor_Parent__r.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
+		                                                                               group by Account.Payor_Parent__r.Name order by count(id) desc limit 20];
+	} else{
+		ars = [select count(id) totalEncounters, Account.Payor_Parent__r.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate
+		       group by Account.Payor_Parent__r.Name order by count(id) desc limit 20];
+	}
+
+	for(AggregateResult ar : ars) {
+		Integer totalEncounters = Integer.valueOf(ar.get('totalEncounters'));
+		String accountName = '-';
+		if(ar.get('accountName')!=null) accountName = String.valueOf(ar.get('accountName'));
+		res += '{"c":[{"v":"'+accountName+'","f":null},{"v":'+totalEncounters+',"f":null}] },';
+	}
+	if(res.right(1) == ',') res = res.left(res.length()-1);
+	res += ']}';
+	return res;
+}
+
+public static String getEncountersAccountUpcoming(Id rId, Id cl, Id accountId, List<User> usrs){
+	String res = '{ "cols" : [{"id":"","label":"Account","pattern":"","type":"string"}, ' +
+	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
+	             '"rows": [';
+	// setWeeks();
+	setDates();
+	lowDate = Date.valueOf(System.now());
+	highDate = Date.valueOf(lowDate).addDays(30);
+	List<AggregateResult> ars = new List<AggregateResult>();
+	if(cl!=null) {
+		ars = [select count(id) totalEncounters, Account.Name accountName
+		       from event where ownerId=:cl and startDateTime>=:lowDate and startDateTime<=:highDate
+		                                 group by Account.Name];
+	} else if(accountId!=null) {
+		ars = [select count(id) totalEncounters, Account.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
+		                                                                               group by Account.Name];
+	} else{
+		ars = [select count(id) totalEncounters, Account.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate
+		       group by Account.Name];
+	}
+
+	for(AggregateResult ar : ars) {
+		Integer totalEncounters = Integer.valueOf(ar.get('totalEncounters'));
+		String accountName = '-';
+		if(ar.get('accountName')!=null) accountName = String.valueOf(ar.get('accountName'));
+		res += '{"c":[{"v":"'+accountName+'","f":null},{"v":'+totalEncounters+',"f":null}] },';
+	}
+	if(res.right(1) == ',') res = res.left(res.length()-1);
+	res += ']}';
+	return res;
+}
+
+public static String getEncountersPayorParentUpcoming(Id rId, Id cl, Id accountId, List<User> usrs){
+	String res = '{ "cols" : [{"id":"","label":"Account","pattern":"","type":"string"}, ' +
+	             '{"id":"","label":"Total Encounters","pattern":"","type":"number"}], ' +
+	             '"rows": [';
+	// setWeeks();
+	setDates();
+	lowDate = Date.valueOf(System.now());
+	highDate = Date.valueOf(lowDate).addDays(30);
+	List<AggregateResult> ars = new List<AggregateResult>();
+	if(cl!=null) {
+		ars = [select count(id) totalEncounters, Account.Payor_Parent__r.Name accountName
+		       from event where ownerId=:cl and startDateTime>=:lowDate and startDateTime<=:highDate
+		                                 group by Account.Payor_Parent__r.Name];
+	} else if(accountId!=null) {
+		ars = [select count(id) totalEncounters, Account.Payor_Parent__r.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate and accountId=:accountId
+		                                                                               group by Account.Payor_Parent__r.Name];
+	} else{
+		ars = [select count(id) totalEncounters, Account.Payor_Parent__r.Name accountName
+		       from event where (owner.userRoleId in :allSubRoleIds or ownerId=:UserInfo.getUserId())
+		       and ownerId in :usrs
+		       and startDateTime>=:lowDate and startDateTime<=:highDate
+		       group by Account.Payor_Parent__r.Name];
 	}
 
 	for(AggregateResult ar : ars) {

@@ -65,15 +65,17 @@
     <body>
         <div class="my-wrapper">
             <c:SalesHD_ManagedCareNav />
-            <div class="row justify-content-md-center bg-contact-blue">
+            <div class="row justify-content-md-center bg-contact-blue page-head">
 
                 <div class="col-md-12 text-white">
                     <div class="text-center">
                         <div>
-                            <span class="pull-left;">
-                                <c:SalesHD_Favorite />
-                            </span>
-                            <h3 class="font-weight-light">{!contact.name}
+                            
+                            <h3 class="font-weight-light">
+                                <span class="float-left">
+                                    <c:SalesHD_Favorite />
+                                </span>
+                                {!contact.name}
                                 <a onclick="window.location='/apex/saleshd_managedcarecontactedit?id={!contact.Id}'">
                                     <i style="margin-left:20px;" class="far fa-edit"></i>
                                 </a>
@@ -99,7 +101,7 @@
             <div class="row justify-content-center">
 
                 <div class="col-md-5">
-                    <div class="col-md-12 bg-white rounded max-height-3">
+                    <div class="col-md-12 bg-white rounded p-0">
                         <c:SalesHD_ManagedCareNotes />
                     </div>
                 </div>

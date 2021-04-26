@@ -85,14 +85,14 @@
     <body>
         <div class="my-wrapper">
             <c:SalesHD_ManagedCareNav />
-            <div class="row justify-content-md-center bg-purple">
+            <div class="row justify-content-md-center bg-purple page-head">
 
                 <div class="col-md-12 text-white">
                     <div class="text-center">
 
                         <div>
                             <h3 class="font-weight-light">
-                                <span class="pull-left;">
+                                <span class="float-left">
                                     <c:SalesHD_Favorite />
                                 </span>
                                 {!account.name}

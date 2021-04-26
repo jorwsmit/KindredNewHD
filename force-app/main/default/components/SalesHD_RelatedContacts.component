@@ -58,6 +58,13 @@
 
     <div>
         <ul class="header-pad">
+
+            <apex:outputPanel rendered="{!relatedContacts.size<=0}">
+                <li class="m-2 p-1 pt-2 text-secondary">
+                    <i class="fa fa-times-circle" aria-hidden="true"></i> No related Contacts. Click the Relate Contact button above to relate a favorited contact to this MCO.
+                </li>
+            </apex:outputPanel>
+
             <apex:repeat value="{!relatedContacts}" var="c">
                 <li class="m-2 p-1" onclick="window.location.href='/apex/SalesHD_ManagedCareContact?id={!c.Id}'">
                     <div>

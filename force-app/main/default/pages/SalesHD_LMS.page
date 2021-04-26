@@ -386,6 +386,7 @@ h1{
           <div id="filter-row" class="row" style="margin-top:70px;">
             <div class="col-md-12">
               <button type="button" class="btn filters filter-selected">All</button>
+              <button type="button" class="btn filters">HD Sales Campaign</button>
               <button type="button" class="btn filters">Clinical Videos</button>
               <button type="button" class="btn filters">Sales Videos</button>
               <button type="button" class="btn filters">Marketing Collaterals</button>

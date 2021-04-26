@@ -3,7 +3,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        <title>DOMCR Dashboard</title>
+        <title>Managed Care Leader Dashboard</title>
         <style>
             #dashboard-body {
                 background-color: #E0E2E7;
@@ -79,12 +79,12 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_EncountersByAccount/>
+                            <c:SalesHD_EncountersByAccount20/>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_EncountersByAccountUpcoming/>
+                            <c:SalesHD_EncountersByPayorParent10/>
                         </div>
 
                     </div>
@@ -94,12 +94,12 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_EncountersByContact/>
+                            <c:SalesHD_EncountersByAccountUpcoming/>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_EncountersByPurpose/>
+                            <c:SalesHD_EncountersByPayorParentUpcoming/>
                         </div>
                     </div>
 
@@ -114,7 +114,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="report-container">
-                            <!-- <c:SalesHD_EncountersByPayorType/> -->
+                            <c:SalesHD_EncountersByUsers/>
                         </div>
                     </div>
 

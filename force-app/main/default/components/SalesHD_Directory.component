@@ -4,7 +4,7 @@
             <div class="col-md-12 no-pad">
                 <h3 class="thin italic">
                     <i class="fas fa-address-book icon bg-pink" style="margin-left:0px;padding:10px 12px 10px 12px;" aria-hidden="true"></i> Directory</h3>
-                <ul id="directory">
+                <ul id="directory" class="scroll-list">
                     <apex:outputPanel rendered="{!directory.size<=0}">
                         <div class="text-secondary" style="padding:10px;">
                             <i class="fa fa-times-circle" aria-hidden="true"></i> You have no favorited MCOs, STACHs, or contacts.

@@ -763,7 +763,13 @@
 							<div>
 								<label style="display:inline-block;">Account:</label>
 								<p style="display:inline-block;">
-									<a href="/apex/SalesHD_account?id={!event.WhatId}">{!event.What.Name}</a>
+									<apex:outputPanel rendered="{!CONTAINS(event.What.RecordType.Name,'MCO')}">
+										<a href="/apex/SalesHD_mco?id={!event.WhatId}">{!event.What.Name}</a>
+									</apex:outputPanel>
+									<apex:outputPanel rendered="{!CONTAINS(event.What.RecordType.Name,'HD Account')}">
+										<a href="/apex/SalesHD_account?id={!event.WhatId}">{!event.What.Name}</a>
+									</apex:outputPanel>
+									
 								</p>
 							</div>
 							<apex:outputPanel rendered="{!NOT(CONTAINS(event.RecordType.Name,'Managed Care'))}">

@@ -73,38 +73,42 @@
                     <div class="col-md-12 bg-white rounded p-0">
                         <c:SalesHD_Notifications />
                     </div>
+                    <div class="col-md-12 bg-white rounded p-0">
+                        <c:SalesHD_Reports />
+                    </div>
+                    <div class="col-md-12 bg-white rounded p-0">
+                        <c:SalesHD_ContactRelationships />
+                    </div>
                 </div>
 
                 <div class="col-md-5">
                     <div class="col-md-12 bg-white rounded p-0">
                         <c:SalesHD_Messages />
                     </div>
-                </div>
-            </div>
-
-            <div class="row justify-content-center m-3">
-                <div class="col-md-5">
-                    <div class="col-md-12 bg-white rounded p-0">
-                        <c:SalesHD_Reports />
-                    </div>
-                </div>
-                <div class="col-md-5">
                     <div class="col-md-12 bg-white rounded p-0">
                         <c:SalesHD_Directory />
                     </div>
+                    <div class="col-md-12 bg-white rounded p-0" onclick="window.location.href='/apex/SalesHD_ManagedCareDashboard'">
+                        <c:SalesHD_MCEncountersByAccount />
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center m-3">
+                <div class="col-md-5">
+                    
+                </div>
+                <div class="col-md-5">
+                    
                 </div>
             </div>
 
             <div class="row justify-content-center m-3">
                     <div class="col-md-5">
-                        <div class="col-md-12 bg-white rounded p-0">
-                            <c:SalesHD_ContactRelationships />
-                        </div>
+                        
                     </div>
                     <div class="col-md-5">
-                        <div class="col-md-12 bg-white rounded p-0" onclick="window.location.href='/apex/SalesHD_ManagedCareDashboard'">
-                            <c:SalesHD_MCEncountersByAccount />
-                        </div>
+                        
                     </div>
             </div>
 

@@ -4,7 +4,7 @@
             <div class="col-md-12 no-pad">
                 <h3 class="thin italic">
                     <i class="fas fa-bell icon bg-blue" style="margin-left:0px;padding:10px 12px 10px 12px;" aria-hidden="true"></i> Notifications</h3>
-                <ul id="notifications">
+                <ul id="notifications" class="scroll-list">
                     <apex:outputPanel rendered="{!notifications.size<=0}">
                         <div class="text-secondary" style="padding:10px;">
                             <i class="fa fa-times-circle" aria-hidden="true"></i> You have no notifications at this time.

@@ -29,8 +29,8 @@
                                 <apex:input required="true" styleClass="form-control" value="{!noteTitle}" html-placeholder="Note Title"></apex:input>
                                 <apex:inputTextarea style="margin-top:10px" styleClass="form-control" value="{!noteBody}" html-placeholder="Note Body" />
                                 <p style="padding-top:20px">
-                                    <b>Optional File Upload: </b>Use the button below to choose a file and upload it as an attachment to be assoicated
-                                    to the note.</p>
+                                    <b>Optional File Upload: </b>Use the button below to choose a file and upload it as an attachment
+                                    to be assoicated to the note.</p>
                                 <div style="padding:10px; border:1px solid #ced4da; border-radius:.25rem;">
                                     <apex:inputFile value="{!file}" fileName="{!fileName}" />
                                 </div>
@@ -51,17 +51,25 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <apex:commandButton styleClass="btn btn-primary" style="margin-left:5px!important;" value="Save Note" status="statusSpinner"
-								 action="{!saveNote}" />
+                                action="{!saveNote}" />
                         </div>
                     </div>
                 </div>
             </div>
-            
+
+            <apex:outputPanel rendered="{!myNotes.size<=0 && notes.size<=0}">
+                <ul class="m-0 mt-1 p-2">
+                    <li class="text-secondary pt-2">
+                        <i class="fa fa-times-circle" aria-hidden="true"></i> No notes.</li>
+                </ul>
+            </apex:outputPanel>
+
             <apex:outputPanel rendered="{!myNotes.size>0}">
                 <div class="col-12 p-3 justify-content-md-center text-center mt-3" style="background-color: #E0E5E6;">
                     <h4>My Notes</h4>
                 </div>
-                <ul>
+                <ul class="m-0 mt-1">
+
                     <apex:repeat value="{!myNotes}" var="n">
                         <li class="m-2 p-1">
                             <div class="row">
@@ -72,7 +80,7 @@
                                     {!n.body}
                                 </div>
                                 <div class="col-md-12">
-                                    <apex:outputText value="{!n.fileLink}" escape="false"/>
+                                    <apex:outputText value="{!n.fileLink}" escape="false" />
                                 </div>
                             </div>
                         </li>
@@ -80,7 +88,7 @@
                 </ul>
             </apex:outputPanel>
             <apex:outputPanel rendered="{!notes.size>0}">
-                <div class="col-12 p-3 justify-content-md-center text-center mt-3"  style="background-color: #E0E5E6;">
+                <div class="col-12 p-3 justify-content-md-center text-center mt-3" style="background-color: #E0E5E6;">
                     <h4>Others Notes</h4>
                 </div>
                 <ul>
@@ -94,7 +102,7 @@
                                     {!n.body}
                                 </div>
                                 <div class="col-md-12">
-                                    <apex:outputText value="{!n.fileLink}" escape="false"/>
+                                    <apex:outputText value="{!n.fileLink}" escape="false" />
                                 </div>
                             </div>
                         </li>

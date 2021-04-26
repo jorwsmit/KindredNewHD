@@ -14,7 +14,10 @@
         </span>
     </div>
     <div>
-        <ul class="max-height-3 header-pad m-0">
+        <ul class="max-height-3 header-pad m-0 mt-1">
+            <apex:outputPanel rendered="{!relatedEvents.size<=0}">
+                <li class="m-2 p-1 pt-2 text-secondary"><i class="fa fa-times-circle" aria-hidden="true"></i> No related encounters.</li>
+            </apex:outputPanel>
             <apex:repeat value="{!relatedEvents}" var="e">
                 <li class="m-2 p-1" onclick="window.location.href='/apex/SalesHD_Encounter?id={!e.Id}'">
                     <div>

@@ -1,12 +1,12 @@
 <apex:component controller="SalesHD_ManagedCareComponents" allowDML="true">
     <apex:form id="favorited">
         <apex:outputPanel rendered="{!IF(favorited, false, true)}">
-            <apex:commandLink action="{!favorite}" rerender="favorited">
+            <apex:commandLink action="{!favorite}" rerender="favorited" style="margin-left:10px">
                 <i class='far fa-star text-white'></i>
             </apex:commandLink>
         </apex:outputPanel>
         <apex:outputPanel rendered="{!IF(favorited, true, false)}">
-            <apex:commandLink action="{!favorite}" rerender="favorited">
+            <apex:commandLink action="{!favorite}" rerender="favorited" style="margin-left:10px">
                 <i class="fas fa-star text-white"></i>
             </apex:commandLink>
         </apex:outputPanel>
