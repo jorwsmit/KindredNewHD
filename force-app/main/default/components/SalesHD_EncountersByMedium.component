@@ -50,7 +50,7 @@
 
                 var options = {
                     height: 500,
-                    title: 'Encounters by Medium',
+                    title: 'Encounters by Contact Method',
                     pieSliceText: 'percentage',
                     legend: {
                         position: 'labeled'

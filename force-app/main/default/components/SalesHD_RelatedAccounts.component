@@ -2,7 +2,7 @@
     <div class="header p-2">
         <h3>
             <i class="fas fa-hospital purple"></i>
-            <b>Related MCOs</b>
+            <b>Related Accounts</b>
         </h3>
     </div>
     <div>
@@ -13,17 +13,26 @@
                 </li>
             </apex:outputPanel>
             <apex:repeat value="{!relatedAccounts}" var="a">
-                <li class="m-2 p-1" onclick="window.location.href='/apex/SalesHD_MCO?id={!a.Id}'">
+                <li class="m-2 p-1">
                     <div>
                         <div class="row">
-                            <div class="col-md-8">
-                                <b>{!a.name}</b> {!a.ShippingState}
-                            </div>
-                            <div class="col-md-4 text-right">
+                            <div class="col-md-8" onclick="window.location.href='/apex/SalesHD_MCO?id={!a.Id}'">
+                                <div>
+                                    <b>{!a.name}</b> {!a.ShippingState}</div>
+                                <div>
                                     <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
                                         <b>Last Called</b>
-                                        <span class="font-weight-light"><apex:param value="{!a.lastActivityDate}" /></span>
+                                        <span class="font-weight-light">
+                                            <apex:param value="{!a.lastActivityDate}" />
+                                        </span>
                                     </apex:outputText>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-right">
+
+
+                                <a class="text-danger" data-target="#accountRemoveModal" data-toggle="modal" href="#accountRemoveModal" onclick="relatedAccountId('{!a.Id}');">
+                                    <i class="fas fa-trash-alt"></i> Remove Account </a>
                             </div>
                         </div>
                     </div>
@@ -32,4 +41,34 @@
             </apex:repeat>
         </ul>
     </div>
+
+    <div class="modal fade" id="accountRemoveModal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h3 class="bold text-white">
+                        <i aria-hidden="true" class="fa fa-hospital" style="padding-right:10px;"></i> Remove Account</h3>
+                </div>
+                <div class="modal-body">
+                    Are you sure that you want to remove the account?
+                </div>
+                <div class="modal-footer">
+                    <apex:form id="accountRelationForm">
+                        <apex:inputHidden id="relatedAccountId" value="{!relatedAccountId}"></apex:inputHidden>
+
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <apex:commandButton styleClass="btn btn-danger" action="{!deleteAccountRelation}" value="Remove"/>
+                    </apex:form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function relatedAccountId(accountId) {
+            console.log(accountId);
+            document.getElementById('{!$Component.accountRelationForm.relatedAccountId}').value = accountId;
+        }
+    </script>
 </apex:component>

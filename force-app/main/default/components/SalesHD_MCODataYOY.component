@@ -76,25 +76,25 @@
                         <b>Conversion</b>
                     </td>
                     <td>
-                        {!dataYoy.conversionPy}
+                        {!dataYoy.conversionPy}%
                     </td>
                     <td>
-                        {!dataYoy.conversionCy}
+                        {!dataYoy.conversionCy}%
                     </td>
                     <apex:variable value="{!dataYoy.conversionCy - dataYoy.conversionPy}" var="variance" />
                     <apex:outputPanel rendered="{!variance<0}">
                         <td class="text-danger">
-                            {!variance}
+                            {!variance}%
                         </td>
                     </apex:outputPanel>
                     <apex:outputPanel rendered="{!variance=0}">
                         <td class="text-secondary">
-                            {!variance}
+                            {!variance}%
                         </td>
                     </apex:outputPanel>
                     <apex:outputPanel rendered="{!variance>0}">
                         <td class="text-success">
-                            +{!variance}
+                            +{!variance}%
                         </td>
                     </apex:outputPanel>
                 </tr>

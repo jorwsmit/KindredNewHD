@@ -1,4 +1,4 @@
-public with sharing class SalesHD_MCOs {
+public without sharing class SalesHD_MCOs {
 
     public String selectedState {get; set;}
     public String selectedPayorType {get; set;}
@@ -27,16 +27,16 @@ public with sharing class SalesHD_MCOs {
         return picklist;
     }
 
-    public List<Selectoption> getPayorTypePicklist(){
-        List<Selectoption> picklist = new List<selectoption>();
-        picklist.add(new selectOption('', 'Payor Type'));
-         Schema.DescribeFieldResult fieldResult = Account.SalesHD_MCO_Payor_Type__c.getDescribe();
-         List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-         for( Schema.PicklistEntry pickListVal : ple){
-             picklist.add(new selectOption(pickListVal.getLabel(), pickListVal.getLabel()));
-         }     
-         return picklist;
-     }
+    // public List<Selectoption> getPayorTypePicklist(){
+    //     List<Selectoption> picklist = new List<selectoption>();
+    //     picklist.add(new selectOption('', 'Payor Type'));
+    //      Schema.DescribeFieldResult fieldResult = Account.SalesHD_MCO_Payor_Type__c.getDescribe();
+    //      List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+    //      for( Schema.PicklistEntry pickListVal : ple){
+    //          picklist.add(new selectOption(pickListVal.getLabel(), pickListVal.getLabel()));
+    //      }     
+    //      return picklist;
+    //  }
 
     public PageReference searchAccounts() {
         setupAccountStandardSetSetup();
@@ -45,13 +45,12 @@ public with sharing class SalesHD_MCOs {
     }
 
     private void setupAccountStandardSetSetup(){
-        String query = 'select id, name, shippingAddress__c, type, SalesHD_MCO_Payor_Type__c, Payor_Parent__r.Name, '+
+        String query = 'select id, name, shippingAddress__c, type, Payor_Parent__r.Name, '+
         'LastActivityDate from account where recordtype.name=\'HD MCOs\' and status__c=\'Active\'';
         if(searchString!=null)
         query += ' and (name like \'%'+searchString+'%\' or shippingAddress__c like \'%'+searchString+'%\')';
     
         if(selectedState!=null) query += ' and ShippingState like \''+selectedState+'\'';
-        if(selectedPayorType!=null) query += ' and SalesHD_MCO_Payor_Type__c like \''+selectedPayorType+'\'';
 
         query += ' order by name asc';
     

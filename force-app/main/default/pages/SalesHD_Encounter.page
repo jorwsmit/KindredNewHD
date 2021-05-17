@@ -703,9 +703,8 @@
 				</div>
 			</div> -->
 
-			<!-- <c:SalesHD_RedesignNav /> -->
-			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
-			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" />
+			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
+			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/>
 
 			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
 
@@ -763,13 +762,7 @@
 							<div>
 								<label style="display:inline-block;">Account:</label>
 								<p style="display:inline-block;">
-									<apex:outputPanel rendered="{!CONTAINS(event.What.RecordType.Name,'MCO')}">
-										<a href="/apex/SalesHD_mco?id={!event.WhatId}">{!event.What.Name}</a>
-									</apex:outputPanel>
-									<apex:outputPanel rendered="{!CONTAINS(event.What.RecordType.Name,'HD Account')}">
-										<a href="/apex/SalesHD_account?id={!event.WhatId}">{!event.What.Name}</a>
-									</apex:outputPanel>
-									
+									<a href="/apex/SalesHD_account?id={!event.WhatId}">{!event.What.Name}</a>
 								</p>
 							</div>
 							<apex:outputPanel rendered="{!NOT(CONTAINS(event.RecordType.Name,'Managed Care'))}">
@@ -784,14 +777,9 @@
 									<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
 								</div>
 							</apex:outputPanel>
-							
 
 							<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
-								<div>
-									<label style="display:inline-block;">Payor Type:</label>
-									<p style="display:inline-block;">{!event.SalesHD_Managed_Care_Payor__c}</p>
-								</div>
-								
+
 								<div>
 									<label style="display:inline-block;">Purpose:</label>
 									<p style="display:inline-block;">{!event.Subject__c}</p>
@@ -866,13 +854,10 @@
 
 							<label style="width:100%; border-top:1px solid #ddd;">POST CALL</label>
 
-							<apex:outputPanel rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}">
-								<div>
-									<label style="display:inline-block;">Close / Customer Commitment: </label>
-									<p style="display:inline-block;">{!event.SalesHD_Close_Customer_Commitment__c}</p>
-								</div>
-							</apex:outputPanel>
-							
+							<div>
+								<label style="display:inline-block;">Close / Customer Commitment: </label>
+								<p style="display:inline-block;">{!event.SalesHD_Close_Customer_Commitment__c}</p>
+							</div>
 							<div>
 								<label style="display:inline-block;">Summary and Results:</label>
 								<p style="display:inline-block;">{!event.Result__c}</p>
@@ -1058,7 +1043,7 @@
 						</div>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding-top:1px!important;  padding-bottom:1px!important;">Cancel</button>
-							<apex:form>
+							<apex:form >
 								<apex:commandButton styleClass="btn btn-danger" style="margin-left:5px!important;" value="Delete" action="{!deleteEvent}"
 								/></apex:form>
 						</div>
@@ -1074,12 +1059,12 @@
 								Upload Attachments
 							</h3>
 						</div>
-						<apex:form>
+						<apex:form >
 							<div class="modal-body">
 								<apex:inputFile value="{!file}" fileName="{!fileName}" />
 							</div>
 							<div class="modal-footer">
-								<apex:actionRegion>
+								<apex:actionRegion >
 									<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!uploadFiles}" value="Upload" />
 								</apex:actionRegion>
 								<button style="padding:2px 20px !important;" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>

@@ -174,7 +174,7 @@
 				left: 10px;
 				font-size: 48px !important;
 				cursor: pointer;
-				color: #ffffff;
+				color: #FFFFFF;
 			}
 
 			.modal {
@@ -550,10 +550,6 @@
 				cursor: default;
 			}
 
-			.pointer {
-				cursor: pointer;
-			}
-
 			ul li:hover {
 				border-bottom: 1px solid #afafaf;
 			}
@@ -578,7 +574,6 @@
 			}
 
 			.form-control {
-				color: #495057 !important;
 				margin-left: 0px !important;
 			}
 
@@ -630,47 +625,57 @@
 				color: #FF3B39 !important;
 			}
 
-			.multiSelectPicklistRow td:not(.multiSelectPicklistCell) {
-				width: 45%;
+			a {
+				color: #208FFF !important;
+				text-decoration: underline !important;
 			}
 
-			.multiSelectPicklistRow td select {
-				width: 100% !important;
+			a:hover {
+				color: #1773d1 !important;
 			}
 
-			.multiSelectPicklistRow {
-				font-size: 16px;
+			.delete-link {
+				color: #FF3B39 !important;
+				text-decoration: none !important;
 			}
 
-			.multiSelectPicklistTable tbody tr:not(multiSelectPicklistRow) td {
-				border: none;
+			.delete-link:hover {
+				color: #d13a38 !important;
 			}
 
-			.multiSelectPicklistCell a {
-				margin: auto !important;
+			.btn-danger {
+				background-color: #dc3545 !important;
 			}
 
-			.multiSelectPicklistCell a:first-child {
-				margin-bottom: 30px !important;
+			.btn-danger:hover {
+				background-color: #c82333 !important;
 			}
 
-			.multiSelectPicklistCell {
-				border: none;
+			.btn-success {
+				background-color: #42ce5a !important;
 			}
 
-			/* #j_id0\:encounterForm\:closeCustomer_selected_hint,
-			#j_id0\:encounterForm\:closeCustomer_unselected_hint {
-				display: none !important;
-			} */
-
-			#addMoreContacts,
-			#addMoreTeamMembers {
-				text-decoration: underline;
+			.btn-success:hover {
+				background-color: #3ab74f !important;
 			}
 
-			#teamList {
-				max-height: 245px;
-				overflow: auto;
+			.btn-success:active {
+				background-color: #3ab74f !important;
+			}
+
+			#emailSent {
+				width: 100%;
+				background-color: #157DFA !important;
+				color: white !important;
+				display: none;
+			}
+
+			.audit {
+				border-radius: 25px;
+				margin: 5px 2px;
+				padding: 5px 10px;
+				display: inline-block;
+				color: #ffffff;
 			}
 		</style>
 	</head>
@@ -679,216 +684,371 @@
 
 		<div class="slds-scope">
 
-			<div class="slds-spinner_container" id="spinner" style="position:fixed; width:100vw; height:100vh; display:none;">
-				<div class="slds-spinner slds-spinner--large slds-spinner--brand">
-					<div class="slds-spinner__dot-a"></div>
-					<div class="slds-spinner__dot-b"></div>
-				</div>
-			</div>
 
-			<!-- <div class="nav-container blue-bg">
-				<div class="row">
-					<ul class="nav-list">
-						<li onclick="window.location.href='/apex/saleshd_homepage'">
-							<i class="fas fa-home"></i> HOME
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_accounts'">
-							<i class="fas fa-hospital"></i> MY ACCOUNTS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_contacts'">
-							<i class="fas fa-user-md"></i> MY CONTACTS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_encounters'">
-							<i class="fas fa-phone"></i> ENCOUNTERS
-						</li>
-					</ul>
-				</div>
-			</div> -->
+			<c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}"/>
+			<c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}"/>
 
-			<c:SalesHD_RedesignNav />
 
 			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
 
-			<!-- <div class="header">
-				<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
-			</div> -->
 
 			<div class="container shadow white-bg">
 				<div class="row">
-					<apex:outputPanel id="containerBlock">
-						<apex:form id="encounterForm">
+					<apex:outputPanel id="containerBlock" style="width:100%;">
+						<apex:form id="encounterForm" style="width:100%;">
 							<label>INFORMATION</label>
-							<div style="margin-top:5px;">
-								<apex:inputHidden value="{!additionalTeamIdString}" id="additionalTeamIds" />
-								<apex:inputHidden value="{!removeAdditionalTeamIdString}" id="removeAdditionalTeamIds" />
-								<label style="width: 100%; display:none;" id="teamLabel">Additional Kindred Team Members</label>
-								<ul style="margin-top:-10px;" id="addedTeam"></ul>
-								<span id="addMoreTeamMembers" class="blue pointer">
-									<i class="fa fa-user-plus"></i> Add Additional Kindred Team Members</span>
-								<div id="team-members" style="display:none;">
-									<input placeholder="Search for Kindred Team Members" class="form-control" id="teamSearch" style="border:1px solid #ddd; border-radius:4px 4px 0px 0px;"/>
-									<ul id="teamList" style="border:1px solid #ddd; border-radius:0px 0px 4px 4px;"></ul>
+
+							<div>
+								<label style="display:inline-block;">Created By:</label>
+								<p style="display:inline-block;">{!event.CreatedBy.Name}</p>
+							</div>
+
+							<apex:outputPanel rendered="{!IF(event.CreatedById<>event.OwnerId, true, false)}">
+								<div>
+									<label style="display:inline-block;">Assigned To:</label>
+									<p style="display:inline-block;">{!event.Owner.Name}</p>
 								</div>
-							</div>
-							<label class="required" style="width: 100%;">*Date
-								<span style="padding-left:28%;">*Time</span>
-								<span style="padding-left:27%;">*Duration In Minutes</span>
-							</label>
-							<apex:input type="date" id="startDate" value="{!startDate}" style="height:37px; width:33%; margin-right:1%; display:inline-block;"
-							 styleClass="form-control" required="true" />
-							<apex:input type="time" id="startTime" value="{!startTime}" style="height:37px; width:32%; margin-right:1%; display:inline-block;"
-							 styleClass="form-control" required="true" />
-							<apex:input type="number" id="duration" value="{!duration}" style="height:37px; width:33%; display:inline-block;" styleClass="form-control"
-							 required="true" />
-							<!-- <apex:inputField styleClass="form-control" value="{!event.DurationInMinutes}" html-placeholder="Duration" required="true"/> -->
-							<!-- <label class="required" style="width: 100%;">*End Datetime</label> -->
-							<!-- <apex:input type="date" id="endDate" value="{!endDate}" style="height:37px; width:49%; margin-right:1%; display:inline-block;" styleClass="form-control" required="true"/> -->
-							<!-- <apex:input type="time" id="endTime" value="{!endTime}" style="height:37px; width:49%; display:inline-block;" styleClass="form-control" required="true"/> -->
-							<label class="required" style="width: 100%;">*Primary Contact</label>
-							<apex:inputHidden value="{!contactId}" id="contactId" required="true" />
-							<input class="form-control" placeholder="Contact" id="contact" value="{!contactName}" />
-							<ul class="form-control" id="contactList" style="display:none;"></ul>
+							</apex:outputPanel>
 
-							<apex:inputHidden value="{!additionalContactIdString}" id="additionalContactIds" />
-							<apex:inputHidden value="{!removeAdditionalContactIdString}" id="removeAdditionalContactIds" />
-							<ul id="addedContacts"></ul>
-							<ul class="form-control" id="addContactList" style="display:none;"></ul>
-							<div style="margin-top:5px;">
-								<span id="addMoreContacts" class="blue pointer">
-									<i class="fa fa-user-plus"></i> Add Additional Contacts</span>
+							<apex:outputPanel rendered="{!IF(event.SalesHD_Account_Strategy__c!=null, true, false)}">
+								<div>
+									<label style="display:inline-block;">Related Sales Plan Strategy:</label>
+									<a href="apex/SalesHD_SalesPlan?id={!event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__c}" style="display:inline-block;">
+										<b>Sales Plan</b> - {!CASE(MONTH(event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c),
+										1, "January", 2, "February", 3, "March", 4, "April", 5, "May", 6, "June", 7, "July", 8, "August", 9, "September",
+										10, "October", 11, "November", 12, "December", "None")&" "&TEXT(YEAR(event.SalesHD_Account_Strategy__r.Account_Sales_Plan__r.Parent_Sales_Plan__r.SalesHD_Plan_Date__c))}</a>
+								</div>
+							</apex:outputPanel>
+
+							<div id="additionalTeam" style="display:none;">
+								<label style="display:inline-block;">Additional Kindred Team Members:</label>
+								<p style="display:inline-block;"></p>
 							</div>
 
-							<label class="required" style="width: 100%;">*Account
-								<!-- <span style="padding-left:41%;">*Unit</span> -->
-							</label>
-							<apex:inputHidden value="{!accountId}" id="accountId" required="true" />
-							<input class="form-control" placeholder="Account" style="width:49%; margin-right:1%; display:inline-block;" id="account"
-							 value="{!accountName}" />
-							<!-- <apex:inputHidden value="{!unitId}" id="unitId" required="true" />
-							<input class="form-control" placeholder="Unit" style="width:49%; display:inline-block;" id="unit" value="{!unitName}" /> -->
-							<ul class="form-control" id="accountList" style="display:none; width:49%;"></ul>
-							<!-- <ul class="form-control" id="unitList" style="display:none; width:49%; margin-left:50% !important;"></ul> -->
-
-							<!-- <label class="required">*Type</label>
-							<apex:inputField styleClass="form-control" value="{!event.Type}" html-placeholder="Type" required="true" /> -->
-							
-							<label class="required">*Contact Method</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Contact_Method__c}" html-placeholder="Medium"
-							 required="true" />
-							
-							<label class="required">*Objective
-								<span class="educationtip" id="objective">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Call_Objective__c}" html-placeholder="Objective"
-							 required="true" />
-
-
-							 <label class="required">*Topic
-								<span class="educationtip" id="topic">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Topic__c}" html-placeholder="Topic"
-							 required="true" />
-
-							<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">PREPARATION</label>
-							<label class="required" style="width: 100%; {!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}">Last Encounter</label>
-							<apex:inputField styleClass="form-control" style="{!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}"
-							 value="{!event.SalesHD_Last_Encounter__c}" html-placeholder="Last Encounter" html-disabled="true" />
-							<label class="required" style="width: 100%;">*Open Ended Questions
-								<span class="educationtip" id="question">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
-							 required="true" />
-							<label style="width: 100%;">Marketing Collateral
-
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
-							/>
-							<label style="width: 100%;">Agenda
-								<span class="educationtip" id="agenda">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Agenda_Preparation__c}" html-placeholder="Agenda Preparation"
-							/>
-							<label style="width: 100%;">Data
-								<span class="educationtip" id="data">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
-							/>
-
-
-							<apex:outputPanel id="postCallPanel">
-								<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">POST CALL</label>
-								<p style="font-size:13px;" class="required">
-									*This section is requried after you complete the call.
+							<div>
+								<label style="display:inline-block;">Start/End Datetime:</label>
+								<p style="display:inline-block;">{!startDateFormated} to {!endDateFormated}</p>
+							</div>
+							<div>
+								<label style="display:inline-block;">Primary Contact:</label>
+								<p style="display:inline-block;">
+									<a href="/apex/SalesHD_contact?id={!event.WhoId}">{!event.Who.Name}</a>
 								</p>
+							</div>
+							<div id="additionalContacts" style="display:none;">
+								<label style="display:inline-block;">Additional Contacts:</label>
+								<p style="display:inline-block;"></p>
+							</div>
+							<div>
+								<label style="display:inline-block;">Account:</label>
+								<p style="display:inline-block;">
+									<a href="/apex/SalesHD_account?id={!event.WhatId}">{!event.What.Name}</a>
+								</p>
+							</div>
+							<apex:outputPanel rendered="{!NOT(CONTAINS(event.RecordType.Name,'Managed Care'))}">
+								<div>
+									<label style="display:inline-block;">Unit:</label>
+									<p style="display:inline-block;">
+										<a href="/apex/SalesHD_unit?id={!event.SalesHD_Account_Unit__c}">{!if(event.SalesHD_Account_Unit__r.Unit__r.Name="Administrative", "Global / Director", event.SalesHD_Account_Unit__r.Unit__r.Name)}</a>
+									</p>
+								</div>
+								<div>
+									<label style="display:inline-block;">Contact Method:</label>
+									<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
+								</div>
+							</apex:outputPanel>
 
-								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Close / Customer Commitment', 'Close / Customer Commitment')}</label>
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Close_Customer_Commitment__c}" html-placeholder="Close / Customer Commitment"
-								 id="closeCustomer" />
-								<script>replaceMultiselectButtons();</script>
+							<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
 
-								<!-- <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, false)}" style="display:inline-block;"> -->
+								<div>
+									<label style="display:inline-block;">Purpose:</label>
+									<p style="display:inline-block;">{!event.Subject__c}</p>
+								</div>
 
-								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Summary and Results', 'Summary and Results')}
-
-									<span class="educationtip" id="results">
-										<i class="fas fa-question-circle blue pointer"></i>
-									</span>
-								</label>
-
-								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results" />
-
-								<label style="width: 100%;">Summary and Results Continued
-
-									<span class="educationtip" id="results">
-										<i class="fas fa-question-circle blue pointer"></i>
-									</span>
-								</label>
-
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Results_Continued__c}" html-placeholder="Summary and Results Continued" />
-
-								<label style="width: 100%;">Next Steps / Follow-up Actions
-									<span class="educationtip" id="nextsteps">
-										<i class="fas fa-question-circle blue pointer"></i>
-									</span>
-								</label>
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Next_Encounter__c}" html-placeholder="Next Steps / Follow-up Encounter" onkeyup="showNextEncounter();"
-								/>
-								
-								<label style="width: 100%;">Complete</label>
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Complete__c}" style="width:15px;">
-									<apex:actionSupport event="onchange" rerender="postCallPanel" />
-								</apex:inputField>
 							</apex:outputPanel>
 
 
-
-							<div style="margin-top:20px;">
-								<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNew}" onclick="storeHtml();" oncomplete="loadPage();"
-								 value="Save" rerender="containerBlock" id="saveNew" style="vertical-align:bottom; margin-top:0px!important;" />
-								<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveAndNew}" onclick="storeHtml();" oncomplete="loadPage();"
-								 value="Save and New" rerender="containerBlock" id="saveAndNew" style="vertical-align:bottom; margin-top:0px!important; margin-left:10px!important;"
-								/>
-								<apex:commandButton styleClass="btn btn-secondary" value="Cancel" oncomplete="loadPage();" style="margin-top:0px!important; margin-left:10px!important;"
-								 onclick="window.history.back();" rerender="containerBlock" />
-								<apex:commandButton styleClass="btn btn-success" id="saveAndNext" status="statusSpinner" oncomplete="loadPage();" style="margin-left:10px!important;
-								 {!IF(ISBLANK(event.SalesHD_Next_Encounter__c), 'display:none;',
-								 IF($CurrentPage.parameters.duplicate='true', 'display:none;', 'display:inline-block;'))} vertical-align:bottom; margin-top:0px!important;"
-								 action="{!saveAndNext}" value="Save and Follow-up" rerender="containerBlock" />
+							<div>
+								<label style="display:inline-block;">Objective:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Call_Objective__c}</p>
 							</div>
 
+							<div>
+								<label style="display:inline-block;">Topic:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Topic__c}</p>
+							</div>
 
+							<label style="width:100%; border-top:1px solid #ddd;">PREPARATION</label>
+							<div>
+								<label style="{!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:inline-block;')}">Last Encounter:</label>
+								<p style="{!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:inline-block;')}">{!event.SalesHD_Last_Encounter__c}</p>
+							</div>
+							<div>
+								<label style="display:inline-block;">Open Ended Questions:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Open_Ended_Questions__c}</p>
+							</div>
+							<div>
+								<label style="display:inline-block;">Marketing Tool:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Marketing_Collateral__c}</p>
+							</div>
+							<div>
+								<label style="display:inline-block;">Agenda:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Agenda_Preparation__c}</p>
+							</div>
+							<div>
+								<label style="display:inline-block;">Data:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Data_Preparation__c}</p>
+							</div>
+
+							<div>
+								<label style="display:inline-block;">Attachments: </label>
+								<apex:repeat value="{!files}" var="f">
+									<br/>
+									<a href="/sfc/servlet.shepherd/version/download/{!f.Id}" class="blue-link" style="padding-right:10px;">{!f.Title}</a>
+									<apex:commandLink action="{!deleteFiles}" styleClass="delete-link" rerender="containerBlock" status="statusSpinner">
+										<i class="fas fa-trash-alt"></i> delete
+										<apex:param name="fileId" assignTo="{!fileId}" value="{!f.Id}" />
+									</apex:commandLink>
+								</apex:repeat>
+
+								<apex:actionStatus id="statusSpinner">
+									<apex:facet name="start">
+
+										<div class="slds-spinner_container" style="position:fixed; width:100vw; height:100vh;">
+											<div class="slds-spinner slds-spinner--large slds-spinner--brand">
+												<div class="slds-spinner__dot-a"></div>
+												<div class="slds-spinner__dot-b"></div>
+											</div>
+										</div>
+
+									</apex:facet>
+								</apex:actionStatus>
+
+								<apex:pageMessages />
+
+
+								<div>
+									<div style="padding: 2px 5px !important; font-size: 20px !important;" class="btn btn-primary" data-toggle="modal" data-target="#fileUploadModal">Upload Attachments</div>
+								</div>
+							</div>
+
+							<label style="width:100%; border-top:1px solid #ddd;">POST CALL</label>
+
+							<div>
+								<label style="display:inline-block;">Close / Customer Commitment: </label>
+								<p style="display:inline-block;">{!event.SalesHD_Close_Customer_Commitment__c}</p>
+							</div>
+							<div>
+								<label style="display:inline-block;">Summary and Results:</label>
+								<p style="display:inline-block;">{!event.Result__c}</p>
+							</div>
+							<apex:outputPanel rendered="{!if(event.SalesHD_Results_Continued__c!=null, True, False)}">
+								<div>
+									<label style="display:inline-block;">Summary and Results Continued:</label>
+									<p style="display:inline-block;">{!event.SalesHD_Results_Continued__c}</p>
+								</div>
+							</apex:outputPanel>
+							<div>
+								<label style="display:inline-block;">Next Encounter / Follow-up Actions:</label>
+								<p style="display:inline-block;">{!event.SalesHD_Next_Encounter__c}</p>
+							</div>
+
+							<div>
+								<label style="display:inline-block;">Complete:</label>
+								<p style="display:inline-block;">
+									<i class="fas {!If(event.SalesHD_Complete__c=true,'fa-check green','fa-times red')}"></i>
+								</p>
+							</div>
+
+							<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__c!=null}">
+								<label style="width:100%; border-top:1px solid #ddd;">MANAGER AUDIT</label>
+								<div>
+									<label style="display:inline-block;">Audited By:</label>
+									<p style="display:inline-block;">
+										{!relatedAudit.Encounter_Audit__r.Owner.Name}
+									</p>
+								</div>
+								<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__r.Audit_Result__c!=null}">
+									<div>
+										<label style="display:inline-block;">Audit Result:</label>
+										<p style="display:inline-block;">
+											{!relatedAudit.Encounter_Audit__r.Audit_Result__c}
+										</p>
+									</div>
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__r.Rating__c!=null}">
+									<div>
+										<label style="display:inline-block;">Audit Rating:</label>
+										<p class="{!if(relatedAudit.Encounter_Audit__r.Rating__c='Approved', 'text-success',
+										if(relatedAudit.Encounter_Audit__r.Rating__c='Needs Improvement', 'text-warning',
+										if(relatedAudit.Encounter_Audit__r.Rating__c='Rejected', 'text-danger', '')))}" style="display:inline-block;">
+											{!relatedAudit.Encounter_Audit__r.Rating__c}
+										</p>
+									</div>
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!relatedAudit.Encounter_Audit__r.Manager_Comment__c!=null}">
+									<div>
+										<label style="display:inline-block;">Manager Audit Comment:</label>
+										<p style="display:inline-block;">
+											{!relatedAudit.Encounter_Audit__r.Manager_Comment__c}
+										</p>
+									</div>
+								</apex:outputPanel>
+							</apex:outputPanel>
+
+
+							<div style="margin-top:20px;">
+								<div class="alert alert-primary" role="alert" id="emailSent">
+									An invite has been sent to your Outlook Calendar.
+								</div>
+							</div>
+
+							<!-- <apex:outputPanel rendered="{!isManager=false || event.SalesHD_Encounter_Audit__c!=null}">
+								<div>
+								<apex:outputPanel rendered="{!IF(event.SalesHD_Encounter_Audit__c='Approved', true, false)}">
+									<b>Manager Audit: </b> <div class="bg-success audit">
+										<i class="fas fa-check-circle"></i> Approved</div>
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!IF(event.SalesHD_Encounter_Audit__c='Needs Review', true, false)}">
+									<b>Manager Audit: </b> <div class="bg-warning audit">
+										<i class="fas fa-minus-circle"></i> Needs Review</div>
+								</apex:outputPanel>
+								<apex:outputPanel rendered="{!IF(event.SalesHD_Encounter_Audit__c='Rejected', true, false)}">
+									<b>Manager Audit: </b> <div class="bg-danger audit">
+										<i class="fas fa-times-circle"></i> Rejected</div>
+								</apex:outputPanel>
+							</div>
+							<apex:outputPanel rendered="{!isManager=false}">
+							<div style="margin-top:10px;">
+								<b style="vertical-align:top;">CL Audit Comments: </b><apex:inputTextarea></apex:inputTextarea>
+							</div>
+						</apex:outputPanel>
+							</apex:outputPanel> -->
+
+
+
+							<apex:outputPanel rendered="{!IF(event.OwnerId=$User.Id, true, false)}">
+
+								<apex:outputPanel rendered="{!NOT(CONTAINS(event.RecordType.Name,'Managed Care'))}">
+
+									<div style="margin-top:20px;">
+										<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_ManagedCareNewEncounter?id={!event.Id}';"
+										 style="margin-top:-7px!important" />
+										<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Relate to Sales Plan"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_RelateToSalesPlan?eid={!event.Id}';" />
+										<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_ManagedCareNewEncounter?id={!event.Id}&duplicate=true';"
+										/>
+										<div class="btn btn-danger" style="margin-left:5px!important; margin-top:-7px!important; padding-top:3px!important;  padding-bottom:3px!important;"
+										 data-toggle="modal" data-target="#deleteModal">Delete</div>
+										<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';" />
+										<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
+										 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
+									</div>
+
+								</apex:outputPanel>
+
+								<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
+
+									<div style="margin-top:20px;">
+										<apex:commandButton styleClass="btn btn-primary" value="Edit" rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_ManagedCareNewEncounter?id={!event.Id}';"
+										 style="margin-top:-7px!important" />
+										<apex:commandButton styleClass="btn btn-secondary" style="margin-left:10px!important; margin-top:-7px!important;" value="Duplicate"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_ManagedCareNewEncounter?id={!event.Id}&duplicate=true';"
+										/>
+										<div class="btn btn-danger" style="margin-left:5px!important; margin-top:-7px!important; padding-top:3px!important;  padding-bottom:3px!important;"
+										 data-toggle="modal" data-target="#deleteModal">Delete</div>
+										<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Complete"
+										 rerender="containerBlock" onclick="window.location.href='/apex/SalesHD_CompleteEncounter?id={!event.Id}';" />
+										<apex:commandButton styleClass="btn btn-primary" style="margin-left:10px!important; margin-top:-7px!important;" value="Add to Outlook"
+										 rerender="containerBlock" action="{!addToOutlook}" oncomplete="emailSent();" />
+									</div>
+
+								</apex:outputPanel>
+
+
+							</apex:outputPanel>
+
+							<!-- <apex:outputPanel rendered="{!isManager && event.Encounter_Audit__r.Audit_Result__c==null}">
+
+								<div>
+									<label style="display:inline-block;">Manager Audit: </label>
+									<p style="display:inline-block;">{!event.Encounter_Audit__r.Rating__c}</p>
+									<apex:inputField style="display: inline-block;" styleClass="form-control" value="{!event.Encounter_Audit__r.Audit_Result__c}" html-placeholder="Audit Result"/>
+								</div>
+
+								
+							</apex:outputPanel> -->
+							<!-- <apex:outputPanel rendered="{!isManager && event.SalesHD_Encounter_Audit__c==null}">
+								<div>
+									<apex:commandButton styleClass="btn btn-success" style="margin-left:10px!important; margin-top:-7px!important;" value="Approved"
+									 rerender="containerBlock" action="{!auditApproved}" />
+									<apex:commandButton styleClass="btn btn-warning" style="margin-left:10px!important; margin-top:-7px!important;" value="Needs Review"
+									 rerender="containerBlock" action="{!auditReview}" />
+									<apex:commandButton styleClass="btn btn-danger" style="margin-left:10px!important; margin-top:-7px!important;" value="Rejected"
+									 rerender="containerBlock" action="{!auditRejected}" />
+								</div>
+
+								<apex:selectList multiselect="false" size="1" style="margin:10px;">
+									<apex:selectOption itemValue="" itemLabel="" />
+									<apex:selectOption itemValue="Asking for business" itemLabel="Asking for business" />
+									<apex:selectOption itemValue="Referral managing" itemLabel="Referral managing" />
+									<apex:selectOption itemValue="No strategy" itemLabel="No strategy" />
+									<apex:selectOption itemValue="No next steps" itemLabel="No next steps" />
+									<apex:selectOption itemValue="Did not use all fields" itemLabel="Did not use all fields" />
+								</apex:selectList>
+
+							</apex:outputPanel> -->
+						</apex:form>
+
+						<apex:pageMessages />
+
+					</apex:outputPanel>
+
+
+
+				</div>
+			</div>
+
+			<div class="modal fade" id="deleteModal">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header bg-danger">
+							<h3 class="bold">
+								<i aria-hidden="true" class="fa fa-bed" style="padding-right:10px;"></i> Delete Encounter</h3>
+						</div>
+						<div class="modal-body">
+							Are you sure that you want to delete this encounter {!event.Who.Name}?
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding-top:1px!important;  padding-bottom:1px!important;">Cancel</button>
+							<apex:form >
+								<apex:commandButton styleClass="btn btn-danger" style="margin-left:5px!important;" value="Delete" action="{!deleteEvent}"
+								/></apex:form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="fileUploadModal">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header icon-blue">
+							<h3 class="bold">
+								Upload Attachments
+							</h3>
+						</div>
+						<apex:form >
+							<div class="modal-body">
+								<apex:inputFile value="{!file}" fileName="{!fileName}" />
+							</div>
+							<div class="modal-footer">
+								<apex:actionRegion >
+									<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!uploadFiles}" value="Upload" />
+								</apex:actionRegion>
+								<button style="padding:2px 20px !important;" type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+							</div>
 							<apex:actionStatus id="statusSpinner">
 								<apex:facet name="start">
 
@@ -903,52 +1063,10 @@
 							</apex:actionStatus>
 
 							<apex:pageMessages />
-
 						</apex:form>
-					</apex:outputPanel>
-
-					<apex:form >
-						<apex:outputPanel id="recurrencePanel">
-							<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">Recurring Event</label>
-							<apex:inputcheckbox styleClass="form-control" value="{!event.IsRecurrence}" style="width:15px;">
-								<apex:actionSupport event="onclick" rerender="recurrencePanel" action="{!recurrenceClicked}" />
-							</apex:inputcheckbox>
-
-							<apex:outputPanel rendered="{!displayRecurrence}">
-								<label style="width: 100%;">Recurrence Interval</label>
-								<apex:selectList multiselect="false" size="1" value="{!selectedRecurrenceType}">
-									<apex:selectOption itemLabel="Daily" itemValue="RecursDaily" />
-									<apex:selectOption itemLabel="Weekly" itemValue="RecursWeekly" />
-									<apex:selectOption itemLabel="Monthly" itemValue="RecursMonthly" />
-									<apex:actionSupport event="onchange" rerender="recurrencePanel" action="{!selectRecurrenceType}" />
-								</apex:selectList>
-							</apex:outputPanel>
-
-						</apex:outputPanel>
-					</apex:form>
-
-				</div>
-			</div>
-
-			<div class="modal fade" id="educationModal">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-header icon-blue">
-							<h3 class="bold">
-								<i aria-hidden="true" class="far fa-question-circle" style="padding-right:10px;"></i>
-								<span id="education-title"></span>
-							</h3>
-						</div>
-						<div class="modal-body">
-							<p id="education-body" style="font-size:15px;"></p>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-						</div>
 					</div>
 				</div>
 			</div>
-
 
 		</div>
 		<!-- Lightning Wrapper -->
@@ -960,300 +1078,26 @@
 		<script src="//code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
 		<script>
 
-			var educationtips = {
-				"objective": { "title": "Objective", "body": "<b>Definition:</b> The call objective conveys the primary purpose of the encounter. What do you hope to achieve with the customer?</br></br><b>Instructions:</b> Clearly understand the purpose for the call and/or the desired outcome." },
-				"question": { "title": "Open Ended Questions", "body": "<b>Definition:</b> A question that initiates dialogue to propel the conversation in the direction of the encounter’s strategic topic and objective. These questions cannot be answered with a “yes” or “no” response. An open-ended question allows the respondent to include more information to clarify their own knowledge, thoughts and feelings. Open-ended questions result in more meaningful conversations, creating a deeper connection to the customer.</br></br><b>Instructions:</b> Prepare 2 or 3 questions to identify customer’s needs that cannot be answered in a short or single-word answer. Prepare these questions without assumption of the a customer’s current situation. Then actively LISTEN to form a response that provides a solution to their need.</br></br><b>Example:</b> What is the protocol for discharging ventilator patients from the ICU? Typically, what is the reason for a patient’s extended stay? What types of patients are you seeing in your unit today?" },
-				"results": { "title": "Summary and Results", "body": "<b>Definition:</b> This section describes what took place during the encounter</br></br><b>Instructions:</b> Only document what was accomplished or not as they tie to the objective of the call and the sales plan. Use the ARF method of documenting (Action, Results, Follow Up)</br></br><b>Example:</b> Dr. Cooper stated he knew very little about LTACH LOC.  He used to work at the IRF across the street and prefers to D/C patients to that clinical setting.  Education provided on our high acuity clinical capabilities. Discussion on benefits of using TCHs.Dr. Cooper met CEO, CCO, Med Dir and RT Director.  Surprised that we are a \"hospital.\"  Agreed to consider credentialing." },
-				"data": { "title": "Data", "body": "<b>Definition:</b> Any data items that will be presented during the encounter that are relevant to the objective.</br></br><b>Instructions:</b> Make sure the data is timely and professional.  The data should be relevant to the topic and objective of the encounter.</br></br><b>Example:</b> >$1.3MM MedPAR opportunity (ICU-specific) for St. Joseph’s hospital. 2019 Discharge Disposition – RTA 6%, LLOC 68%." },
-				"topic": { "title": "Topic", "body": "<b>Definition:</b>  What is the primary topic you will focus on?</br></br><b>Instructions:</b> Select the encounter topic that best conveys the primary focus during the encounter. For reporting purposes, only ONE topic can be chosen for each encounter. If multiple topics were discussed, choose the topic that was most imperative in helping to accomplish the desired objective." },
-				"agenda": { "title": "Topic", "body": "<b>Definition:</b> The planned discussion points to be delivered during the encounter and which Kindred representative will be presenting them.</br></br><b>Instructions:</b> List the pre-planned topics to be discussed. All Kindred participants should be listed here.</br></br><b>Example:</b></br>- Initial introductions with Dr. Cooper (all)</br>- Discuss vent weaning protocol (Amy)</br>- Review quality sheet (Dan)</br>- Potential dates for in-service with pulmonary group (Amy)" },
-				"nextsteps": {"title": "Next Steps / Follow-up Actions", "body": "<b>Definition:</b> The actionable items that are required as follow-up from the information gathered during the current encounter.  These next steps allow for sequential messaging to create continued dialogue for a next encounter.  (Notes written from this section will populate in the next call scheduled.)</br></br><b>Instructions:</b> Tie this section to the discussion documented in the Summary & Results section. During the discussion, what steps were discovered that will continue Kindred’s value proposition in the next discussion?Include any notes or reminders will you want to bring into the next encounter.</br></br><b>Example:</b> Follow-up with quality outcomes for vent patients at Kindred. Educate on benefits of sending patients to KND before IRF if clinically appropriate. Find relevant success story.Dr. Cooper will tour KND LTACH next Thurs."},
-			};
-
-			var addedContacts = [];
-			var removeContacts = [];
-
-			var addedTeam = [];
-			var removeTeam = [];
-
-			var contactHtml = '';
-			var additionalContactHtml = '';
-			var accountHtml = '';
-			var unitHtml = '';
-			var unitListHtml = '';
-
 			$(document).ready(function () {
 
-				replaceMultiselectButtons();
-				loadPage();
-
-				$(document).on("click", ".educationtip", function () {
-					$("#education-title").text(educationtips[$(this).attr('id')].title);
-					$("#education-body").html(educationtips[$(this).attr('id')].body);
-					$('#educationModal').modal('show');
-				});
-
-				$(document).on("click", "#addMoreContacts", function () {
-					$('#addContactList').show();
-				});
-
-				$(document).on("click", "#addMoreTeamMembers", function () {
-					$('#team-members').show();
-				});
-
-			});
-
-			function showNextEncounter() {
-				if ('{!$CurrentPage.parameters.duplicate}' != 'true') {
-					document.getElementById('{!$Component.encounterForm.saveAndNext}').style.display = 'inline-block';
-				}
-			}
-
-			function replaceMultiselectButtons() {
-				$("#j_id0\\:encounterForm\\:closeCustomer_right_arrow").replaceWith('<i style="font-size:50px;" class="fas fa-arrow-circle-right blue"></i>');
-				$("#j_id0\\:encounterForm\\:closeCustomer_left_arrow").replaceWith('<i style="font-size:50px;" class="fas fa-arrow-circle-left blue"></i>');
-			}
-
-			function removeAddedContact(id) {
-				$("#addedContact-" + id).remove();
-
-				var index = addedContacts.indexOf(id);
-
-				if (index !== -1) {
-					addedContacts.splice(index, 1);
-					removeContacts.push(id);
-					document.getElementById('{!$Component.encounterForm.removeAdditionalContactIds}').value = removeContacts.join();
-				}
-
-			}
-
-			function removeAddedTeam(id) {
-				$("#addedTeam-" + id).remove();
-
-				var index = addedTeam.indexOf(id);
-
-				if (index !== -1) {
-					addedTeam.splice(index, 1);
-					removeTeam.push(id);
-					document.getElementById('{!$Component.encounterForm.removeAdditionalTeamIds}').value = removeTeam.join();
-					if (addedTeam.length == 0) $("#teamLabel").hide();
-				}
-
-			}
-
-			function loadPage() {
-
-				if ('{!JSENCODE(contactName)}' == '') $("#contact").val(contactHtml);
-				if ('{!JSENCODE(accountName)}' == '') $("#account").val(accountHtml);
-				if ('{!JSENCODE(unitName)}' == '') $("#unit").val(unitHtml);
-				if ({!unitList
-			}.length == 0) $("#unitList").html(unitListHtml);
-			$("#addedContacts").html(additionalContactHtml);
-
-			if ('{!JSENCODE(contactName)}' != '' || contactHtml != '') $("#addMoreContacts").show();
-
-			$("#unit").attr("name", Math.random().toString(36).substring(7));
-			$("#contact").attr("name", Math.random().toString(36).substring(7));
-			$("#account").attr("name", Math.random().toString(36).substring(7));
-
-			var additionalContacts = {!additionalContactsString
+				var additionalContacts = {!additionalContactsString
 			};
 			if (!isEmpty(additionalContacts)) {
+				$("#additionalContacts").show();
 				for (var contactId in additionalContacts) {
-					addedContacts.push(contactId);
-					$("#addedContacts").append('<li id="addedContact-' + contactId + '">' +
-						additionalContacts[contactId] + ' <span style="float:right;" onclick="removeAddedContact(\'' + contactId + '\');"><i class="fas fa-times"></i></span></li>');
+					$("#additionalContacts p").append('<a style="margin-right:10px;" href="/apex/SalesHD_contact?id=' + contactId + '">' + additionalContacts[contactId] + '</a>');
 				}
-				document.getElementById('{!$Component.encounterForm.additionalContactIds}').value = addedContacts.join();
 			}
 
-			var additionalTeamMembers = {!additionalTeamString
+			var additionalTeam = {!additionalTeamString
 			};
-			if (!isEmpty(additionalTeamMembers)) {
-				$("#teamLabel").show();
-				for (var userId in additionalTeamMembers) {
-					addedTeam.push(userId);
-					$("#addedTeam").append('<li id="addedTeam-' + userId + '">' +
-						additionalTeamMembers[userId] + ' <span style="float:right;" onclick="removeAddedTeam(\'' + userId + '\');"><i class="fas fa-times"></i></span></li>');
+			if (!isEmpty(additionalTeam)) {
+				$("#additionalTeam").show();
+				for (var userId in additionalTeam) {
+					$("#additionalTeam p").append('<span style="margin-right:10px; text-decoration:underline;">' + additionalTeam[userId] + '</span>');
 				}
-				document.getElementById('{!$Component.encounterForm.additionalTeamIds}').value = addedTeam.join();
 			}
-
-			if ({!unitList}.length > 0) $("#unitList").html('');
-			for (var unit of {!unitList}) {
-				if (unit.Unit__r.Name == 'Administrative') $("#unitList").append('<li data-unitid="' + unit.Id + '">Global / Director</li>');
-				else $("#unitList").append('<li data-unitid="' + unit.Id + '">' + unit.Unit__r.Name + '</li>');
-			}
-			$(document).on("click", '#unitList li', function () {
-				$('#unit').val($(this).text()).data('unitid', $(this).data('unitid'));
-				document.getElementById('{!$Component.encounterForm.unitId}').value = $(this).data('unitid');
-			});
-
-			$(document).on("click", '#contact', function () {
-				$('#contactList').show();
-			});
-
-			$(document).on("click", '#account', function () {
-				$('#accountList').show();
-			});
-
-			$(document).on("click", '#unit', function () {
-				$('#unitList').show();
-			});
-
-			$(document).click(function (e) {
-				if (!$('#contact').is(e.target) && $('#contact').has(e.target).length === 0) {
-					$('#contactList').hide();
-				}
-			});
-
-			$(document).click(function (e) {
-				if (!$('#addMoreContacts').is(e.target) && $('#addMoreContacts').has(e.target).length === 0) {
-					$('#addContactList').hide();
-				}
-			});
-
-			$(document).click(function (e) {
-				if (!$('#addMoreTeamMembers').is(e.target) && $('#addMoreTeamMembers').has(e.target).length === 0 &&
-					!$('#teamSearch').is(e.target) && $('#teamSearch').has(e.target).length === 0) {
-					$('#team-members').hide();
-				}
-			});
-
-			$(document).click(function (e) {
-				if (!$('#account').is(e.target) && $('#account').has(e.target).length === 0) {
-					$('#accountList').hide();
-				}
-			});
-
-			$(document).click(function (e) {
-				if (!$('#unit').is(e.target) && $('#unit').has(e.target).length === 0) {
-					$('#unitList').hide();
-				}
-			});
-
-			$('#contact').keyup(function () {
-				$("#contactList li").each(function () {
-					if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#contact").val().toUpperCase().replace(/\s/g, '')) > -1) {
-						$(this).show();
-					} else {
-						$(this).hide();
-					}
-				});
-			});
-
-			$('#teamSearch').keyup(function () {
-				$("#teamList li").each(function () {
-					if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#teamSearch").val().toUpperCase().replace(/\s/g, '')) > -1) {
-						$(this).show();
-					} else {
-						$(this).hide();
-					}
-				});
-			});
-
-
-			$('#account').keyup(function () {
-				$("#accountList li").each(function () {
-					if ($(this).text().toUpperCase().replace(/\s/g, '').indexOf($("#account").val().toUpperCase().replace(/\s/g, '')) > -1) {
-						$(this).show();
-					} else {
-						$(this).hide();
-					}
-				});
-			});
-
-
-			SalesHD_Event.getTeam(function (callback, event) {
-				var data = JSON.parse(callback);
-				for (var teamMember of data) {
-					$("#teamList").append('<li data-userid="' + teamMember.Id + '">' + teamMember.Name + '</li>');
-				}
-
-				$(document).on("click", '#teamList li', function () {
-					if (!addedTeam.includes($(this).data('userid'))) {
-						$('#addedTeam').append('<li id="addedTeam-' + $(this).data('userid') + '">' + $(this).text() + ' <span style="float:right;" onclick="removeAddedTeam(\'' + $(this).data('userid') + '\');"><i class="fas fa-times"></i></span></li>');
-						addedTeam.push($(this).data('userid'));
-						$("#teamLabel").show();
-						var index = removeTeam.indexOf($(this).data('userid'));
-
-						if (index !== -1) {
-							removeTeam.splice(index, 1);
-							document.getElementById('{!$Component.encounterForm.removeAdditionalTeamIds}').value = removeTeam.join();
-						}
-
-						document.getElementById('{!$Component.encounterForm.additionalTeamIds}').value = addedTeam.join();
-					}
-
-				});
-
-			}, { escape: false });
-
-
-
-			SalesHD_Event.getContacts(function (callback, event) {
-				var data = JSON.parse(callback);
-				$("#contactList").html('');
-				$("#addContactList").html('');
-				for (var contacts of data) {
-					var contact = contacts.Contact__r;
-					$("#contactList").append('<li data-contactid="' + contact.Id + '">' + contact.Name + '</li>');
-					$("#addContactList").append('<li data-contactid="' + contact.Id + '">' + contact.Name + '</li>');
-				}
-				$(document).on("click", '#contactList li', function () {
-
-					$("#addMoreContacts").show();
-
-					$('#contact').val($(this).text()).data('contactid', $(this).data('contactid'));
-					document.getElementById('{!$Component.encounterForm.contactId}').value = $(this).data('contactid');
-				});
-
-				$(document).on("click", '#addContactList li', function () {
-					if (!addedContacts.includes($(this).data('contactid'))) {
-						$('#addedContacts').append('<li id="addedContact-' + $(this).data('contactid') + '">' + $(this).text() + ' <span style="float:right;" onclick="removeAddedContact(\'' + $(this).data('contactid') + '\');"><i class="fas fa-times"></i></span></li>');
-						addedContacts.push($(this).data('contactid'));
-
-						var index = removeContacts.indexOf($(this).data('contactid'));
-
-						if (index !== -1) {
-							removeContacts.splice(index, 1);
-							document.getElementById('{!$Component.encounterForm.removeAdditionalContactIds}').value = removeContacts.join();
-						}
-
-						document.getElementById('{!$Component.encounterForm.additionalContactIds}').value = addedContacts.join();
-					}
-
-				});
-
-			}, { escape: false });
-
-			SalesHD_Event.getAccounts(function (callback, event) {
-				var data = JSON.parse(callback);
-				$("#accountList").html('');
-				for (var account of data) {
-					$("#accountList").append('<li data-accountid="' + account.AccountId + '">' + account.Account.Name + '</li>');
-				}
-				$(document).on("click", '#accountList li', function () {
-					$('#account').val($(this).text()).data('accountid', $(this).data('accountid'));
-					document.getElementById('{!$Component.encounterForm.accountId}').value = $(this).data('accountid');
-
-					SalesHD_Event.getUnits($(this).data('accountid'), function (callback, event) {
-						var data = JSON.parse(callback);
-						$("#unitList").html('');
-						for (var unit of data) {
-							// $("#unitList").append('<li data-unitid="'+unit.Id+'">'+unit.Unit__r.Name+'</li>');
-							if (unit.Unit__r.Name == 'Administrative') $("#unitList").append('<li data-unitid="' + unit.Id + '">Global / Director</li>');
-							else $("#unitList").append('<li data-unitid="' + unit.Id + '">' + unit.Unit__r.Name + '</li>');
-						}
-						$(document).on("click", '#unitList li', function () {
-							$('#unit').val($(this).text()).data('unitid', $(this).data('unitid'));
-							document.getElementById('{!$Component.encounterForm.unitId}').value = $(this).data('unitid');
-						});
-					}, { escape: false });
-
-				});
-			}, { escape: false });
-}
+});
 
 			function isEmpty(obj) {
 				for (var key in obj) {
@@ -1263,13 +1107,8 @@
 				return true;
 			}
 
-
-			function storeHtml() {
-				contactHtml = $("#contact").val();
-				accountHtml = $("#account").val();
-				unitHtml = $("#unit").val();
-				unitListHtml = $("#unitList").html();
-				additionalContactHtml = $("#addedContacts").html();
+			function emailSent() {
+				$("#emailSent").slideDown().delay(3500).slideUp();
 			}
 
 		</script>

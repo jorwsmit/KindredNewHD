@@ -774,7 +774,7 @@
             <button data-weekly="true" class="btn btn-primary rounded weekly-monthly weekly-monthly-selected" style="padding-top:5px!important; padding-bottom:5px!important; margin-bottom:10px;">Weekly</button>
             <button id="monthly" data-weekly="false" class="btn btn-primary rounded weekly-monthly" style="padding-top:5px!important; padding-bottom:5px!important; margin-bottom:10px;">Monthly</button>
 
-            <apex:outputPanel rendered="{!IF(OR(CONTAINS($Profile.Name, 'Manager'), CONTAINS($Profile.Name, 'Admin')), true, false)}">
+            <apex:outputPanel rendered="{!IF(OR(CONTAINS($Profile.Name, 'Manager'), CONTAINS($Profile.Name, 'Admin'), CONTAINS($Profile.Name, 'Leader')), true, false)}">
               <button class="btn btn-secondary rounded" id="cl-button" style="padding: 5px !important; width:150px; margin-top:-10px;"
                 data-toggle="modal" data-target="#clModal">Select CL</button>
               <div>
@@ -940,7 +940,7 @@
 
         sessionStorage.removeItem("hdBreadcrumb");
 
-        if ({!IF(OR(CONTAINS($Profile.Name, 'Manager'), CONTAINS($Profile.Name, 'Admin')), true, false)
+        if ({!IF(OR(CONTAINS($Profile.Name, 'Manager'), CONTAINS($Profile.Name, 'Admin'), CONTAINS($Profile.Name, 'Leader')), true, false)
       }){
         SalesHD_Event.getUsersUnderRoleId('{!$UserRole.Id}', function (users, event) {
           for (user of users) {

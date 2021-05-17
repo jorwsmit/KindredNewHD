@@ -54,6 +54,10 @@ public List<Event> getRelatedEvents(){
 	return new List<Event>();
 }
 
+public List<Report> getReports(){
+	return [select Id, Name FROM Report where FolderName='HD Managed Care Reports' order by Name asc];
+}
+
 
 public List<Contact> getRelatedContacts(){
 	if(recordId!=null && objectKeys.containsKey(String.valueOf(recordId).substring(0,3)) &&
@@ -327,6 +331,22 @@ public PageReference favorite(){
 				}
 			}
 		}
+	}
+	return null;
+}
+
+public String relatedAccountId {get; set;}
+public Pagereference deleteAccountRelation(){
+	List<Account_Unit__c> aus = [select Id from Account_Unit__c where Account__c=:relatedAccountId and Unit__r.Name='Administrative'];
+	List<Account_unit_contact__c> auc = [select id from account_unit_contact__c where account_unit__c in :aus and Contact__c=:recordId];
+	try{
+		if(!auc.isEmpty()) delete auc;
+		// Pagereference page = new PageReference('/apex/saleshd_managedcarecontact?id='+auc[0].Id);
+		// page.setredirect(true);
+		// return page;
+	} catch(DmlException ex) {
+		ApexPages.addMessages(ex);
+		return null;
 	}
 	return null;
 }
@@ -631,28 +651,32 @@ public class DataYOY{
 	public Integer py {get; set;}
 	public Integer referralsPy {get; set;}
 	public Integer admitsPy {get; set;}
-	public Integer conversionPy {get; set;}
+	public Decimal conversionPy {get; set;}
 	public Integer revenuePy {get; set;}
 
 	public Integer cy {get; set;}
 	public Integer referralsCy {get; set;}
 	public Integer admitsCy {get; set;}
-	public Integer conversionCy {get; set;}
+	public Decimal conversionCy {get; set;}
 	public Integer revenueCy {get; set;}
 }
 
 public DataYOY getDataYoy(){
 	DataYOY data = new DataYOY();
-	data.py = 2019;
+	data.py = System.now().year()-1;
+	// Integer referrals = Integer.valueOf(Math.random()*500);
+	// Integer admits = Integer.valueOf(referrals*Math.random());
 	data.referralsPy = Integer.valueOf(Math.random()*500);
-	data.admitsPy = Integer.valueOf(data.referralsPy * 0.734);
-	data.conversionPy = Integer.valueOf(data.referralsPy * 0.215);
+	data.admitsPy = Integer.valueOf(data.referralsPy*Math.random());
+	data.conversionPy = ((Decimal.valueOf(data.admitsPy)/Decimal.valueOf(data.referralsPy))*100).setScale(2);
 	data.revenuePy = Integer.valueOf(Math.random()*1000000);
 
-	data.cy = 2020;
-	data.referralsCy = Integer.valueOf(Math.random()*600);
-	data.admitsCy = Integer.valueOf(data.referralsCy * 0.734);
-	data.conversionCy = Integer.valueOf(data.referralsCy * 0.215);
+	data.cy = System.now().year();
+	// referrals = Integer.valueOf(Math.random()*500);
+	// admits = Integer.valueOf(referrals*Math.random());
+	data.referralsCy = Integer.valueOf(Math.random()*500);
+	data.admitsCy = Integer.valueOf(data.referralsCy * (Math.random()));
+	data.conversionCy = ((Decimal.valueOf(data.admitsCy)/Decimal.valueOf(data.referralsCy))*100).setScale(2);
 	data.revenueCy = Integer.valueOf(Math.random()*1500000);
 	
 	return data;

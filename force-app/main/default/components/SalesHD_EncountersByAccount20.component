@@ -47,13 +47,14 @@
                     google.load('visualization', '1', { packages: ['corechart'], callback: drawAccountChart });
                 }
                 function drawAccountChart() {
-
-                    var data = new google.visualization.DataTable({!encountersByAccount20});
+                    console.log([{!encountersByAccount20}]);
+                    var data = new google.visualization.arrayToDataTable([{!encountersByAccount20}]);
 
                 var options = {
                     height: 500,
                     title: 'Encounters by Account Top 20',
-                    backgroundColor: { fill: 'transparent' }
+                    backgroundColor: { fill: 'transparent' },
+                    isStacked: true
                 };
 
                 var chart = new google.visualization.BarChart(document.getElementById("encountersByAccount20"));

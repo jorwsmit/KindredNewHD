@@ -89,10 +89,14 @@
                                     <apex:selectOptions value="{!statePicklist}" />
                                     <apex:actionsupport event="onchange" action="{!searchContacts}" reRender="contactSearch" />
                                 </apex:selectList>
-                                <apex:selectList size="1" value="{!selectedRelationship}">
-                                    <apex:selectOptions value="{!relationshipPicklist}" />
+                                <apex:selectList size="1" value="{!selectedType}">
+                                    <apex:selectOptions value="{!typePicklist}" />
                                     <apex:actionsupport event="onchange" action="{!searchContacts}" reRender="contactSearch" />
                                 </apex:selectList>
+                                <!-- <apex:selectList size="1" value="{!selectedRelationship}">
+                                    <apex:selectOptions value="{!relationshipPicklist}" />
+                                    <apex:actionsupport event="onchange" action="{!searchContacts}" reRender="contactSearch" />
+                                </apex:selectList> -->
                             </div>
                         </div>
                     </div>
@@ -112,8 +116,9 @@
                                 <thead>
                                     <tr>
                                         <th>Contact Name</th>
-                                        <th>Address</th>
-                                        <th>Relationship</th>
+                                        <th>State</th>
+                                        <!-- <th>Relationship</th> -->
+                                        <th>Title</th>
                                         <th>Last Activity</th>
                                     </tr>
                                 </thead>
@@ -126,8 +131,9 @@
                                                     <b>{!c.contact__r.name}</b>
                                                 </a>
                                             </td>
-                                            <td>{!c.contact__r.MailingAddress__c}</td>
-                                            <td>{!c.contact__r.SalesHD_Managed_Care_Relationship__c}</td>
+                                            <td>{!c.contact__r.MailingState}</td>
+                                            <!-- <td>{!c.contact__r.SalesHD_Managed_Care_Relationship__c}</td> -->
+                                            <td>{!c.contact__r.Title__c}</td>
                                             <td>
                                                 <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
                                                     <apex:param value="{!c.contact__r.LastActivityDate}" />
@@ -161,8 +167,9 @@
                                 <thead>
                                     <tr>
                                         <th>Contact Name</th>
-                                        <th>Address</th>
-                                        <th>Relationship</th>
+                                        <th>State</th>
+                                        <!-- <th>Relationship</th> -->
+                                        <th>Title</th>
                                         <th>Last Activity</th>
                                     </tr>
                                 </thead>
@@ -175,8 +182,9 @@
                                                     <b>{!c.name}</b>
                                                 </a>
                                             </td>
-                                            <td>{!c.MailingAddress__c}</td>
-                                            <td>{!c.SalesHD_Managed_Care_Relationship__c}</td>
+                                            <td>{!c.MailingState}</td>
+                                            <!-- <td>{!c.SalesHD_Managed_Care_Relationship__c}</td> -->
+                                            <td>{!c.Title__c}</td>
                                             <td>
                                                 <apex:outputText value="{0,date,MM'/'dd'/'yyyy}">
                                                     <apex:param value="{!c.LastActivityDate}" />

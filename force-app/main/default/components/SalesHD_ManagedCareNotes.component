@@ -89,7 +89,7 @@
             </apex:outputPanel>
             <apex:outputPanel rendered="{!notes.size>0}">
                 <div class="col-12 p-3 justify-content-md-center text-center mt-3" style="background-color: #E0E5E6;">
-                    <h4>Others Notes</h4>
+                    <h4>Team Member Notes</h4>
                 </div>
                 <ul>
                     <apex:repeat value="{!notes}" var="n">

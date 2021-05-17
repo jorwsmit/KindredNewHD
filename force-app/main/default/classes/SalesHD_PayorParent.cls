@@ -1,6 +1,6 @@
 public with sharing class SalesHD_PayorParent {
 
-    public Payor_Parent__c payorParent {get; set;}
+    public Account payorParent {get; set;}
     public String selectedState {get; set;}
     public String selectedPayorType {get; set;}
     public String searchString {get; set;}
@@ -10,7 +10,7 @@ public with sharing class SalesHD_PayorParent {
 
     public SalesHD_PayorParent(ApexPages.StandardController stdController) {
 
-        payorParent = (Payor_Parent__c)stdController.getRecord();
+        payorParent = (Account)stdController.getRecord();
         
         setupAccountStandardSetSetup();
     }
@@ -27,16 +27,16 @@ public with sharing class SalesHD_PayorParent {
         return picklist;
     }
 
-    public List<Selectoption> getPayorTypePicklist(){
-        List<Selectoption> picklist = new List<selectoption>();
-        picklist.add(new selectOption('', 'Payor Type'));
-         Schema.DescribeFieldResult fieldResult = Account.SalesHD_MCO_Payor_Type__c.getDescribe();
-         List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-         for( Schema.PicklistEntry pickListVal : ple){
-             picklist.add(new selectOption(pickListVal.getLabel(), pickListVal.getLabel()));
-         }     
-         return picklist;
-     }
+    // public List<Selectoption> getPayorTypePicklist(){
+    //     List<Selectoption> picklist = new List<selectoption>();
+    //     picklist.add(new selectOption('', 'Payor Type'));
+    //      Schema.DescribeFieldResult fieldResult = Account.SalesHD_MCO_Payor_Type__c.getDescribe();
+    //      List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+    //      for( Schema.PicklistEntry pickListVal : ple){
+    //          picklist.add(new selectOption(pickListVal.getLabel(), pickListVal.getLabel()));
+    //      }     
+    //      return picklist;
+    //  }
 
     public PageReference searchAccounts() {
         setupAccountStandardSetSetup();
@@ -46,7 +46,7 @@ public with sharing class SalesHD_PayorParent {
 
     private void setupAccountStandardSetSetup(){
         Id payorParentId = payorParent.Id;
-        String query = 'select id, name, shippingAddress__c, type, SalesHD_MCO_Payor_Type__c, Payor_Parent__r.Name, '+
+        String query = 'select id, name, shippingAddress__c, type, Payor_Parent__r.Name, '+
         'LastActivityDate from account where recordtype.name=\'HD MCOs\' and status__c=\'Active\' and Payor_Parent__c=:payorParentId';
         if(searchString!=null)
         query += ' and (name like \'%'+searchString+'%\' or shippingAddress__c like \'%'+searchString+'%\')';

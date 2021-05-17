@@ -70,7 +70,7 @@
                 <div class="col-md-12 text-white">
                     <div class="text-center">
                         <div>
-                            
+
                             <h3 class="font-weight-light">
                                 <span class="float-left">
                                     <c:SalesHD_Favorite />
@@ -82,17 +82,65 @@
                             </h3>
                         </div>
                         <div>
-                            <b>Address </b>{!contact.MailingAddress__c}
+                            <iframe width="100%" height="200" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBUIxMAMNrySrgM8GJ4lSaodkseNPYaciI&q={!contact.MailingStreet},{!contact.MailingCity},{!contact.MailingState},{!contact.MailingPostalCode}"></iframe>
+                        </div>
+                        <div>
+                            <b>Address </b><a class="text-white" href="https://www.google.com/maps/place/{!contact.MailingStreet},{!contact.MailingCity},{!contact.MailingState},{!contact.MailingPostalCode}">{!contact.MailingStreet},{!contact.MailingCity},{!contact.MailingState},{!contact.MailingPostalCode}</a>
                         </div>
                         <div>
                             <b>Phone </b>{!contact.Phone}
                         </div>
                         <div>
+                            <b>Ext </b>{!contact.Extension__c}
+                        </div>
+                        <div>
+                            <b>Phone Note </b>{!contact.SalesHD_Phone_Note__c}
+                        </div>
+                        <div>
+                            <b>Additional Phone </b>{!contact.OtherPhone}
+                        </div>
+                        <div>
+                            <b>Additional Phone Note </b>{!contact.SalesHD_Additional_Phone_Note__c}
+                        </div>
+                        <div>
+                            <b>Fax </b>{!contact.Fax}
+                        </div>
+                        <div>
+                            <b>Email </b>{!contact.Email}
+                        </div>
+                        <div>
+                            <b>Email Opt Out: </b> <i class="{!If(contact.HasOptedOutOfEmail,'fas fa-check','fas fa-times')}"></i>
+                        </div>
+                        <div>
                             <b>Title </b>{!contact.Title__c}
+                        </div>
+                        <div>
+                            <b>Payor Type </b> {!contact.Managed_Care_Payor__c}
                         </div>
                         <div>
                             <b>Relationship </b> {!contact.SalesHD_Managed_Care_Relationship__c}
                         </div>
+                        <apex:outputText rendered="{!IF(contact.recordtype.name = 'HD Contacts',true,false)}">
+                            <div>
+                                <b>Contact Type: </b> Non-Physician Contact
+                                <i class="fas fa-user"></i>
+                            </div>
+
+                        </apex:outputText>
+                        <apex:outputText rendered="{!IF(contact.recordtype.name = 'HD Physicians',true,false)}">
+                            <div>
+                                <b>NPI: </b>{!contact.NPI__c}</div>
+                            <div>
+                                <b>Specialty: </b>{!contact.HD_Specialties__c}</div>
+                            <apex:outputText rendered="{!IF(contact.HD_Specialties__c = 'Other',true,false)}">
+                                <div>
+                                    <b>Other Specialty: </b>{!contact.HD_Other_Specialty__c}</div>
+                            </apex:outputText>
+                            <div>
+                                <b>Contact Type: </b> Physician Contact
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                        </apex:outputText>
                     </div>
                 </div>
 
@@ -121,6 +169,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="

@@ -19,6 +19,7 @@
                 font-size: 15px;
             }
         </style>
+        
     </head>
 
     <body>
@@ -53,6 +54,9 @@
                 var options = {
                     height: 500,
                     title: 'Encounters by Account',
+                    <apex:outputText escape="false" rendered="{!CONTAINS($Profile.Name, 'Managed Care')}">
+                        title: 'Encounters by MCO',
+                    </apex:outputText>
                     backgroundColor: { fill: 'transparent' }
                 };
 

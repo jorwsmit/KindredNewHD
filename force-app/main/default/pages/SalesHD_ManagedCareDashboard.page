@@ -94,27 +94,27 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_EncountersByContact/>
+                            <c:SalesHD_EncountersByMedium/>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="report-container">
-                            <c:SalesHD_EncountersByPurpose/>
-                        </div>
-                    </div>
-
-                </div>
-
-
-                <div class="row">
                     <div class="col-md-6">
                         <div class="report-container">
                             <c:SalesHD_EncountersByObjective/>
                         </div>
+                        
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByMeetingType/>
+                            <!-- <c:SalesHD_EncountersByContact/> -->
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <div class="report-container">
-                            <!-- <c:SalesHD_EncountersByPayorType/> -->
+                            
                         </div>
                     </div>
 

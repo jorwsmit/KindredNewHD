@@ -5,14 +5,25 @@
                 <h3 class="thin italic">
                     <i class="fas fa-chart-pie icon bg-lightblue" style="margin-left:0px;padding:10px 12px 10px 12px;" aria-hidden="true"></i> Reports</h3>
                 <div>
-                    <a href="/apex/SalesHD_ManagedCareDashboard">Dashboard</a>
+                    <a target="_blank" href="/00O/o?isdtp=vw">
+                        <b>Salesforce Reports</b>
+                    </a>
                 </div>
                 <div>
+                    <a href="/apex/SalesHD_ManagedCareDashboard"><b>Dashboard</b></a>
+                </div>
+                
+                <apex:repeat value="{!reports}" var="report">
+                    <div>
+                        <a href="/{!report.Id}?isdtp=vw">{!report.Name}</a>
+                    </div>
+                </apex:repeat>
+                <!-- <div>
                     <a href="#">Report 1</a>
                 </div>
                 <div>
                     <a href="#">Report 2</a>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

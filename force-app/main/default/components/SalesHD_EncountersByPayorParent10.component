@@ -47,13 +47,13 @@
                     google.load('visualization', '1', { packages: ['corechart'], callback: drawAccountChart });
                 }
                 function drawAccountChart() {
-
-                    var data = new google.visualization.DataTable({!encountersByPayorParent10});
+                    var data = new google.visualization.arrayToDataTable([{!encountersByPayorParent10}]);
 
                 var options = {
                     height: 500,
                     title: 'Encounters by Payor Parent Top 10',
-                    backgroundColor: { fill: 'transparent' }
+                    backgroundColor: { fill: 'transparent' },
+                    isStacked: true
                 };
 
                 var chart = new google.visualization.BarChart(document.getElementById("encountersByPayorParent10"));

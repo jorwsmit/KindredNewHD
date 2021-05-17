@@ -123,10 +123,18 @@
                         <div style="margin-left:40px;"></div>
                         <a class="nav-item nav-link" href="/apex/SalesHD_ManagedCareHome">
                             <i class="fas fa-home"></i> Home</a>
+
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'HD Managed Care Leader'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                                <a class="nav-item nav-link" href="/apex/SalesHD_ManagedCareLeaderDashboard">
+                                    <i class="fas fa-chart-pie"></i> Dashboard</a>
+                        </apex:outputPanel>
+                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Sales: HD Managed Care DOMCR'), true, IF(CONTAINS($Profile.Name, 'Sales: HD Managed Care DOMCR'), true, false))}">
                             <a class="nav-item nav-link" href="/apex/SalesHD_ManagedCareDashboard">
                                 <i class="fas fa-chart-pie"></i> Dashboard</a>
+                        </apex:outputPanel>
+                            
                         <a class="nav-item nav-link" href="/apex/SalesHD_MCOs">
-                            <i class="fas fa-hospital"></i> MCOs</a>
+                            <i class="fas fa-hospital"></i> Accounts</a>
                             <a class="nav-item nav-link" href="/apex/SalesHD_Accounts">
                                 <i class="fas fa-hospital"></i> STACHs</a>
                         <a class="nav-item nav-link" href="/apex/SalesHD_ManagedCareContacts">
@@ -134,7 +142,7 @@
                         <a class="nav-item nav-link" href="/apex/SalesHD_Encounters">
                             <i class="fas fa-phone"></i> Encounters</a>
                         <a class="nav-item nav-link" href="/apex/saleshd_collaterals">
-                            <i class="fas fa-mail-bulk"></i> Collaterals</a>
+                            <i class="fas fa-mail-bulk"></i> Marketing Tools</a>
                     </div>
                 </div>
             </nav>

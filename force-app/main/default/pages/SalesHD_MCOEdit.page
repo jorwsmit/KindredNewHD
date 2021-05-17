@@ -45,74 +45,142 @@
             label {
                 margin-top: 2.5rem;
             }
+
+            .multiSelectPicklistRow td:not(.multiSelectPicklistCell) {
+                width: 45%;
+            }
+
+            .multiSelectPicklistRow td select {
+                width: 100% !important;
+            }
+
+            .multiSelectPicklistRow {
+                font-size: 16px;
+            }
+
+            .multiSelectPicklistTable tbody tr:not(multiSelectPicklistRow) td {
+                border: none;
+            }
+
+            .multiSelectPicklistCell a {
+                margin: auto !important;
+            }
+
+            .multiSelectPicklistCell a:first-child {
+                margin-bottom: 30px !important;
+            }
+
+            .multiSelectPicklistCell {
+                border: none;
+            }
+
+            .multiSelectPicklistCell img {
+                width: 50px;
+                margin: auto;
+            }
         </style>
     </head>
 
 
     <body>
-        <div class="slds-scope">
-
-
+        <!-- <div class="my-wrapper">
             <c:SalesHD_ManagedCareNav />
-            <div class="row justify-content-md-center">
+            <div class="row justify-content-md-center bg-purple page-head">
 
-                <div class="col-md-10 bg-white rounded m-3">
-                    <apex:outputPanel id="editPanel">
+                <div class="col-md-12 text-white">
+                    <div class="text-center">
 
-                        <apex:form styleClass="form-group">
-                            <div class="text-center">
-                                <div>
+                        <div>
+                            <h3 class="font-weight-light">
+                                <span class="float-left">
+                                    <c:SalesHD_Favorite />
+                                </span>
+                                {!account.name}
+                                <a onclick="window.location='/apex/saleshd_mcoedit?id={!account.Id}'">
+                                    <i style="margin-left:20px;" class="far fa-edit"></i>
+                                </a>
+                            </h3>
+                        </div> -->
+
+
+
+        <div class="slds-scope">
+            <div class="my-wrapper">
+
+                <c:SalesHD_ManagedCareNav />
+                <div class="row justify-content-md-center bg-purple page-head">
+                    <div class="col-md-12 text-white">
+                        <div class="text-center">
+
+                            <div>
+                                <h3 class="font-weight-light" style="font-size:24px;">
+                                    {!account.name}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-md-center">
+
+                    <div class="col-md-10 bg-white rounded m-3">
+                        <apex:outputPanel id="editPanel">
+
+                            <apex:form styleClass="form-group">
+                                <div class="text-center">
+                                    <!-- <div>
                                     <label class="text-danger float-left">*Name</label>
                                     <apex:inputField styleClass="form-control" value="{!account.name}" html-placeholder="First Name" required="true"></apex:inputField>
-                                </div>
-                                <div>
-                                    <label class="float-left">Address</label>
-                                    <apex:inputField styleClass="form-control" value="{!account.ShippingStreet}" html-placeholder="Street" />
-                                    <apex:inputField styleClass="form-control" value="{!account.ShippingCity}" html-placeholder="City" />
-                                    <apex:inputField styleClass="form-control" value="{!account.ShippingState}" html-placeholder="State" required="true" />
-                                    <apex:inputField styleClass="form-control" value="{!account.ShippingPostalCode}" html-placeholder="Zip" />
-                                </div>
-                                <div>
-                                    <label class="float-left">Website</label>
-                                    <apex:inputField styleClass="form-control" value="{!account.Website}" html-placeholder="Website" />
-                                </div>
-                                <div>
-                                    <label class="float-left">Payor Type</label>
-                                    <apex:inputField styleClass="form-control" value="{!account.SalesHD_MCO_Payor_Type__c}" html-placeholder="Payor Type" />
-                                </div>
-                                <div>
-                                    <label class="float-left">Phone</label>
-                                    <apex:inputField styleClass="form-control" value="{!account.Phone}" html-placeholder="Phone" />
-                                </div>
-                                <div>
-                                    <label class="float-left">Relationship</label>
-                                    <apex:inputField styleClass="form-control" value="{!account.SalesHD_Managed_Care_Relationship__c}" html-placeholder="Relationship"
-                                    />
-                                </div>
-                                <div>
-                                    <apex:commandButton styleClass="btn btn-primary text-white m-3" action="{!save}" status="statusSpinner" value="Save" rerender="editPanel"
-                                    />
-                                    <apex:commandButton styleClass="btn btn-secondary text-white m-3" value="Cancel" style="margin-left:10px!important;" onclick="window.history.back();"
-                                    />
-                                </div>
-                            </div>
-                        </apex:form>
-
-                        <apex:actionStatus id="statusSpinner">
-                            <apex:facet name="start">
-
-                                <div class="slds-spinner_container" style="position:fixed; width:100vw; height:100vh;">
-                                    <div class="slds-spinner slds-spinner--large slds-spinner--brand">
-                                        <div class="slds-spinner__dot-a"></div>
-                                        <div class="slds-spinner__dot-b"></div>
+                                </div> -->
+                                    <div>
+                                        <label class="float-left">Address</label>
+                                        <apex:inputField styleClass="form-control" value="{!account.ShippingStreet}" html-placeholder="Street" />
+                                        <apex:inputField styleClass="form-control" value="{!account.ShippingCity}" html-placeholder="City" />
+                                        <apex:inputField styleClass="form-control" value="{!account.ShippingState}" html-placeholder="State" required="true" />
+                                        <apex:inputField styleClass="form-control" value="{!account.ShippingPostalCode}" html-placeholder="Zip" />
+                                    </div>
+                                    <div>
+                                        <label class="float-left">Website</label>
+                                        <apex:inputField styleClass="form-control" value="{!account.Website}" html-placeholder="Website" />
+                                    </div>
+                                    <div>
+                                        <label class="float-left">Payor Type</label>
+                                        <apex:inputField styleClass="form-control" value="{!account.SalesHD_MCO_Payor_Type__c}" html-placeholder="Payor Type" />
+                                    </div>
+                                    <div>
+                                        <label class="float-left">Phone</label>
+                                        <apex:inputField styleClass="form-control" value="{!account.Phone}" html-placeholder="Phone" />
+                                    </div>
+                                    <div>
+                                        <label class="float-left">Relationship</label>
+                                        <apex:inputField styleClass="form-control" value="{!account.SalesHD_Managed_Care_Relationship__c}" html-placeholder="Relationship"
+                                        />
+                                    </div>
+                                    <div>
+                                        <apex:commandButton styleClass="btn btn-primary text-white m-3" action="{!save}" status="statusSpinner" value="Save" rerender="editPanel"
+                                        />
+                                        <apex:commandButton styleClass="btn btn-secondary text-white m-3" value="Cancel" style="margin-left:10px!important;" onclick="window.history.back();"
+                                        />
                                     </div>
                                 </div>
+                            </apex:form>
 
-                            </apex:facet>
-                        </apex:actionStatus>
-                        <apex:pageMessages />
+                            <apex:actionStatus id="statusSpinner">
+                                <apex:facet name="start">
 
-                    </apex:outputPanel>
+                                    <div class="slds-spinner_container" style="position:fixed; width:100vw; height:100vh;">
+                                        <div class="slds-spinner slds-spinner--large slds-spinner--brand">
+                                            <div class="slds-spinner__dot-a"></div>
+                                            <div class="slds-spinner__dot-b"></div>
+                                        </div>
+                                    </div>
+
+                                </apex:facet>
+                            </apex:actionStatus>
+                            <apex:pageMessages />
+
+                        </apex:outputPanel>
+                    </div>
                 </div>
             </div>
         </div>

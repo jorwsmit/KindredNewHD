@@ -43,7 +43,44 @@
             }
 
             label {
-                margin-top: 2.5rem;
+                float: left;
+                font-weight: bold;
+                margin-top: 13px;
+            }
+            .form-control{
+                margin: 5px 0px !important;
+            }
+            .multiSelectPicklistRow td:not(.multiSelectPicklistCell) {
+                width: 45%;
+            }
+
+            .multiSelectPicklistRow td select {
+                width: 100% !important;
+            }
+
+            .multiSelectPicklistRow {
+                font-size: 16px;
+            }
+
+            .multiSelectPicklistTable tbody tr:not(multiSelectPicklistRow) td {
+                border: none;
+            }
+
+            .multiSelectPicklistCell a {
+                margin: auto !important;
+            }
+
+            .multiSelectPicklistCell a:first-child {
+                margin-bottom: 30px !important;
+            }
+
+            .multiSelectPicklistCell {
+                border: none;
+            }
+
+            .multiSelectPicklistCell img {
+                width: 50px;
+                margin: auto !important;
             }
         </style>
     </head>
@@ -70,10 +107,10 @@
                                 </div>
                                 <div>
                                     <label class="text-danger">*Address</label>
-                                    <apex:inputField styleClass="form-control" value="{!contact.MailingStreet}" html-placeholder="Street" required="true" />
-                                    <apex:inputField styleClass="form-control" value="{!contact.MailingCity}" html-placeholder="City" required="true" />
+                                    <apex:inputField styleClass="form-control" value="{!contact.MailingStreet}" html-placeholder="Street"  />
+                                    <apex:inputField styleClass="form-control" value="{!contact.MailingCity}" html-placeholder="City"  />
                                     <apex:inputField styleClass="form-control" value="{!contact.MailingState}" html-placeholder="State" required="true" />
-                                    <apex:inputField styleClass="form-control" value="{!contact.MailingPostalCode}" html-placeholder="Zip" required="true" />
+                                    <apex:inputField styleClass="form-control" value="{!contact.MailingPostalCode}" html-placeholder="Zip" />
                                 </div>
                                 <div>
                                     <label class="text-danger">*Title</label>
@@ -82,6 +119,41 @@
                                 <div>
                                     <label class="text-danger">*Phone</label>
                                     <apex:inputField styleClass="form-control" value="{!contact.Phone}" html-placeholder="Phone" required="true" />
+                                </div>
+                                <div>
+                                    <label>Ext</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.Extension__c}" html-placeholder="Ext" />
+                                </div>
+                                <div>
+                                    <label>Phone Note</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.SalesHD_Phone_Note__c}" html-placeholder="Phone Note" />
+                                </div>
+                                <div>
+                                    <label>Additional Phone</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.OtherPhone}" html-placeholder="Additional Phone" />
+                                </div>
+                                <div>
+                                    <label>Additional Phone Note</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.SalesHD_Additional_Phone_Note__c}" html-placeholder="Additional Phone Note" />
+                                </div>
+                                <div>
+                                    <label>Fax</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.Fax}" html-placeholder="Fax" />
+                                </div>
+                                <div>
+                                    <label>Email</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.Email}" html-placeholder="Email"
+                                    />
+                                </div>
+                                <div>
+                                    <label>Email Opt Out</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.HasOptedOutOfEmail}" html-placeholder="Email Opt Out"
+                                    />
+                                </div>
+                                <div>
+                                    <label>Payor Type</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.Managed_Care_Payor__c}" html-placeholder="Payor Type"
+                                    />
                                 </div>
                                 <div>
                                     <label>Relationship</label>

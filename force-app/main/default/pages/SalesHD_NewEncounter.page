@@ -835,7 +835,7 @@
 
 								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Close / Customer Commitment', 'Close / Customer Commitment')}</label>
 								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Close_Customer_Commitment__c}" html-placeholder="Close / Customer Commitment"
-								 id="closeCustomer" />
+								 id="closeCustomer"  required="{!event.SalesHD_Complete__c}"/>
 								<script>replaceMultiselectButtons();</script>
 
 								<!-- <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, false)}" style="display:inline-block;"> -->
@@ -847,7 +847,7 @@
 									</span>
 								</label>
 
-								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results" />
+								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results" required="{!event.SalesHD_Complete__c}"/>
 
 								<label style="width: 100%;">Summary and Results Continued
 

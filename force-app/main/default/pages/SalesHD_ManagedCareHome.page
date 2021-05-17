@@ -63,7 +63,7 @@
 
     <body>
 
-        <div class="my-wrapper">
+        <div class="my-wrapper pt-0">
 
 
             <c:SalesHD_ManagedCareNav />

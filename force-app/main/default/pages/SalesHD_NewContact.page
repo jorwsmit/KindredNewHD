@@ -603,7 +603,7 @@
 				<apex:inputField styleClass="form-control" value="{!contact.FirstName}" html-placeholder="First Name" style="margin-bottom:1%;" required="true"/>
 				<apex:inputField styleClass="form-control" value="{!contact.LastName}" html-placeholder="Last Name" required="true"/>
 				<label class="required">*Address <span style="font-size:14px; cursor:pointer;" class="blue" id="account-address"><i class="fa fa-clone" aria-hidden="true"></i> Prepopulate from Favorited Account Addresses</span></label>
-				<apex:inputField styleClass="form-control" value="{!contact.MailingStreet}" html-placeholder="Street" required="true" id="contactStreet"/>
+				<apex:inputField styleClass="form-control" value="{!contact.MailingStreet}" html-placeholder="Street" required="{!$Profile.Name!='Sales: HD Managed Care DOMCR' && $Profile.Name!='Sales: HD Managed Care Leader'}" id="contactStreet"/>
 				<apex:inputField styleClass="form-control" value="{!contact.MailingCity}" html-placeholder="City" style="margin-top:10px;" required="true" id="contactCity"/>
 				<apex:inputField styleClass="form-control" value="{!contact.MailingState}" html-placeholder="State" style="margin-top:10px;" required="true" id="contactState"/>
 				<apex:inputField styleClass="form-control" value="{!contact.MailingPostalCode}" html-placeholder="Zip" style="margin-top:10px;" required="true" id="contactZip"/>

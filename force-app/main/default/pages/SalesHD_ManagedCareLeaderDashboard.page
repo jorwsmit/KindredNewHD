@@ -19,11 +19,19 @@
                 padding: 10px !important;
             }
 
-            h2 {
+            h3 {
                 font-size: 16px !important;
+                font-weight: lighter !important;
+                padding: 10px 0px !important;
+                height: 70px;
+            }
+
+            h2 {
+                font-size: 25px !important;
                 font-weight: bold !important;
                 padding: 10px 0px !important;
             }
+
 
             .btn {
                 margin: 10px 0px !important;
@@ -44,6 +52,9 @@
                 color: #fff;
                 background-color: #5a6268;
                 border-color: #545b62;
+            }
+            .mh-1{
+                min-height: 130px !important;
             }
         </style>
     </head>
@@ -73,15 +84,98 @@
                                 <apex:actionsupport event="onchange" action="{!selectDateOption}" />
                             </apex:selectList>
                         </div>
+                        
+
+                        <!--<div class="col-md-6 offset-md-3">
+                            <apex:inputField style="display:none;" value="{!usr.Region__c}" />
+                            <div class="input-group" style="margin-left:15px;">
+                                <div class="row" style="width:100%;">
+                                    <div class="col-md-6 p-0">
+                                        <b>District</b>
+                                        <apex:inputField value="{!usr.District__c}">
+                                            <apex:actionsupport event="onchange" action="{!selectDistrict}" />
+                                        </apex:inputField>
+                                    </div>
+                                    <div class="col-md-6 p-0">
+                                        <b>Market</b>
+                                        <apex:inputField  value="{!usr.Area__c}">
+                                            <apex:actionsupport event="onchange" action="{!selectArea}" />
+                                        </apex:inputField>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 offset-md-3">
+                            <apex:selectList size="1" value="{!selectedCL}">
+                                <apex:selectOptions value="{!CLPicklist}" />
+                                <apex:actionsupport event="onchange" action="{!selectCL}" />
+                            </apex:selectList>
+                        </div> -->
+
+
+                        <div class="col-md-6 offset-md-3">
+                            <apex:selectList size="1" value="{!selectedCL}">
+                                <apex:selectOptions value="{!CLPicklist}" />
+                                <apex:actionsupport event="onchange" action="{!selectCL}" />
+                            </apex:selectList>
+                        </div>
+
+                        <div class="col-md-6 offset-md-3">
+                            <apex:selectList size="1" value="{!selectedMCOState}">
+                                <apex:selectOptions value="{!MCOStatePicklist}" />
+                                <apex:actionsupport event="onchange" action="{!selectMCOState}" />
+                            </apex:selectList>
+                        </div>
+
+                        
+
                     </div>
                 </apex:form>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="report-container">
-                            <c:SalesHD_EncountersByAccount20/>
+                <apex:outputPanel rendered="{!selectedCL==null && selectedMCOState==null}">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="col-md-12 bg-primary mt-3 rounded text-white text-center mh-1">
+                                <h3 class="text-uppercase">Total Encounters</h3>
+                                <h2>{!totalEncounters}</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="col-md-12 bg-secondary mt-3 rounded text-white text-center mh-1">
+                                <h3 class="text-uppercase">JQCs</h3>
+                                <h2>{!totalJQC}</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="col-md-12 bg-secondary mt-3 rounded text-white text-center mh-1">
+                                <h3 class="text-uppercase">1:1 or small group meeting or conversation</h3>
+                                <h2>{!totalSmallGroup}</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="col-md-12 bg-secondary mt-3 rounded text-white text-center mh-1">
+                                <h3 class="text-uppercase">Scheduled presentation/in-service</h3>
+                                <h2>{!totalPresentation}</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="col-md-12 bg-secondary mt-3 rounded text-white text-center mh-1">
+                                <h3 class="text-uppercase">Care Coordination/ICT</h3>
+                                <h2>{!totalCareCoor}</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="col-md-12 bg-secondary mt-3 rounded text-white text-center mh-1">
+                                <h3 class="text-uppercase">Tour</h3>
+                                <h2>{!totalTour}</h2>
+                            </div>
                         </div>
                     </div>
+                </apex:outputPanel>
+                
+
+                <div class="row">
+
                     <div class="col-md-6">
                         <div class="report-container">
                             <c:SalesHD_EncountersByPayorParent10/>
@@ -89,19 +183,30 @@
 
                     </div>
 
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByAccount20/>
+                            <p class="pl-3 pr-3 pb-3">*This report can result in one encounter showing up more than once depending on how many additional accounts the encounter was associated with.</p>
+                        </div>
+                    </div>
+                    
+
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="report-container">
-                            <c:SalesHD_EncountersByAccountUpcoming/>
-                        </div>
-                    </div>
+
                     <div class="col-md-6">
                         <div class="report-container">
                             <c:SalesHD_EncountersByPayorParentUpcoming/>
                         </div>
                     </div>
+
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByAccountUpcoming/>
+                        </div>
+                    </div>
+                    
 
                 </div>
 
@@ -115,6 +220,20 @@
                     <div class="col-md-6">
                         <div class="report-container">
                             <c:SalesHD_EncountersByUsers/>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <c:SalesHD_EncountersByMeetingType/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="report-container">
+                            <!-- <c:SalesHD_EncountersByUsers/> -->
                         </div>
                     </div>
 
