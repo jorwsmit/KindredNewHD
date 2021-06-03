@@ -9,10 +9,17 @@
                         <b>Salesforce Reports</b>
                     </a>
                 </div>
-                <div>
-                    <a href="/apex/SalesHD_ManagedCareDashboard"><b>Dashboard</b></a>
-                </div>
-                
+                <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'HD Managed Care Leader'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                    <a href="/apex/SalesHD_ManagedCareLeaderDashboard">
+                        <b>Dashboard</b>
+                    </a>
+                </apex:outputPanel>
+                <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Sales: HD Managed Care DOMCR'), true, IF(CONTAINS($Profile.Name, 'Sales: HD Managed Care DOMCR'), true, false))}">
+                    <a href="/apex/SalesHD_ManagedCareDashboard">
+                        <b>Dashboard</b>
+                    </a>
+                </apex:outputPanel>
+
                 <apex:repeat value="{!reports}" var="report">
                     <div>
                         <a href="/{!report.Id}?isdtp=vw">{!report.Name}</a>

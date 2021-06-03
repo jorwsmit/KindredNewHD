@@ -57,14 +57,14 @@ public without sharing class SalesHD_ManagedCareContacts {
 
     private void setupContactStandardSetSetup(){
         String query = 'select id, name, MailingAddress__c, Title__c, SalesHD_Managed_Care_Relationship__c, '+
-        'LastActivityDate, MailingState from contact where status__c=\'Active\' and recordType.name!=\'HD Contacts\' and recordType.name!=\'HD Physician Requests\' ' ;
+        'LastActivityDate, MailingState from contact where status__c=\'Active\' and (recordType.name=\'HD Physicians\' or recordType.name=\'Managed Care Contacts\') ' ;
         if(searchString!=null)
         query += ' and (name like \'%'+searchString+'%\' or MailingAddress__c like \'%'+searchString+'%\')';
     
         if(selectedState!=null) query += ' and MailingState like \''+selectedState+'\'';
         if(selectedType!=null) query += ' and RecordTypeId = \''+selectedType+'\'';
         if(selectedRelationship!=null) query += ' and SalesHD_Managed_Care_Relationship__c like \''+selectedRelationship+'\'';
-        query += ' order by name asc';
+        query += ' order by name asc limit 10000';
     
         contactSSC = new ApexPages.StandardSetController(Database.getQueryLocator(
             query

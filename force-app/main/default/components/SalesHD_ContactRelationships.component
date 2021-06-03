@@ -1,7 +1,7 @@
 <apex:component controller="SalesHD_ManagedCareComponents">
 
     <div class="header text-center text-primary">
-        <h3>Contact Relationships</h3>
+        <h3>Contact Relationships Last Month</h3>
     </div>
     <div class="row">
         <div class="col-md-12 mt-5">

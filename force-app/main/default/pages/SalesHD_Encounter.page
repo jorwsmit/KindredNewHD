@@ -781,9 +781,30 @@
 							<apex:outputPanel rendered="{!CONTAINS(event.RecordType.Name,'Managed Care')}">
 
 								<div>
-									<label style="display:inline-block;">Purpose:</label>
-									<p style="display:inline-block;">{!event.Subject__c}</p>
+									<label style="display:inline-block;">State:</label>
+									<p style="display:inline-block;">{!event.Managed_Care_State__c}</p>
 								</div>
+
+								<div>
+									<label style="display:inline-block;">Market:</label>
+									<p style="display:inline-block;">{!event.Managed_Care_Market__c}</p>
+								</div>
+
+								<div>
+									<label style="display:inline-block;">Payor Type:</label>
+									<p style="display:inline-block;">{!event.SalesHD_Managed_Care_Payor__c}</p>
+								</div>
+
+								<div>
+									<label style="display:inline-block;">Contact Method:</label>
+									<p style="display:inline-block;">{!event.SalesHD_Contact_Method__c}</p>
+								</div>
+
+								<div>
+									<label style="display:inline-block;">Meeting Type:</label>
+									<p style="display:inline-block;">{!event.Type}</p>
+								</div>
+								
 
 							</apex:outputPanel>
 

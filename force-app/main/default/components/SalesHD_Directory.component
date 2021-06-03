@@ -4,7 +4,10 @@
             <div class="col-md-12 no-pad">
                 <h3 class="thin italic">
                     <i class="fas fa-address-book icon bg-pink" style="margin-left:0px;padding:10px 12px 10px 12px;" aria-hidden="true"></i> Directory</h3>
-                <ul id="directory" class="scroll-list">
+                    <div style="margin-left:10px;">
+                        <input placeholder="Directory Search" class="form-control" id="directorySearch" />
+                    </div>
+                    <ul id="directory" class="scroll-list" style="overflow-x:hidden;">
                     <apex:outputPanel rendered="{!directory.size<=0}">
                         <div class="text-secondary" style="padding:10px;">
                             <i class="fa fa-times-circle" aria-hidden="true"></i> You have no favorited MCOs, STACHs, or contacts.
@@ -45,4 +48,15 @@
             </div>
         </div>
     </div>
+    <script>
+        $('#directorySearch').keyup(function () {
+            $("#directory li").each(function () {
+                if ($(this).find(".name-search").text().toUpperCase().replace(/\s/g, '').indexOf($("#directorySearch").val().toUpperCase().replace(/\s/g, '')) > -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    </script>
 </apex:component>

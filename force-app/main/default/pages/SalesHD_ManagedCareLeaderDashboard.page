@@ -148,7 +148,7 @@
                         </div>
                         <div class="col-md-2">
                             <div class="col-md-12 bg-secondary mt-3 rounded text-white text-center mh-1">
-                                <h3 class="text-uppercase">1:1 or small group meeting or conversation</h3>
+                                <h3 class="text-uppercase">1:1 conversation/small group</h3>
                                 <h2>{!totalSmallGroup}</h2>
                             </div>
                         </div>
@@ -178,22 +178,25 @@
 
                     <div class="col-md-6">
                         <div class="report-container">
-                            <c:SalesHD_EncountersByPayorParent10/>
+                            <c:SalesHD_EncountersByMCO/>
                         </div>
 
                     </div>
 
                     <div class="col-md-6">
                         <div class="report-container">
+                            <c:SalesHD_EncountersByAccountUpcoming/>
+                        </div>
+                        <!-- <div class="report-container">
                             <c:SalesHD_EncountersByAccount20/>
                             <p class="pl-3 pr-3 pb-3">*This report can result in one encounter showing up more than once depending on how many additional accounts the encounter was associated with.</p>
-                        </div>
+                        </div> -->
                     </div>
                     
 
                 </div>
 
-                <div class="row">
+                <!-- <div class="row">
 
                     <div class="col-md-6">
                         <div class="report-container">
@@ -208,7 +211,7 @@
                     </div>
                     
 
-                </div>
+                </div> -->
 
 
                 <div class="row">
@@ -233,7 +236,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="report-container">
-                            <!-- <c:SalesHD_EncountersByUsers/> -->
+                            <c:SalesHD_EncountersByMedium/>
                         </div>
                     </div>
 

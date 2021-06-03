@@ -1,6 +1,7 @@
 public without sharing class SalesHD_MCOs {
 
     public String selectedState {get; set;}
+    public String selectedType {get; set;}
     public String selectedPayorType {get; set;}
     public String searchString {get; set;}
     public ApexPages.StandardSetController accountSSC {get; private set;}
@@ -16,11 +17,30 @@ public without sharing class SalesHD_MCOs {
     }
 
 
+     public List<Selectoption> getTypePicklist(){
+        
+        
+        
+        
+        List<Selectoption> picklist = new List<selectoption>();
+        picklist.add(new selectOption('', 'Account Type'));
+        picklist.add(new selectOption('MCO', 'MCO'));
+        picklist.add(new selectOption('ACO', 'ACO'));
+        picklist.add(new selectOption('IPA/shared risk', 'IPA/shared risk'));
+        picklist.add(new selectOption('IPA/full risk', 'IPA/full risk'));
+        //  Schema.DescribeFieldResult fieldResult = Account.Type.getDescribe();
+        //  List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+        //  for( Schema.PicklistEntry pickListVal : ple){
+        //      picklist.add(new selectOption(pickListVal.getLabel(), pickListVal.getLabel()));
+        //  }     
+         return picklist;
+     }
+
     public List<Selectoption> getStatePicklist(){
         List<Selectoption> picklist = new List<selectoption>();
         picklist.add(new selectOption('', 'State'));
         for(AggregateResult ar : [select ShippingState state from account where ShippingState!=null
-        and status__c='Active' and recordType.name='HD MCOs' group by ShippingState order by ShippingState ]){
+        and status__c='Active' and recordType.name='HD Managed Care Accounts' group by ShippingState order by ShippingState ]){
             String state = String.valueOf(ar.get('state'));
             picklist.add(new selectOption(state, state));
         }
@@ -45,12 +65,13 @@ public without sharing class SalesHD_MCOs {
     }
 
     private void setupAccountStandardSetSetup(){
-        String query = 'select id, name, shippingAddress__c, type, Payor_Parent__r.Name, '+
-        'LastActivityDate from account where recordtype.name=\'HD MCOs\' and status__c=\'Active\'';
+        String query = 'select id, name, shippingAddress__c, type,  '+
+        'LastActivityDate from account where recordtype.name=\'HD Managed Care Accounts\' and status__c=\'Active\'';
         if(searchString!=null)
         query += ' and (name like \'%'+searchString+'%\' or shippingAddress__c like \'%'+searchString+'%\')';
     
         if(selectedState!=null) query += ' and ShippingState like \''+selectedState+'\'';
+        if(selectedType!=null) query += ' and Type like \''+selectedType+'\'';
 
         query += ' order by name asc';
     
@@ -67,8 +88,8 @@ public without sharing class SalesHD_MCOs {
     public List<AccountTeamMember> getFavoritedAccounts (){	
         String userId = UserInfo.getUserId();
         String query = 'select accountId, account.name, account.shippingAddress__c'+
-        ', account.type, account.SalesHD_MCO_Payor_Type__c, account.Payor_Parent__r.Name, '+
-        'account.LastActivityDate from accountTeamMember where account.recordtype.name=\'HD MCOs\' and'+
+        ', account.type, account.SalesHD_MCO_Payor_Type__c, '+
+        'account.LastActivityDate from accountTeamMember where account.recordtype.name=\'HD Managed Care Accounts\' and'+
         ' account.status__c=\'Active\' and userId=:userId';
         return Database.query(query);
     }

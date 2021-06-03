@@ -61,7 +61,7 @@
 
             <apex:outputPanel rendered="{!relatedContacts.size<=0}">
                 <li class="m-2 p-1 pt-2 text-secondary">
-                    <i class="fa fa-times-circle" aria-hidden="true"></i> No related Contacts. Click the Relate Contact button above to relate a favorited contact to this MCO.
+                    <i class="fa fa-times-circle" aria-hidden="true"></i> No related Contacts. Click the Relate Contact button above to relate a favorited contact to this Account.
                 </li>
             </apex:outputPanel>
 

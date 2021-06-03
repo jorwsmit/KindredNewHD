@@ -212,7 +212,7 @@ global with sharing class SalesHD_Event {
 	}
 	
 	@RemoteAction global static String getAccounts() {
-	  return JSON.serializePretty([select AccountId, Account.Name from AccountTeamMember where UserId =: currentUser and (Account.RecordType.Name='HD Accounts' or Account.RecordType.Name='HD MCOs') and Account.status__c='Active' order by Account.LastActivityDate desc nulls last, Account.Name asc]);
+	  return JSON.serializePretty([select AccountId, Account.Name from AccountTeamMember where UserId =: currentUser and (Account.RecordType.Name='HD Accounts' or Account.RecordType.Name='HD Managed Care Accounts') and Account.status__c='Active' order by Account.LastActivityDate desc nulls last, Account.Name asc]);
 	}
 	
 	@RemoteAction global static String getUnits(Id accountId) {
@@ -265,7 +265,7 @@ global with sharing class SalesHD_Event {
 		for(ContentVersion cv : [select Id, ContentDocumentId, Title, TextPreview from ContentVersion where ContentDocumentId =: fileIds and isLatest=true]) {
 		  files.add(cv);
 		}
-	
+	 
 	
 	  }catch(DmlException ex) {
 		ApexPages.addMessages(ex);

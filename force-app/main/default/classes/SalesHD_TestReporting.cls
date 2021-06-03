@@ -6,6 +6,10 @@ public class SalesHD_TestReporting {
 	Account acct = new Account(Name='Test Account', Status__c='Active', RecordtypeId=accountRecordType.Id);
 	insert acct;
 
+	RecordType mcAccountRecordType = [select Id from RecordType where name = 'HD Managed Care Accounts'];
+	Account mcAcct = new Account(Name='Test Managed Care Account', Status__c='Active', RecordtypeId=mcAccountRecordType.Id, ShippingState='KY');
+	insert mcAcct;
+
 	AccountTeamMember atm = new AccountTeamMember(AccountId=acct.Id, UserId=UserInfo.getUserId());
 	insert atm;
 
@@ -278,6 +282,58 @@ public class SalesHD_TestReporting {
 	pageRef.getParameters().put('date_option', String.valueOf(controller.dateOption));
 	Test.setCurrentPage(pageRef);
 	controller.eLastWeek();
+	Test.stopTest();
+}
+
+//----------- Managed Care Tests
+@isTest static void Reporting_MCFilters() {
+	PageReference pageRef = Page.SalesHD_ManagedCareLeaderDashboard;
+	Test.setCurrentPage(pageRef);
+	Test.startTest();
+	SalesHD_ReportingClass controller = new SalesHD_ReportingClass();
+
+	List<SelectOption> picklist = controller.getMCOStatePicklist();
+	picklist = controller.getEmployeeTypePicklist();
+
+	controller.selectedMCOState = 'KY';
+	controller.selectMCOState();
+
+	controller.userType = 'Test';
+	controller.selectUserType();
+
+	Test.stopTest();
+
+}
+
+@isTest static void Reporting_MCReports() {
+	PageReference pageRef = Page.SalesHD_ManagedCareLeaderDashboard;
+	Test.setCurrentPage(pageRef);
+	Test.startTest();
+	SalesHD_ReportingClass controller = new SalesHD_ReportingClass();
+	controller.eLastWeekPurpose();
+	controller.eLastWeekType();
+	// controller.eLastWeekPayorType();
+	controller.eLastWeekUsers();
+	// controller.eLastWeekAccounts20();
+	// controller.eLastWeekPayorParent10();
+	controller.eByAccount();
+	controller.eUpcomingAccounts();
+	// controller.eUpcomingPayorParent();
+	Test.stopTest();
+
+}
+
+@isTest static void Reporting_MCTypes() {
+	PageReference pageRef = Page.SalesHD_ManagedCareLeaderDashboard;
+	Test.setCurrentPage(pageRef);
+	Test.startTest();
+	SalesHD_ReportingClass controller = new SalesHD_ReportingClass();
+	controller.getTotalEncounters();
+	controller.getTotalJQC();
+	controller.getTotalPresentation();
+	controller.getTotalSmallGroup();
+	controller.getTotalCareCoor();
+	controller.getTotalTour();
 	Test.stopTest();
 }
 

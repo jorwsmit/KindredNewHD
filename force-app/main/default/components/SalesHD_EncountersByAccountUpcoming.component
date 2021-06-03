@@ -53,9 +53,6 @@
                 var options = {
                     height: 500,
                     title: 'Encounters by Account Next 30 Days',
-                    <apex:outputText escape="false" rendered="{!CONTAINS($Profile.Name, 'Managed Care')}">
-                        title: 'Encounters by MCO Next 30 Days',
-                    </apex:outputText>
                     backgroundColor: { fill: 'transparent' }
                 };
 

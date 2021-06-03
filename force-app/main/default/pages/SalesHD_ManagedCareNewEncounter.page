@@ -773,17 +773,14 @@
 							 value="{!accountName}" />
 							<ul class="form-control" id="accountList" style="display:none;"></ul>
 						
-							<label class="required">*State</label>
-							<apex:inputField styleClass="form-control" value="{!event.Managed_Care_State__c}" html-placeholder="State"
-							 required="true" />
+							<label>State</label>
+							<apex:inputField styleClass="form-control" value="{!event.Managed_Care_State__c}" html-placeholder="State" />
 
-							 <label class="required">*Market</label>
-							<apex:inputField styleClass="form-control" value="{!event.Managed_Care_Market__c}" html-placeholder="Market"
-							 required="true" />
+							 <label>Market</label>
+							<apex:inputField styleClass="form-control" value="{!event.Managed_Care_Market__c}" html-placeholder="Market" />
 
-							 <label class="required">*Payor Type</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Managed_Care_Payor__c}" html-placeholder="Payor Type"
-							 required="true" />
+							 <label>Payor Type</label>
+							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Managed_Care_Payor__c}" html-placeholder="Payor Type" />
 
 							<label class="required">*Contact Method</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Contact_Method__c}" html-placeholder="Medium"
@@ -856,7 +853,7 @@
 									</span>
 								</label>
 
-								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results" />
+								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results"  required="{!event.SalesHD_Complete__c}" />
 
 								<label style="width: 100%;">Summary and Results Continued
 

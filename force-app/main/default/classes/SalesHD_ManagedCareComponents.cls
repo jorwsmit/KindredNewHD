@@ -45,7 +45,7 @@ public List<Event> getRelatedEvents(){
 	if(recordId!=null && objectType!=null) {
 		// String objectType = objectKeys.get(String.valueOf(recordId).substring(0,3));
 		String query = 'select Id, owner.Name, SalesHD_Open_ended_questions__c, ActivityDate,'
-		+'SalesHD_Call_Objective__c, Who.Name, Account.Name from event ';
+		               +'SalesHD_Call_Objective__c, Who.Name, Account.Name from event ';
 		if(objectType == 'Account') query += ' where accountId =: recordId';
 		else if(objectType == 'Contact') query += ' where whoId =: recordId';
 		query += ' order by activityDate desc limit 200';
@@ -87,11 +87,11 @@ public List<Account> getRelatedAccounts(){
 
 
 // public List<ContentDocument> getMyNotesOld(){
-// 	if(!documentIds.isEmpty())
-// 		return [select Id, LatestPublishedVersionId, LatestPublishedVersion.Title,
-// 		        LatestPublishedVersion.Description, LatestPublishedVersion.TextPreview, FileType, FileExtension
-// 		        from ContentDocument where Id =: documentIds and OwnerId =: UserInfo.getUserId()];
-// 	return new List<ContentDocument>();
+//  if(!documentIds.isEmpty())
+//      return [select Id, LatestPublishedVersionId, LatestPublishedVersion.Title,
+//              LatestPublishedVersion.Description, LatestPublishedVersion.TextPreview, FileType, FileExtension
+//              from ContentDocument where Id =: documentIds and OwnerId =: UserInfo.getUserId()];
+//  return new List<ContentDocument>();
 // }
 
 public List<Notes> getMyNotes(){
@@ -107,6 +107,8 @@ public List<Notes> getMyNotes(){
 
 	return new List<Notes>();
 }
+
+
 
 private Notes newNote(ContentDocument cd){
 	notes n = new notes(cd.Id);
@@ -131,7 +133,7 @@ public String body {get; set;}
 public String fileLink {get; set;}
 public String createdBy {get; set;}
 public notes(Id noteId){
-	noteId = this.noteId;
+	this.noteId = noteId;
 	title = '';
 	body = '';
 	fileLink = '';
@@ -140,11 +142,11 @@ public notes(Id noteId){
 }
 
 // public List<ContentDocument> getNotes(){
-// 	if(!documentIds.isEmpty())
-// 		return [select Id, LatestPublishedVersionId, LatestPublishedVersion.Title,
-// 		        LatestPublishedVersion.Description, LatestPublishedVersion.TextPreview, FileType, FileExtension
-// 		        from ContentDocument where Id =: documentIds and OwnerId !=: UserInfo.getUserId()];
-// 	return new List<ContentDocument>();
+//  if(!documentIds.isEmpty())
+//      return [select Id, LatestPublishedVersionId, LatestPublishedVersion.Title,
+//              LatestPublishedVersion.Description, LatestPublishedVersion.TextPreview, FileType, FileExtension
+//              from ContentDocument where Id =: documentIds and OwnerId !=: UserInfo.getUserId()];
+//  return new List<ContentDocument>();
 // }
 
 public List<Notes> getNotes(){
@@ -222,6 +224,20 @@ public PageReference saveNote(){
 			ApexPages.addMessages(ex);
 			return null;
 		}
+	}
+}
+
+public String noteId {get; set;}
+public PageReference deleteNote(){
+	try{
+		List<ContentDocument> n = [select Id from ContentDocument where Id=:noteId limit 1];
+		if(!n.isEmpty()) delete n;
+		PageReference page = ApexPages.currentPage();
+		page.setRedirect(true);
+		return page;
+	}catch(DmlException ex) {
+		ApexPages.addMessages(ex);
+		return null;
 	}
 }
 
@@ -341,9 +357,6 @@ public Pagereference deleteAccountRelation(){
 	List<Account_unit_contact__c> auc = [select id from account_unit_contact__c where account_unit__c in :aus and Contact__c=:recordId];
 	try{
 		if(!auc.isEmpty()) delete auc;
-		// Pagereference page = new PageReference('/apex/saleshd_managedcarecontact?id='+auc[0].Id);
-		// page.setredirect(true);
-		// return page;
 	} catch(DmlException ex) {
 		ApexPages.addMessages(ex);
 		return null;
@@ -385,7 +398,7 @@ public contactRelations(string relationship, integer totalContacts){
 public List<contactRelations> getContactRelationships(){
 	Map<String, contactRelations> data = new Map<String, contactRelations>();
 	for(AggregateResult ar : [select SalesHD_Managed_Care_Relationship__c relationship, count(id) total from
-	                          contact where (recordtype.name='HD Contacts' or recordtype.name='HD Physicians') and SalesHD_Managed_Care_Relationship__c!=null group by SalesHD_Managed_Care_Relationship__c]) {
+	                          contact where (recordtype.name='Managed Care Contacts' or recordtype.name='HD Physicians') and SalesHD_Managed_Care_Relationship__c!=null group by SalesHD_Managed_Care_Relationship__c]) {
 		String relation = '';
 		if(String.valueOf(ar.get('relationship'))!=null) relation = String.valueOf(ar.get('relationship'));
 		Integer totalContacts = 0;
@@ -397,7 +410,8 @@ public List<contactRelations> getContactRelationships(){
 
 	for(AggregateResult ar : [select WhoId contactId, count(id) total from event where
 	                                  (who.recordtype.name='HD Contacts' or who.recordtype.name='HD Physicians')
-	                          and (activitydate=this_year or activitydate=last_year) group by WhoId]) {
+	                          and (activitydate=last_month) and
+	                          whoId in (select id from contact where (recordtype.name='Managed Care Contacts' or recordtype.name='HD Physicians') and SalesHD_Managed_Care_Relationship__c!=null)  group by WhoId]) {
 		Id contactId = String.valueOf(ar.get('contactId'));
 		Integer total = Integer.valueOf(ar.get('total'));
 		contactIds.put(contactId, total);
@@ -636,8 +650,8 @@ public List<directoryObject> getDirectory() {
 		directory.add(temp);
 	}
 
-	for(AccountTeamMember a : [select AccountId, Account.Name from AccountTeamMember where Account.Status__c='Active' and UserId =: currentUser 
-	and (Account.RecordType.Name='HD Accounts' or Account.RecordType.Name='HD MCOs')]) {
+	for(AccountTeamMember a : [select AccountId, Account.Name from AccountTeamMember where Account.Status__c='Active' and UserId =: currentUser
+	                                                                                                                               and (Account.RecordType.Name='HD Accounts' or Account.RecordType.Name='HD Managed Care Accounts')]) {
 		directoryObject temp = new directoryObject(a.Account.Name, a.AccountId, 'Account');
 		directory.add(temp);
 	}
@@ -647,18 +661,18 @@ public List<directoryObject> getDirectory() {
 
 
 
-public class DataYOY{
-	public Integer py {get; set;}
-	public Integer referralsPy {get; set;}
-	public Integer admitsPy {get; set;}
-	public Decimal conversionPy {get; set;}
-	public Integer revenuePy {get; set;}
+public class DataYOY {
+public Integer py {get; set;}
+public Integer referralsPy {get; set;}
+public Integer admitsPy {get; set;}
+public Decimal conversionPy {get; set;}
+public Integer revenuePy {get; set;}
 
-	public Integer cy {get; set;}
-	public Integer referralsCy {get; set;}
-	public Integer admitsCy {get; set;}
-	public Decimal conversionCy {get; set;}
-	public Integer revenueCy {get; set;}
+public Integer cy {get; set;}
+public Integer referralsCy {get; set;}
+public Integer admitsCy {get; set;}
+public Decimal conversionCy {get; set;}
+public Integer revenueCy {get; set;}
 }
 
 public DataYOY getDataYoy(){
@@ -678,7 +692,7 @@ public DataYOY getDataYoy(){
 	data.admitsCy = Integer.valueOf(data.referralsCy * (Math.random()));
 	data.conversionCy = ((Decimal.valueOf(data.admitsCy)/Decimal.valueOf(data.referralsCy))*100).setScale(2);
 	data.revenueCy = Integer.valueOf(Math.random()*1500000);
-	
+
 	return data;
 }
 

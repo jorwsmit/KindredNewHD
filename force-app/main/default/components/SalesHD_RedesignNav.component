@@ -783,76 +783,82 @@
                     </div>
                 </div>
             </nav> -->
+            <apex:outputPanel rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}">  
+                <nav class="navbar navbar-expand-lg navbar-dark bg-primary p-0">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+    
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mr-auto">
+                            <li class="nav-item active">
+                                <a class="nav-link" href="/apex/SalesHD_Homepage">
+                                    <i class="fas fa-home"></i> Home</a>
+                            </li>
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/apex/SalesHD_DashboardManager" target="_blank">
+                                        <i class="fas fa-chart-pie"></i> Dashboard</a>
+                                </li>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/apex/SalesHD_DashboardCL" target="_blank">
+                                        <i class="fas fa-chart-pie"></i> Dashboard</a>
+                                </li>
+                            </apex:outputPanel>
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="/apex/SalesHD_Accounts">
+                                    <i class="fas fa-hospital"></i> STACHs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/apex/SalesHD_Contacts">
+                                    <i class="fas fa-user-md"></i> Contacts</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/apex/SalesHD_Encounters">
+                                    <i class="fas fa-phone"></i> Encounters</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/apex/SalesHD_Collaterals">
+                                    <i class="fas fa-mail-bulk"></i> Marketing Tools</a>
+                            </li>
+                            <!-- <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <i class="fas fa-mail-bulk"></i> Marketing Tools
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item text-primary" href="/apex/SalesHD_Collaterals">Collaterals</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-primary" href="/apex/SalesHD_EmailTemplates">Email Templates</a>
+                                </div>
+                            </li> -->
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/apex/SalesHD_SalesPlansManager">
+                                        <i class="fas fa-notes-medical"></i> Sales Plans</a>
+                                </li>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/apex/SalesHD_SalesPlans">
+                                        <i class="fas fa-notes-medical"></i> Sales Plans</a>
+                                </li>
+                            </apex:outputPanel>
+                        </ul>
+                    </div>
+                </nav>
+    
+                <div style="margin:50px;"></div>
+            </apex:outputPanel>
 
-            <nav class="navbar navbar-expand-lg navbar-dark bg-primary p-0">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/apex/SalesHD_Homepage">
-                                <i class="fas fa-home"></i> Home</a>
-                        </li>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/apex/SalesHD_DashboardManager" target="_blank">
-                                    <i class="fas fa-chart-pie"></i> Dashboard</a>
-                            </li>
-                        </apex:outputPanel>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/apex/SalesHD_DashboardCL" target="_blank">
-                                    <i class="fas fa-chart-pie"></i> Dashboard</a>
-                            </li>
-                        </apex:outputPanel>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="/apex/SalesHD_Accounts">
-                                <i class="fas fa-hospital"></i> STACHs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/apex/SalesHD_Contacts">
-                                <i class="fas fa-user-md"></i> Contacts</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/apex/SalesHD_Encounters">
-                                <i class="fas fa-phone"></i> Encounters</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/apex/SalesHD_Collaterals">
-                                <i class="fas fa-mail-bulk"></i> Marketing Tools</a>
-                        </li>
-                        <!-- <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <i class="fas fa-mail-bulk"></i> Marketing Tools
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item text-primary" href="/apex/SalesHD_Collaterals">Collaterals</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item text-primary" href="/apex/SalesHD_EmailTemplates">Email Templates</a>
-                            </div>
-                        </li> -->
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, IF(CONTAINS($Profile.Name, 'Admin'), true, false))}">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/apex/SalesHD_SalesPlansManager">
-                                    <i class="fas fa-notes-medical"></i> Sales Plans</a>
-                            </li>
-                        </apex:outputPanel>
-                        <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Associate'), true, IF(CONTAINS($Profile.Name, 'PAC'), true, false))}">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/apex/SalesHD_SalesPlans">
-                                    <i class="fas fa-notes-medical"></i> Sales Plans</a>
-                            </li>
-                        </apex:outputPanel>
-                    </ul>
-                </div>
-            </nav>
-
-            <div style="margin:50px;"></div>
+            <apex:outputPanel rendered="{!Contains($Profile.Name, 'Managed Care')}">
+                <c:SalesHD_ManagedCareNav></c:SalesHD_ManagedCareNav>
+            </apex:outputPanel>
+            
 
         </div>
 

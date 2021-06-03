@@ -136,7 +136,7 @@
                                         <label class="float-left">Address</label>
                                         <apex:inputField styleClass="form-control" value="{!account.ShippingStreet}" html-placeholder="Street" />
                                         <apex:inputField styleClass="form-control" value="{!account.ShippingCity}" html-placeholder="City" />
-                                        <apex:inputField styleClass="form-control" value="{!account.ShippingState}" html-placeholder="State" required="true" />
+                                        <apex:inputField styleClass="form-control" value="{!account.ShippingState}" html-placeholder="State"/>
                                         <apex:inputField styleClass="form-control" value="{!account.ShippingPostalCode}" html-placeholder="Zip" />
                                     </div>
                                     <div>
@@ -150,6 +150,10 @@
                                     <div>
                                         <label class="float-left">Phone</label>
                                         <apex:inputField styleClass="form-control" value="{!account.Phone}" html-placeholder="Phone" />
+                                    </div>
+                                    <div>
+                                        <label class="float-left">Type</label>
+                                        <apex:inputField styleClass="form-control" value="{!account.Type}" html-placeholder="Type" />
                                     </div>
                                     <div>
                                         <label class="float-left">Relationship</label>

@@ -102,16 +102,6 @@
                             </h3>
                         </div>
                         <div>
-                            <!-- <h4>
-                                <b>Payor Parent </b>
-                                <apex:outputText escape="false" rendered="{!account.Payor_Parent__c!=null}">
-                                    <span onclick="window.location.href='/apex/saleshd_payorparent?id={!account.Payor_Parent__c}'">
-                                        {!account.Payor_Parent__r.Name}
-                                    </span>
-                                </apex:outputText>
-                            </h4> -->
-                        </div>
-                        <div>
                             <b>State </b>{!account.ShippingState}
                         </div>
                         <div>
@@ -127,7 +117,10 @@
                             <b>Phone </b>{!account.Phone}
                         </div>
                         <div>
-                            <b>Relationship </b>
+                            <b>Type </b>{!account.Type}
+                        </div>
+                        <div>
+                            <b>Relationship </b>{!account.SalesHD_Managed_Care_Relationship__c}
                         </div>
                     </div>
                 </div>

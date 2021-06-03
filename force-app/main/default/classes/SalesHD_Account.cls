@@ -43,6 +43,15 @@ public SalesHD_Account(ApexPages.StandardController stdController) {
 	notesList = getNotes(acct.Id);
 }
 
+public Pagereference managedCareRedirect(){
+	if([select RecordType.Name from account where Id=:acct.Id][0].RecordType.name.contains('Managed Care')) {
+		PageReference page = new PageReference('/apex/SalesHD_MCO?id='+acct.Id);
+		page.setRedirect(true);
+		return page;
+	}
+	return null;
+}
+
 @RemoteAction global static String getCsuite(Id acctId){
 	List<Id> administrativeContactIds = new List<Id>();
 	for(Account_unit_contact__c auc : [select Contact__c from Account_unit_contact__c

@@ -3,7 +3,7 @@
     <html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <head>
-        <title>Encounters By Account</title>
+        <title>Encounters By Payor Parent Top 20</title>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
             crossorigin="anonymous" />
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
@@ -19,12 +19,11 @@
                 font-size: 15px;
             }
         </style>
-        
     </head>
 
     <body>
         <div class="slds-scope">
-            <div id="encountersByAccount"></div>
+            <div id="encountersByPayorParent10"></div>
         </div>
         <!-- Lightning Wrapper -->
 
@@ -36,7 +35,7 @@
         <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
         <script>
             $(document).ready(function () {
-                encountersByAccount();
+                encountersByPayorParent10();
 
             });
 
@@ -48,16 +47,16 @@
                     google.load('visualization', '1', { packages: ['corechart'], callback: drawAccountChart });
                 }
                 function drawAccountChart() {
-
-                    var data = new google.visualization.DataTable({!encountersByAccount});
+                    var data = new google.visualization.arrayToDataTable([{!encountersByMCO}]);
 
                 var options = {
                     height: 500,
                     title: 'Encounters by Account',
-                    backgroundColor: { fill: 'transparent' }
+                    backgroundColor: { fill: 'transparent' },
+                    isStacked: true
                 };
 
-                var chart = new google.visualization.BarChart(document.getElementById("encountersByAccount"));
+                var chart = new google.visualization.BarChart(document.getElementById("encountersByPayorParent10"));
                 chart.draw(data, options);
 
 }
@@ -68,7 +67,7 @@
     </html>
 
     <apex:form >
-        <apex:actionFunction name="encountersByAccount" action="{!eLastWeekAccounts}" rerender="dataFunction" oncomplete="loadAccount();"></apex:actionFunction>
+        <apex:actionFunction name="encountersByPayorParent10" action="{!eByAccount}" rerender="dataFunction" oncomplete="loadAccount();"></apex:actionFunction>
     </apex:form>
 
 </apex:component>

@@ -47,9 +47,11 @@
                 font-weight: bold;
                 margin-top: 13px;
             }
-            .form-control{
+
+            .form-control {
                 margin: 5px 0px !important;
             }
+
             .multiSelectPicklistRow td:not(.multiSelectPicklistCell) {
                 width: 45%;
             }
@@ -107,8 +109,8 @@
                                 </div>
                                 <div>
                                     <label class="text-danger">*Address</label>
-                                    <apex:inputField styleClass="form-control" value="{!contact.MailingStreet}" html-placeholder="Street"  />
-                                    <apex:inputField styleClass="form-control" value="{!contact.MailingCity}" html-placeholder="City"  />
+                                    <apex:inputField styleClass="form-control" value="{!contact.MailingStreet}" html-placeholder="Street" />
+                                    <apex:inputField styleClass="form-control" value="{!contact.MailingCity}" html-placeholder="City" />
                                     <apex:inputField styleClass="form-control" value="{!contact.MailingState}" html-placeholder="State" required="true" />
                                     <apex:inputField styleClass="form-control" value="{!contact.MailingPostalCode}" html-placeholder="Zip" />
                                 </div>
@@ -117,8 +119,8 @@
                                     <apex:inputField styleClass="form-control" value="{!contact.Title__c}" html-placeholder="Title" required="true" />
                                 </div>
                                 <div>
-                                    <label class="text-danger">*Phone</label>
-                                    <apex:inputField styleClass="form-control" value="{!contact.Phone}" html-placeholder="Phone" required="true" />
+                                    <label>Phone</label>
+                                    <apex:inputField styleClass="form-control" value="{!contact.Phone}" html-placeholder="Phone" />
                                 </div>
                                 <div>
                                     <label>Ext</label>
@@ -134,7 +136,8 @@
                                 </div>
                                 <div>
                                     <label>Additional Phone Note</label>
-                                    <apex:inputField styleClass="form-control" value="{!contact.SalesHD_Additional_Phone_Note__c}" html-placeholder="Additional Phone Note" />
+                                    <apex:inputField styleClass="form-control" value="{!contact.SalesHD_Additional_Phone_Note__c}" html-placeholder="Additional Phone Note"
+                                    />
                                 </div>
                                 <div>
                                     <label>Fax</label>
@@ -142,18 +145,36 @@
                                 </div>
                                 <div>
                                     <label>Email</label>
-                                    <apex:inputField styleClass="form-control" value="{!contact.Email}" html-placeholder="Email"
-                                    />
+                                    <apex:inputField styleClass="form-control" value="{!contact.Email}" html-placeholder="Email" />
                                 </div>
                                 <div>
-                                    <label>Email Opt Out</label>
-                                    <apex:inputField styleClass="form-control" value="{!contact.HasOptedOutOfEmail}" html-placeholder="Email Opt Out"
-                                    />
+                                    <div>
+                                        <label class="w-100 text-left">Email Invalid</label>
+                                    </div>
+                                    <div class="w-100 text-left">
+                                        <apex:outputField styleClass="form-control" value="{!contact.Email_Invalid__c}" html-placeholder="Email Invalid" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div>
+                                        <label class="w-100 text-left">Marketing Suspended</label>
+                                    </div>
+                                    <div class="w-100 text-left">
+                                        <apex:outputField styleClass="form-control" value="{!contact.Marketing_Suspended__c}" html-placeholder="Email Invalid" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div>
+                                        <label class="w-100 text-left">Email Opt Out</label>
+                                    </div>
+                                    <div class="w-100 text-left">
+                                        <apex:inputField styleClass="form-control" value="{!contact.HasOptedOutOfEmail}" html-placeholder="Email Opt Out" />
+                                    </div>
                                 </div>
                                 <div>
                                     <label>Payor Type</label>
-                                    <apex:inputField styleClass="form-control" value="{!contact.Managed_Care_Payor__c}" html-placeholder="Payor Type"
-                                    />
+                                    <apex:inputField styleClass="form-control" value="{!contact.Managed_Care_Payor__c}" html-placeholder="Payor Type" />
                                 </div>
                                 <div>
                                     <label>Relationship</label>
@@ -161,7 +182,7 @@
                                     />
                                 </div>
                                 <div>
-                                    <apex:commandButton styleClass="btn btn-primary m-3 text-white" action="{!save}" status="statusSpinner" value="Save" rerender="editForm"
+                                    <apex:commandButton styleClass="btn btn-primary m-3 text-white" action="{!save}" status="statusSpinner" value="Save" rerender="editPanel"
                                     />
                                     <apex:commandButton styleClass="btn btn-secondary m-3 text-white" value="Cancel" style="margin-left:10px!important;" onclick="window.history.back();"
                                     />

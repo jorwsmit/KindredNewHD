@@ -105,6 +105,51 @@
                 max-height: 380px;
                 overflow-y: auto;
             }
+            #directorySearch {
+                margin-top: 10px;
+                padding: 10px;
+                border: 1px solid #ddd;
+                width: 100%;
+                border-radius: 25px;
+            }
+            .account-search-group{
+                margin-top: 20px;
+            }
+            .multiSelectPicklistRow td:not(.multiSelectPicklistCell) {
+                width: 45%;
+            }
+
+            .multiSelectPicklistRow td select {
+                width: 100% !important;
+            }
+
+            .multiSelectPicklistRow {
+                font-size: 16px;
+            }
+
+            .multiSelectPicklistTable tbody tr:not(multiSelectPicklistRow) td {
+                border: none;
+            }
+
+            .multiSelectPicklistCell a {
+                margin: auto !important;
+            }
+
+            .multiSelectPicklistCell a:first-child {
+                margin-bottom: 30px !important;
+            }
+
+            .multiSelectPicklistCell {
+                border: none;
+            }
+
+            .multiSelectPicklistCell img {
+                width: 50px;
+                margin: auto !important;
+            }
+            .back-btn{
+                display: none;
+            }
         </style>
 
     </head>

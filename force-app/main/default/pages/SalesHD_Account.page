@@ -1,5 +1,5 @@
 <apex:page showHeader="false" lightningStyleSheets="true" standardController="Account" extensions="SalesHD_Account" standardStylesheets="false"
- sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0">
+ sidebar="false" applyHtmlTag="false" applyBodyTag="false" docType="html-5.0" action="{!managedCareRedirect}">
 
 	<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 

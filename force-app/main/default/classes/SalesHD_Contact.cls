@@ -24,6 +24,15 @@ global without sharing class SalesHD_Contact {
 		}
 	}
 
+	public Pagereference managedCareRedirect(){
+		if([select Profile.name from user where Id=: currentUser][0].Profile.name.contains('Managed Care')) {
+			PageReference page = new PageReference('/apex/SalesHD_ManagedCareContact?id='+cont.Id);
+			page.setRedirect(true);
+			return page;
+		}
+		return null;
+	}
+
 	@RemoteAction global static String getUnits(Id contId){
 		return JSON.serializePretty([select Account_Unit__r.Unit__r.Name, Account_Unit__r.Account__r.Name, Id from Account_Unit_Contact__c
 		where Contact__c = :contId and Account_Unit__r.Unit__r.Name!='Administrative' and Account_Unit__r.Active__c=true]);
