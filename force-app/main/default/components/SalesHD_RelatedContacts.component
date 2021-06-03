@@ -57,7 +57,7 @@
     </div>
 
     <div>
-        <ul class="header-pad">
+        <ul class="max-height-3 header-pad m-0 mt-1">
 
             <apex:outputPanel rendered="{!relatedContacts.size<=0}">
                 <li class="m-2 p-1 pt-2 text-secondary">

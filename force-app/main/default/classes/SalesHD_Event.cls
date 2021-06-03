@@ -198,7 +198,7 @@ global with sharing class SalesHD_Event {
 	
 	@RemoteAction global static String getTeam(){
 	  String roleId = '';
-	  for(UserRole ur : [select Id from UserRole where name = 'HD - VP']) {
+	  for(UserRole ur : [select Id from UserRole where name = 'HD & NCD Admin']) {
 		roleId = ur.Id;
 	  }
 	  set<Id> allSubRoleIds = getSubRoleIds(new set<ID> {roleId});

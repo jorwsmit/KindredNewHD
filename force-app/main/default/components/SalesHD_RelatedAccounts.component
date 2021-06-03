@@ -6,7 +6,7 @@
         </h3>
     </div>
     <div>
-        <ul class="header-pad m-0 mt-1">
+        <ul class="max-height-3 header-pad m-0 mt-1">
             <apex:outputPanel rendered="{!relatedAccounts.size<=0}">
                 <li class="m-2 pt-2 text-secondary">
                     <i class="fa fa-times-circle" aria-hidden="true"></i> No related MCOs. Favorite this contact and go to an MCO page to relate one.

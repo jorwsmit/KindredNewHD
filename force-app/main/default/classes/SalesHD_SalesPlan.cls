@@ -157,7 +157,7 @@ public SalesHD_SalesPlan(ApexPages.StandardController stdController) {
 	}
 	if(selectedMonth==null && ApexPages.currentPage().getParameters().get('m')!=null) {
 		selectedMonth=ApexPages.currentPage().getParameters().get('m');
-	} else if(selectedMonth==null && Apexpages.currentPage().getUrl()!=null && Apexpages.currentPage().getUrl().toLowerCase().contains('/apex/saleshd_salesplanreports')) {
+	} else if(selectedMonth==null) {
 		selectedMonth=String.valueOf(Date.valueOf(system.now()).month());
 	}
 
