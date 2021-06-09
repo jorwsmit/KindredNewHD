@@ -33,6 +33,7 @@ html, body, .container-fluid {
   margin-bottom: 15px;
   border-radius: 20px;
   cursor: pointer;
+  display: inline;
 }
 .btn{
   font-size: 30px !important;
@@ -79,6 +80,7 @@ li{
 }
 .complete{
   color: #5ada67 !important;
+  text-decoration: none !important;
 }
 .overdue{
   color: #f14f4c !important;
@@ -92,6 +94,18 @@ h1{
   font-size: 25px !important;
   font-weight: bold !important;
 }
+.lms-nav-link{
+  background-color: #007EF5;
+  color: #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #fff;
+}
+.lms-nav-link:first-child{
+  border-radius: 10px 0px 0px 10px;
+}
+.lms-nav-link:last-child{
+  border-radius: 0px 10px 10px 0px;
+}
 .nav-selected{
   background-color: #fff;
   color: #007EF5;
@@ -103,11 +117,14 @@ h1{
 .calendar-content, .resources-content, .homework-content{
   display: none;
 }
+.card{
+  border-radius: 10px !important;
+}
 .card-header{
   background-color: #007EF5;
   color: #fff;
   font-size: 40px;
-  border-radius: 20px 20px 0px 0px !important;
+  border-radius: 10px 10px 0px 0px !important;
 }
 .filters{
   padding: 2px 10px 2px 10px;
@@ -220,7 +237,9 @@ h1{
   width: 100%;
   position: fixed;
 }
-
+.content{
+  border-radius: 10px;
+}
 #search-row{
   position: fixed;
   z-index: 100;
@@ -247,11 +266,18 @@ h1{
 #smartDropdown{
   display: inline-block;
 }
+.card-height{
+  height: 75px !important;
+}
 </style>
 <body>
 
   <!-- REQUIRED SLDS WRAPPER -->
   <div class="LightningDesign">
+
+    <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
+    <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" />
+
     <div class="slds-spinner_container" id="spinner" style="position:fixed; width:100vw; height:100vh;">
       <div class="slds-spinner slds-spinner--large slds-spinner--brand">
         <div class="slds-spinner__dot-a"></div>
@@ -260,10 +286,33 @@ h1{
     </div>
 
     <div class="container">
+
+      <div class="row lms-nav">
+        <div class="col-md-3 courses lms-nav-link nav-selected">
+          <span class="lnr lnr-home"></span>
+          <span>Courses</span>
+        </div>
+        <div class="col-md-3 homework lms-nav-link">
+          <span class="lnr lnr-pencil"></span>
+          <span>Homework</span>
+        </div>
+        <div class="col-md-3 final lms-nav-link">
+          <span class="lnr lnr-license"></span>
+          <span>Final Exam</span>
+        </div>
+        <div class="col-md-3 calendar lms-nav-link">
+          <span class="lnr lnr-calendar-full"></span>
+          <span>Training Calendar</span>
+        </div>
+      </div>
+
       <div class="row">
 
-        <div class="col-md-2 sidebar">
-          <h1 style="display:none;"><i class="fa fa-graduation-cap" aria-hidden="true"></i> CL Training</h1>
+        
+
+        <!-- <div class="col-md-10 sidebar">
+          
+          
           <ul>
             <li class="nav-selected courses">
               <span class="lnr lnr-home"></span>
@@ -277,25 +326,21 @@ h1{
               <span class="lnr lnr-license"></span>
               <span>Final Exam</span>
             </li>
-            <li class="resources">
-              <span class="lnr lnr-enter"></span>
-              <span>Resource Library</span>
-            </li>
             <li class="calendar">
               <span class="lnr lnr-calendar-full"></span>
               <span>Training Calendar</span>
             </li>
           </ul>
-        </div>
+        </div> -->
 
-        <div class="col-md-10 offset-md-2 content courses-content">
-          <div class="row" style="height:160px;">
+        <div class="col-md-12 content courses-content white-bg shadow mt-3">
+          <div class="row">
             <div class="col-md-4 quicklooks" style="margin-top:20px;">
               <div class="card">
-                <div class="card-header">
+                <div class="card-header bg-primary">
                   <span id="todo"></span><span class="lnr lnr-book float-right" style="margin-top:10px;"></span>
                 </div>
-                <div class="card-body">
+                <div class="card-body card-height">
                   <p class="card-text">TO-DO</p>
                 </div>
               </div>
@@ -305,7 +350,7 @@ h1{
                 <div class="card-header" style="background-color:#f14f4c !important;">
                   <span id="overdue"></span><span class="lnr lnr-clock float-right" style="margin-top:10px;"></span>
                 </div>
-                <div class="card-body">
+                <div class="card-body card-height">
                   <p class="card-text">OVERDUE</p>
                 </div>
               </div>
@@ -315,8 +360,8 @@ h1{
                 <div class="card-header" style="background-color:#5ada67 !important;">
                   <span id="complete"></span><span class="lnr lnr-checkmark-circle float-right" style="margin-top:10px;"></span>
                 </div>
-                <div class="card-body">
-                  <p class="card-text">COMPLETION</p>
+                <div class="card-body card-height">
+                  <p class="card-text">COMPLETE</p>
                 </div>
               </div>
             </div>
@@ -329,7 +374,7 @@ h1{
             </div>
           </div>
         </div>
-        <div class="col-md-10 offset-md-2 content calendar-content" style="margin-top: 20px; margin-bottom: 20px;">
+        <div class="col-md-12 content calendar-content mt-3">
           <div class="row">
             <div class="col">
               <article class="slds-card">
@@ -372,7 +417,7 @@ h1{
           </div>
         </div>
 
-        <div class="col-md-10 offset-md-2 content resources-content">
+        <!-- <div class="col-md-10 offset-md-2 content resources-content">
           <div class="row" style="position:fixed;z-index:100;width:100%;background-color:white;height:40px;">
           </div>
           <div id="search-row" class="row">
@@ -393,7 +438,6 @@ h1{
               <button type="button" class="btn filters">Referral Manager</button>
               <button type="button" class="btn filters">Managed Care</button>
               <button type="button" class="btn filters">Reference Articles</button>
-              <!-- <button type="button" class="btn filters">Post SMART Powerpoint</button> -->
               <div class="dropdown" id="smartDropdown">
                 <button class="btn filters dropdown-toggle" type="button" id="smartDropdownButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Post SMART Powerpoint
@@ -412,12 +456,13 @@ h1{
               </ul>
             </div>
           </div>
-        </div>
+        </div> -->
 
-        <div class="col-md-10 offset-md-2 content homework-content">
-          <div class="row" style="margin-top:80px;margin-bottom:10px;">
+        <div class="col-md-12 content homework-content white-bg shadow mt-3">
+          <div class="row">
             <div class="col-md-12">
               <ul id="homework-list">
+
               </ul>
             </div>
           </div>
@@ -464,13 +509,13 @@ $(document).ready(function(){
     selectedFilter = $(this).text();
     $("#smartDropdownButton").text('Post SMART Powerpoint').removeClass('filter-selected');
     $("#smartDropdownItems a").removeClass('dropdown-selected');
-    $("#resource-list li").each(function() {
-      if(($(this).data("filter").toUpperCase().replace(/\s/g, '').indexOf(selectedFilter.toUpperCase().replace(/\s/g, '')) > -1) || selectedFilter=='All') {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
-    });
+    // $("#resource-list li").each(function() {
+    //   if(($(this).data("filter").toUpperCase().replace(/\s/g, '').indexOf(selectedFilter.toUpperCase().replace(/\s/g, '')) > -1) || selectedFilter=='All') {
+    //     $(this).show();
+    //   } else {
+    //     $(this).hide();
+    //   }
+    // });
   });
 
   $("#smartDropdownItems a").click(function(){
@@ -479,37 +524,37 @@ $(document).ready(function(){
     $(this).addClass('dropdown-selected');
     selectedFilter = 'Post SMART Powerpoint - '+$(this).text();
     $("#smartDropdownButton").text(selectedFilter).addClass('filter-selected');
-    $("#resource-list li").each(function() {
-      if(($(this).data("filter").toUpperCase().replace(/\s/g, '').indexOf(selectedFilter.toUpperCase().replace(/\s/g, '')) > -1) || selectedFilter=='All') {
-        $(this).show();
-      } else {
-        $(this).hide();
-      }
-    });
+    // $("#resource-list li").each(function() {
+    //   if(($(this).data("filter").toUpperCase().replace(/\s/g, '').indexOf(selectedFilter.toUpperCase().replace(/\s/g, '')) > -1) || selectedFilter=='All') {
+    //     $(this).show();
+    //   } else {
+    //     $(this).hide();
+    //   }
+    // });
   });
 
 
 
   loadDashboard();
-  SalesHD_LMS.getResources(function(callback, event){
-    var resources = JSON.parse(callback);
-    for(resource of resources){
-      var filter = 'data-filter=""';
-      if(resource.category!=null) filter = 'data-filter="'+resource.category+'"'
-      $("#resource-list").append('<li data-id="'+resource.resourceId+'" data-name="'+resource.name+'" '+filter+'>'+
-      '<div class="row assignment">'+
-      '<div class="col-md-1">'+
-      resource.icon+
-      '</div>'+
-      '<div class="col-md-11">'+
-      '<div class="row">'+
-      '<div class="col-md-12">'+resource.name+'</div>'+
-      '<div class="col-md-12 due-date">'+resource.type+'</div></div></div></div></li>');
-    }
-    $("#resource-list li").click(function(){
-      openResource($(this).data("id"));
-    });
-  }, {escape:false});
+  // SalesHD_LMS.getResources(function(callback, event){
+  //   var resources = JSON.parse(callback);
+  //   for(resource of resources){
+  //     var filter = 'data-filter=""';
+  //     if(resource.category!=null) filter = 'data-filter="'+resource.category+'"'
+  //     $("#resource-list").append('<li data-id="'+resource.resourceId+'" data-name="'+resource.name+'" '+filter+'>'+
+  //     '<div class="row assignment">'+
+  //     '<div class="col-md-1">'+
+  //     resource.icon+
+  //     '</div>'+
+  //     '<div class="col-md-11">'+
+  //     '<div class="row">'+
+  //     '<div class="col-md-12">'+resource.name+'</div>'+
+  //     '<div class="col-md-12 due-date">'+resource.type+'</div></div></div></div></li>');
+  //   }
+  //   $("#resource-list li").click(function(){
+  //     openResource($(this).data("id"));
+  //   });
+  // }, {escape:false});
 
   SalesHD_LMS.getHomework(function(callback, event){
     var resources = JSON.parse(callback);
@@ -530,7 +575,7 @@ $(document).ready(function(){
   }, {escape:false});
 
 
-  $(".sidebar ul li").click(function(){
+  $(".lms-nav-link").click(function(){
     if($(this).hasClass('final')){
       if(canTakeFinal){
         // navTo(\''+getUrl(assignment)+'\')
@@ -540,7 +585,7 @@ $(document).ready(function(){
         $("#notReady").modal("show");
       }
     } else {
-      $(".sidebar ul li").removeClass("nav-selected");
+      $(".lms-nav-link").removeClass("nav-selected");
       $(this).addClass("nav-selected");
       if($(this).hasClass("dashboard")) navDashboard();
       else if($(this).hasClass("courses")) navCourses();
@@ -581,6 +626,7 @@ $(document).ready(function(){
 function loadDashboard(){
   SalesHD_LMS.loadDashboard(function(callback, event){
     var data = JSON.parse(callback);
+    console.log(data);
     $("#todo").text(data.todo);
     $("#overdue").text(data.overdue);
     $("#complete").text(data.completionPercent + '%');
