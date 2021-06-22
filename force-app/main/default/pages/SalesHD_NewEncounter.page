@@ -686,269 +686,270 @@
 				</div>
 			</div>
 
-			<!-- <div class="nav-container blue-bg">
-				<div class="row">
-					<ul class="nav-list">
-						<li onclick="window.location.href='/apex/saleshd_homepage'">
-							<i class="fas fa-home"></i> HOME
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_accounts'">
-							<i class="fas fa-hospital"></i> MY ACCOUNTS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_contacts'">
-							<i class="fas fa-user-md"></i> MY CONTACTS
-						</li>
-						<li onclick="window.location.href='/apex/saleshd_encounters'">
-							<i class="fas fa-phone"></i> ENCOUNTERS
-						</li>
-					</ul>
-				</div>
-			</div> -->
+
 
 			<c:SalesHD_RedesignNav />
 
-			<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
-
-			<!-- <div class="header">
-				<span class="lnr lnr-arrow-left back-btn" onclick="window.history.back();"></span>
-			</div> -->
-
 			<div class="container shadow white-bg">
 				<div class="row">
-					<apex:outputPanel id="containerBlock">
-						<apex:form id="encounterForm">
-							<label>INFORMATION</label>
-							<div style="margin-top:5px;">
-								<apex:inputHidden value="{!additionalTeamIdString}" id="additionalTeamIds" />
-								<apex:inputHidden value="{!removeAdditionalTeamIdString}" id="removeAdditionalTeamIds" />
-								<label style="width: 100%; display:none;" id="teamLabel">Additional Kindred Team Members</label>
-								<ul style="margin-top:-10px;" id="addedTeam"></ul>
-								<span id="addMoreTeamMembers" class="blue pointer">
-									<i class="fa fa-user-plus"></i> Add Additional Kindred Team Members</span>
-								<div id="team-members" style="display:none;">
-									<input placeholder="Search for Kindred Team Members" class="form-control" id="teamSearch" style="border:1px solid #ddd; border-radius:4px 4px 0px 0px;"/>
-									<ul id="teamList" style="border:1px solid #ddd; border-radius:0px 0px 4px 4px;"></ul>
-								</div>
-							</div>
-							<label class="required" style="width: 100%;">*Date
-								<span style="padding-left:28%;">*Time</span>
-								<span style="padding-left:27%;">*Duration In Minutes</span>
-							</label>
-							<apex:input type="date" id="startDate" value="{!startDate}" style="height:37px; width:33%; margin-right:1%; display:inline-block;"
-							 styleClass="form-control" required="true" />
-							<apex:input type="time" id="startTime" value="{!startTime}" style="height:37px; width:32%; margin-right:1%; display:inline-block;"
-							 styleClass="form-control" required="true" />
-							<apex:input type="number" id="duration" value="{!duration}" style="height:37px; width:33%; display:inline-block;" styleClass="form-control"
-							 required="true" />
-							<!-- <apex:inputField styleClass="form-control" value="{!event.DurationInMinutes}" html-placeholder="Duration" required="true"/> -->
-							<!-- <label class="required" style="width: 100%;">*End Datetime</label> -->
-							<!-- <apex:input type="date" id="endDate" value="{!endDate}" style="height:37px; width:49%; margin-right:1%; display:inline-block;" styleClass="form-control" required="true"/> -->
-							<!-- <apex:input type="time" id="endTime" value="{!endTime}" style="height:37px; width:49%; display:inline-block;" styleClass="form-control" required="true"/> -->
-							<label class="required" style="width: 100%;">*Primary Contact</label>
-							<apex:inputHidden value="{!contactId}" id="contactId" required="true" />
-							<input class="form-control" placeholder="Contact" id="contact" value="{!contactName}" />
-							<ul class="form-control" id="contactList" style="display:none;"></ul>
-
-							<apex:inputHidden value="{!additionalContactIdString}" id="additionalContactIds" />
-							<apex:inputHidden value="{!removeAdditionalContactIdString}" id="removeAdditionalContactIds" />
-							<ul id="addedContacts"></ul>
-							<ul class="form-control" id="addContactList" style="display:none;"></ul>
-							<div style="margin-top:5px;">
-								<span id="addMoreContacts" class="blue pointer">
-									<i class="fa fa-user-plus"></i> Add Additional Contacts</span>
-							</div>
-
-							<label class="required" style="width: 100%;">*Account
-								<span style="padding-left:41%;">*Unit</span>
-							</label>
-							<apex:inputHidden value="{!accountId}" id="accountId" required="true" />
-							<input class="form-control" placeholder="Account" style="width:49%; margin-right:1%; display:inline-block;" id="account"
-							 value="{!accountName}" />
-							<apex:inputHidden value="{!unitId}" id="unitId" required="true" />
-							<input class="form-control" placeholder="Unit" style="width:49%; display:inline-block;" id="unit" value="{!unitName}" />
-							<ul class="form-control" id="accountList" style="display:none; width:49%;"></ul>
-							<ul class="form-control" id="unitList" style="display:none; width:49%; margin-left:50% !important;"></ul>
-
-							<!-- <label class="required">*Type</label>
-							<apex:inputField styleClass="form-control" value="{!event.Type}" html-placeholder="Type" required="true" /> -->
-							
-							<label class="required">*Contact Method</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Contact_Method__c}" html-placeholder="Medium"
-							 required="true" />
-							
-							<label class="required">*Objective
-								<span class="educationtip" id="objective">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Call_Objective__c}" html-placeholder="Objective"
-							 required="true" />
-
-
-							 <label class="required">*Topic
-								<span class="educationtip" id="topic">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Topic__c}" html-placeholder="Topic"
-							 required="true" />
-
-							<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">PREPARATION</label>
-							<label class="required" style="width: 100%; {!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}">Last Encounter</label>
-							<apex:inputField styleClass="form-control" style="{!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}"
-							 value="{!event.SalesHD_Last_Encounter__c}" html-placeholder="Last Encounter" html-disabled="true" />
-							<label class="required" style="width: 100%;">*Open Ended Questions
-								<span class="educationtip" id="question">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
-							 required="true" />
-							<label style="width: 100%;">Marketing Tool
-
-							</label>
-							<apex:inputField styleClass="form-control collateral-picklist" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
-							/>
-							<label style="width: 100%;">Agenda
-								<span class="educationtip" id="agenda">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Agenda_Preparation__c}" html-placeholder="Agenda Preparation"
-							/>
-							<label style="width: 100%;">Data
-								<span class="educationtip" id="data">
-									<i class="fas fa-question-circle blue pointer"></i>
-								</span>
-							</label>
-							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
-							/>
-
-
-							<apex:outputPanel id="postCallPanel">
-								<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">POST CALL</label>
-								<p style="font-size:13px;" class="required">
-									*This section is requried after you complete the call.
-								</p>
-
-								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Close / Customer Commitment', 'Close / Customer Commitment')}</label>
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Close_Customer_Commitment__c}" html-placeholder="Close / Customer Commitment"
-								 id="closeCustomer"  required="{!event.SalesHD_Complete__c}"/>
-								<script>replaceMultiselectButtons();</script>
-
-								<!-- <apex:outputPanel rendered="{!IF(CONTAINS($Profile.Name, 'Manager'), true, false)}" style="display:inline-block;"> -->
-
-								<label style="width: 100%;" class="{!IF(event.SalesHD_Complete__c=true, 'required', '')}">{!IF(event.SalesHD_Complete__c=true, '*Summary and Results', 'Summary and Results')}
-
-									<span class="educationtip" id="results">
-										<i class="fas fa-question-circle blue pointer"></i>
-									</span>
-								</label>
-
-								<apex:inputField styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results" required="{!event.SalesHD_Complete__c}"/>
-
-								<label style="width: 100%;">Summary and Results Continued
-
-									<span class="educationtip" id="results">
-										<i class="fas fa-question-circle blue pointer"></i>
-									</span>
-								</label>
-
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Results_Continued__c}" html-placeholder="Summary and Results Continued" />
-
-								<label style="width: 100%;">Next Steps / Follow-up Actions
-									<span class="educationtip" id="nextsteps">
-										<i class="fas fa-question-circle blue pointer"></i>
-									</span>
-								</label>
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Next_Encounter__c}" html-placeholder="Next Steps / Follow-up Encounter" onkeyup="showNextEncounter();"
-								/>
-								
-								<label style="width: 100%;">Complete</label>
-								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Complete__c}" style="width:15px;">
-									<apex:actionSupport event="onchange" rerender="postCallPanel" />
-								</apex:inputField>
+					<apex:form id="encounterForm">
+						<div class="col-md-12">
+							<apex:outputPanel rendered="{!plannedUnplannedEncounter!='Planned Encounter'
+						&& plannedUnplannedEncounter!='Unplanned Encounter'}">
+								<p>{!plannedUnplannedEncounter}</p>
 							</apex:outputPanel>
 
+							<apex:outputPanel styleClass="btn {!if(plannedUnplannedEncounter='Planned Encounter', 'btn-primary', 'btn-secondary')}" onclick="plannedEncounters()">
+								Planned Encounter
+							</apex:outputPanel>
+							<apex:outputPanel styleClass="btn {!if(plannedUnplannedEncounter='Unplanned Encounter', 'btn-primary', 'btn-secondary')}"
+							 onclick="unplannedEncounters()">
+								Unplanned Encounter
+							</apex:outputPanel>
 
+							<apex:actionFunction immediate="true" action="{!plannedEncounter}" name="plannedEncounters" rerender="encounterForm" status="statusSpinner"
+							 oncomplete="loadPage();">
+							</apex:actionFunction>
+							<apex:actionFunction immediate="true" action="{!unplannedEncounter}" name="unplannedEncounters" rerender="encounterForm"
+							 status="statusSpinner" oncomplete="loadPage();">
+							</apex:actionFunction>
 
-							<div style="margin-top:20px;">
-								<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNew}" onclick="storeHtml();" oncomplete="loadPage();"
-								 value="Save" rerender="containerBlock" id="saveNew" style="vertical-align:bottom; margin-top:0px!important;" />
-								<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveAndNew}" onclick="storeHtml();" oncomplete="loadPage();"
-								 value="Save and New" rerender="containerBlock" id="saveAndNew" style="vertical-align:bottom; margin-top:0px!important; margin-left:10px!important;"
+							<!-- <apex:commandButton value="Planned Encounter" styleClass="btn {!if(plannedUnplannedEncounter='Planned Encounter', 'btn-primary', 'btn-secondary')}"
+							 action="{!plannedEncounter}" reRender="encounterForm" status="statusSpinner" immediate="true" oncomplete="loadPage();"></apex:commandButton>
+							<apex:commandButton value="Unplanned Encounter" styleClass="btn {!if(plannedUnplannedEncounter='Unplanned Encounter', 'btn-primary', 'btn-secondary')}"
+							 action="{!unplannedEncounter}" reRender="encounterForm" status="statusSpinner" immediate="true" oncomplete="loadPage();"></apex:commandButton> -->
+						</div>
+
+						<apex:outputPanel rendered="{!plannedUnplannedEncounter='Planned Encounter'
+						|| plannedUnplannedEncounter='Unplanned Encounter'}">
+
+							<div class="col-md-12">
+								<label>INFORMATION</label>
+
+								<div style="margin-top:5px;">
+									<apex:inputHidden value="{!additionalTeamIdString}" id="additionalTeamIds" />
+									<apex:inputHidden value="{!removeAdditionalTeamIdString}" id="removeAdditionalTeamIds" />
+									<label style="width: 100%; display:none;" id="teamLabel">Additional Kindred Team Members</label>
+									<ul style="margin-top:-10px;" id="addedTeam"></ul>
+									<span id="addMoreTeamMembers" class="blue pointer">
+										<i class="fa fa-user-plus"></i> Add Additional Kindred Team Members</span>
+									<div id="team-members" style="display:none;">
+										<input placeholder="Search for Kindred Team Members" class="form-control" id="teamSearch" style="border:1px solid #ddd; border-radius:4px 4px 0px 0px;"
+										/>
+										<ul id="teamList" style="border:1px solid #ddd; border-radius:0px 0px 4px 4px;"></ul>
+									</div>
+								</div>
+								<label class="required" style="width: 100%;">*Date
+									<span style="padding-left:28%;">*Time</span>
+									<span style="padding-left:27%;">*Duration In Minutes</span>
+								</label>
+								<apex:input type="date" id="startDate" value="{!startDate}" style="height:37px; width:33%; margin-right:1%; display:inline-block;"
+								 styleClass="form-control" required="true" />
+								<apex:input type="time" id="startTime" value="{!startTime}" style="height:37px; width:32%; margin-right:1%; display:inline-block;"
+								 styleClass="form-control" required="true" />
+								<apex:input type="number" id="duration" value="{!duration}" style="height:37px; width:33%; display:inline-block;" styleClass="form-control"
+								 required="true" />
+
+								<label class="required" style="width: 100%;">*Primary Contact</label>
+								<apex:inputHidden value="{!contactId}" id="contactId" required="true" />
+								<input class="form-control" placeholder="Contact" id="contact" value="{!contactName}" />
+								<ul class="form-control" id="contactList" style="display:none;">
+									<apex:repeat value="{!favoritedContacts}" var="c">
+										<li data-contactid="{!c.Contact__c}">{!c.Contact__r.Name}</li>
+									</apex:repeat>
+								</ul>
+
+								<apex:inputHidden value="{!additionalContactIdString}" id="additionalContactIds" />
+								<apex:inputHidden value="{!removeAdditionalContactIdString}" id="removeAdditionalContactIds" />
+								<ul id="addedContacts"></ul>
+								<ul class="form-control" id="addContactList" style="display:none;">
+									<apex:repeat value="{!favoritedContacts}" var="c">
+										<li data-contactid="{!c.Contact__c}">{!c.Contact__r.Name}</li>
+									</apex:repeat>
+								</ul>
+								<div style="margin-top:5px;">
+									<span id="addMoreContacts" class="blue pointer">
+										<i class="fa fa-user-plus"></i> Add Additional Contacts</span>
+								</div>
+
+								<label class="required" style="width: 100%;">*Account
+									<span style="padding-left:41%;">*Unit</span>
+								</label>
+								<apex:inputHidden value="{!accountId}" id="accountId" required="true" />
+								<input class="form-control" placeholder="Account" style="width:49%; margin-right:1%; display:inline-block;" id="account"
+								 value="{!accountName}" />
+								<apex:inputHidden value="{!unitId}" id="unitId" required="true" />
+								<input class="form-control" placeholder="Unit" style="width:49%; display:inline-block;" id="unit" value="{!unitName}" />
+								<ul class="form-control" id="accountList" style="display:none; width:49%;">
+									<apex:repeat value="{!favoritedAccounts}" var="a">
+										<li data-accountid="{!a.accountId}">{!a.Account.Name}</li>
+									</apex:repeat>
+								</ul>
+								<ul class="form-control" id="unitList" style="display:none; width:49%; margin-left:50% !important;"></ul>
+
+								<label class="required">*Contact Method</label>
+								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Contact_Method__c}" html-placeholder="Medium" required="true"
 								/>
-								<apex:commandButton styleClass="btn btn-secondary" value="Cancel" oncomplete="loadPage();" style="margin-top:0px!important; margin-left:10px!important;"
-								 onclick="window.history.back();" rerender="containerBlock" />
-								<apex:commandButton styleClass="btn btn-success" id="saveAndNext" status="statusSpinner" oncomplete="loadPage();" style="margin-left:10px!important;
+
+								<label class="required">*Meeting Type</label>
+								<apex:inputField styleClass="form-control" value="{!event.Type}" html-placeholder="Type" required="true" />
+
+								<label class="required">*Objective
+									<span class="educationtip" id="objective">
+										<i class="fas fa-question-circle blue pointer"></i>
+									</span>
+
+								</label>
+								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Call_Objective__c}" html-placeholder="Objective" required="true"
+								/>
+
+								<label class="required">*Topic
+									<span class="educationtip" id="topic">
+										<i class="fas fa-question-circle blue pointer"></i>
+									</span>
+
+								</label>
+								<apex:inputField styleClass="form-control" value="{!event.SalesHD_Topic__c}" html-placeholder="Topic" required="true" />
+
+								<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">PREPARATION</label>
+								<label class="required" style="width: 100%; {!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}">Last Encounter</label>
+								<apex:inputField styleClass="form-control" style="{!IF(ISBLANK(event.SalesHD_Last_Encounter__c), 'display:none;', 'display:block;')}"
+								 value="{!event.SalesHD_Last_Encounter__c}" html-placeholder="Last Encounter" html-disabled="true" />
+
+								<apex:outputPanel rendered="{!plannedUnplannedEncounter='Unplanned Encounter'}">
+									<label style="width: 100%;">Open Ended Questions
+										<span class="educationtip" id="question">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+									<apex:inputField styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
+									/>
+
+									<label style="width: 100%;">*Marketing Tool</label>
+									<apex:inputField styleClass="form-control collateral-picklist" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
+									/>
+									<label style="width: 100%;">Agenda
+										<span class="educationtip" id="agenda">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+									<apex:inputField styleClass="form-control" value="{!event.SalesHD_Agenda_Preparation__c}" html-placeholder="Agenda Preparation"
+									/>
+									<label style="width: 100%;">Data
+										<span class="educationtip" id="data">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+									<apex:inputField styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
+									/>
+								</apex:outputPanel>
+
+								<apex:outputPanel rendered="{!plannedUnplannedEncounter='Planned Encounter'}">
+									<label class="required" style="width: 100%;">*Open Ended Questions
+										<span class="educationtip" id="question">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+									<apex:inputField required="true" styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
+									/>
+
+									<label class="required" style="width: 100%;">*Marketing Tool</label>
+									<apex:inputField required="true" styleClass="form-control collateral-picklist" value="{!event.SalesHD_Marketing_Collateral__c}"
+									 html-placeholder="Marketing Collateral" />
+
+									<label class="required" style="width: 100%;">*Agenda
+										<span class="educationtip" id="agenda">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+									<apex:inputField required="true" styleClass="form-control" value="{!event.SalesHD_Agenda_Preparation__c}" html-placeholder="Agenda Preparation"
+									/>
+									<label class="required" style="width: 100%;">*Data
+										<span class="educationtip" id="data">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+									<apex:inputField required="true" styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
+									/>
+								</apex:outputPanel>
+
+								<apex:outputPanel id="postCallPanel">
+									<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">POST CALL</label>
+									<p style="font-size:13px;" class="required">
+										*This section is requried after you complete the call.
+									</p>
+									<label style="width: 100%;" class="{!IF(isComplete=true, 'required', '')}">{!IF(isComplete=true, '*Summary and Results', 'Summary and Results')}
+										<span class="educationtip" id="results">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+
+									<apex:inputField required="{!isComplete}" styleClass="form-control" value="{!event.Result__c}" html-placeholder="Summary and Results"
+									/>
+
+									<label style="width: 100%;">Summary and Results Continued
+
+										<span class="educationtip" id="results">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+
+									<apex:inputField styleClass="form-control" value="{!event.SalesHD_Results_Continued__c}" html-placeholder="Summary and Results Continued"
+									/>
+
+									<label style="width: 100%;">Next Steps / Follow-up Actions
+										<span class="educationtip" id="nextsteps">
+											<i class="fas fa-question-circle blue pointer"></i>
+										</span>
+									</label>
+									<apex:inputField styleClass="form-control" value="{!event.SalesHD_Next_Encounter__c}" html-placeholder="Next Steps / Follow-up Encounter"
+									 onkeyup="showNextEncounter();" />
+
+									<label style="width: 100%;">Complete</label>
+									<apex:inputField styleClass="form-control" value="{!event.SalesHD_Complete__c}" style="width:15px;">
+										<apex:actionSupport event="onchange" rerender="postCallPanel" action="{!toggleComplete}" immediate="true"/>
+									</apex:inputField>
+
+								</apex:outputPanel>
+
+
+								<div style="margin-top:20px;">
+									<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveNew}" onclick="storeHtml();" oncomplete="loadPage();"
+									 value="Save" rerender="containerBlock" id="saveNew" style="vertical-align:bottom; margin-top:0px!important;" />
+									<apex:commandButton styleClass="btn btn-primary" status="statusSpinner" action="{!saveAndNew}" onclick="storeHtml();" oncomplete="loadPage();"
+									 value="Save and New" rerender="containerBlock" id="saveAndNew" style="vertical-align:bottom; margin-top:0px!important; margin-left:10px!important;"
+									/>
+									<apex:commandButton styleClass="btn btn-secondary" value="Cancel" oncomplete="loadPage();" style="margin-top:0px!important; margin-left:10px!important;"
+									 onclick="window.history.back();" rerender="containerBlock" />
+									<apex:commandButton styleClass="btn btn-success" id="saveAndNext" status="statusSpinner" oncomplete="loadPage();" style="margin-left:10px!important;
 								 {!IF(ISBLANK(event.SalesHD_Next_Encounter__c), 'display:none;',
 								 IF($CurrentPage.parameters.duplicate='true', 'display:none;', 'display:inline-block;'))} vertical-align:bottom; margin-top:0px!important;"
-								 action="{!saveAndNext}" value="Save and Follow-up" rerender="containerBlock" />
+									 action="{!saveAndNext}" value="Save and Follow-up" rerender="containerBlock" />
+								</div>
+
+
 							</div>
 
-
-							<apex:actionStatus id="statusSpinner">
-								<apex:facet name="start">
-
-									<div class="slds-spinner_container" style="position:fixed; width:100vw; height:100vh;">
-										<div class="slds-spinner slds-spinner--large slds-spinner--brand">
-											<div class="slds-spinner__dot-a"></div>
-											<div class="slds-spinner__dot-b"></div>
-										</div>
-									</div>
-
-								</apex:facet>
-							</apex:actionStatus>
-
-							<apex:pageMessages />
-
-						</apex:form>
-					</apex:outputPanel>
-
-					<apex:form >
-						<apex:outputPanel id="recurrencePanel">
-							<label style="margin-top:30px; width:100%; border-top:1px solid #ddd;">Recurring Event</label>
-							<apex:inputcheckbox styleClass="form-control" value="{!event.IsRecurrence}" style="width:15px;">
-								<apex:actionSupport event="onclick" rerender="recurrencePanel" action="{!recurrenceClicked}" />
-							</apex:inputcheckbox>
-
-							<apex:outputPanel rendered="{!displayRecurrence}">
-								<label style="width: 100%;">Recurrence Interval</label>
-								<apex:selectList multiselect="false" size="1" value="{!selectedRecurrenceType}">
-									<apex:selectOption itemLabel="Daily" itemValue="RecursDaily" />
-									<apex:selectOption itemLabel="Weekly" itemValue="RecursWeekly" />
-									<apex:selectOption itemLabel="Monthly" itemValue="RecursMonthly" />
-									<apex:actionSupport event="onchange" rerender="recurrencePanel" action="{!selectRecurrenceType}" />
-								</apex:selectList>
-							</apex:outputPanel>
-
 						</apex:outputPanel>
+
+
+						<apex:actionStatus id="statusSpinner">
+							<apex:facet name="start">
+
+								<div class="slds-spinner_container" style="position:fixed; width:100vw; height:100vh;">
+									<div class="slds-spinner slds-spinner--large slds-spinner--brand">
+										<div class="slds-spinner__dot-a"></div>
+										<div class="slds-spinner__dot-b"></div>
+									</div>
+								</div>
+
+							</apex:facet>
+						</apex:actionStatus>
+						<apex:pageMessages />
+
 					</apex:form>
-
 				</div>
 			</div>
-
-			<div class="modal fade" id="educationModal">
-				<div class="modal-dialog modal-dialog-centered">
-					<div class="modal-content">
-						<div class="modal-header icon-blue">
-							<h3 class="bold">
-								<i aria-hidden="true" class="far fa-question-circle" style="padding-right:10px;"></i>
-								<span id="education-title"></span>
-							</h3>
-						</div>
-						<div class="modal-body">
-							<p id="education-body" style="font-size:15px;"></p>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-						</div>
-					</div>
-				</div>
-			</div>
-
 
 		</div>
 		<!-- Lightning Wrapper -->
@@ -967,7 +968,7 @@
 				"data": { "title": "Data", "body": "<b>Definition:</b> Any data items that will be presented during the encounter that are relevant to the objective.</br></br><b>Instructions:</b> Make sure the data is timely and professional.  The data should be relevant to the topic and objective of the encounter.</br></br><b>Example:</b> >$1.3MM MedPAR opportunity (ICU-specific) for St. Joseph’s hospital. 2019 Discharge Disposition – RTA 6%, LLOC 68%." },
 				"topic": { "title": "Topic", "body": "<b>Definition:</b>  What is the primary topic you will focus on?</br></br><b>Instructions:</b> Select the encounter topic that best conveys the primary focus during the encounter. For reporting purposes, only ONE topic can be chosen for each encounter. If multiple topics were discussed, choose the topic that was most imperative in helping to accomplish the desired objective." },
 				"agenda": { "title": "Topic", "body": "<b>Definition:</b> The planned discussion points to be delivered during the encounter and which Kindred representative will be presenting them.</br></br><b>Instructions:</b> List the pre-planned topics to be discussed. All Kindred participants should be listed here.</br></br><b>Example:</b></br>- Initial introductions with Dr. Cooper (all)</br>- Discuss vent weaning protocol (Amy)</br>- Review quality sheet (Dan)</br>- Potential dates for in-service with pulmonary group (Amy)" },
-				"nextsteps": {"title": "Next Steps / Follow-up Actions", "body": "<b>Definition:</b> The actionable items that are required as follow-up from the information gathered during the current encounter.  These next steps allow for sequential messaging to create continued dialogue for a next encounter.  (Notes written from this section will populate in the next call scheduled.)</br></br><b>Instructions:</b> Tie this section to the discussion documented in the Summary & Results section. During the discussion, what steps were discovered that will continue Kindred’s value proposition in the next discussion?Include any notes or reminders will you want to bring into the next encounter.</br></br><b>Example:</b> Follow-up with quality outcomes for vent patients at Kindred. Educate on benefits of sending patients to KND before IRF if clinically appropriate. Find relevant success story.Dr. Cooper will tour KND LTACH next Thurs."},
+				"nextsteps": { "title": "Next Steps / Follow-up Actions", "body": "<b>Definition:</b> The actionable items that are required as follow-up from the information gathered during the current encounter.  These next steps allow for sequential messaging to create continued dialogue for a next encounter.  (Notes written from this section will populate in the next call scheduled.)</br></br><b>Instructions:</b> Tie this section to the discussion documented in the Summary & Results section. During the discussion, what steps were discovered that will continue Kindred’s value proposition in the next discussion?Include any notes or reminders will you want to bring into the next encounter.</br></br><b>Example:</b> Follow-up with quality outcomes for vent patients at Kindred. Educate on benefits of sending patients to KND before IRF if clinically appropriate. Find relevant success story.Dr. Cooper will tour KND LTACH next Thurs." },
 			};
 
 			var addedContacts = [];
@@ -985,29 +986,13 @@
 			$(document).ready(function () {
 
 
-			// 	var auditResultColorMap = {
-            //     'Approved': green,
-            //     'Asking for business only': red,
-            //     'Duplicate encounter': red,
-            //     'Improper use of field': yellow,
-            //     'Info in summary or agenda does not match objective': yellow,
-            //     'Lacking detail': yellow,
-            //     'Lacking strategy': yellow,
-            //     'Missing agenda': yellow,
-            //     'Missing next steps': yellow,
-            //     'Missing summary': yellow,
-            //     'No data/metrics/collateral used when needed': yellow,
-            //     'Not a sales call': red,
-            //     'Referral managing': red
-            // };
-
-            $(".collateral-picklist").on('click', function () {
-                $(this).find("option").each(function (index, value) {
-					if($(value).val().indexOf('FLYER -')<0 && $(value).val().indexOf('WHITEPAPER -')<0){
-						$(value).css('font-weight', 'bold');
-					}
-                });
-            });
+				$(".collateral-picklist").on('click', function () {
+					$(this).find("option").each(function (index, value) {
+						if ($(value).val().indexOf('FLYER -') < 0 && $(value).val().indexOf('WHITEPAPER -') < 0) {
+							$(value).css('font-weight', 'bold');
+						}
+					});
+				});
 
 
 				replaceMultiselectButtons();
@@ -1025,6 +1010,26 @@
 
 				$(document).on("click", "#addMoreTeamMembers", function () {
 					$('#team-members').show();
+				});
+
+				$(document).on("click", '#accountList li', function () {
+					$('#account').val($(this).text()).data('accountid', $(this).data('accountid'));
+					document.getElementById('{!$Component.encounterForm.accountId}').value = $(this).data('accountid');
+
+					SalesHD_Event.getUnits($(this).data('accountid'), function (callback, event) {
+						var data = JSON.parse(callback);
+						$("#unitList").html('');
+						for (var unit of data) {
+							// $("#unitList").append('<li data-unitid="'+unit.Id+'">'+unit.Unit__r.Name+'</li>');
+							if (unit.Unit__r.Name == 'Administrative') $("#unitList").append('<li data-unitid="' + unit.Id + '">Global / Director</li>');
+							else $("#unitList").append('<li data-unitid="' + unit.Id + '">' + unit.Unit__r.Name + '</li>');
+						}
+						$(document).on("click", '#unitList li', function () {
+							$('#unit').val($(this).text()).data('unitid', $(this).data('unitid'));
+							document.getElementById('{!$Component.encounterForm.unitId}').value = $(this).data('unitid');
+						});
+					}, { escape: false });
+
 				});
 
 			});
@@ -1216,69 +1221,31 @@
 			}, { escape: false });
 
 
+			$(document).on("click", '#contactList li', function () {
 
-			SalesHD_Event.getContacts(function (callback, event) {
-				var data = JSON.parse(callback);
-				$("#contactList").html('');
-				$("#addContactList").html('');
-				for (var contacts of data) {
-					var contact = contacts.Contact__r;
-					$("#contactList").append('<li data-contactid="' + contact.Id + '">' + contact.Name + '</li>');
-					$("#addContactList").append('<li data-contactid="' + contact.Id + '">' + contact.Name + '</li>');
-				}
-				$(document).on("click", '#contactList li', function () {
+				$("#addMoreContacts").show();
 
-					$("#addMoreContacts").show();
+				$('#contact').val($(this).text()).data('contactid', $(this).data('contactid'));
+				document.getElementById('{!$Component.encounterForm.contactId}').value = $(this).data('contactid');
+			});
 
-					$('#contact').val($(this).text()).data('contactid', $(this).data('contactid'));
-					document.getElementById('{!$Component.encounterForm.contactId}').value = $(this).data('contactid');
-				});
+			$(document).on("click", '#addContactList li', function () {
+				if (!addedContacts.includes($(this).data('contactid'))) {
+					$('#addedContacts').append('<li id="addedContact-' + $(this).data('contactid') + '">' + $(this).text() + ' <span style="float:right;" onclick="removeAddedContact(\'' + $(this).data('contactid') + '\');"><i class="fas fa-times"></i></span></li>');
+					addedContacts.push($(this).data('contactid'));
 
-				$(document).on("click", '#addContactList li', function () {
-					if (!addedContacts.includes($(this).data('contactid'))) {
-						$('#addedContacts').append('<li id="addedContact-' + $(this).data('contactid') + '">' + $(this).text() + ' <span style="float:right;" onclick="removeAddedContact(\'' + $(this).data('contactid') + '\');"><i class="fas fa-times"></i></span></li>');
-						addedContacts.push($(this).data('contactid'));
+					var index = removeContacts.indexOf($(this).data('contactid'));
 
-						var index = removeContacts.indexOf($(this).data('contactid'));
-
-						if (index !== -1) {
-							removeContacts.splice(index, 1);
-							document.getElementById('{!$Component.encounterForm.removeAdditionalContactIds}').value = removeContacts.join();
-						}
-
-						document.getElementById('{!$Component.encounterForm.additionalContactIds}').value = addedContacts.join();
+					if (index !== -1) {
+						removeContacts.splice(index, 1);
+						document.getElementById('{!$Component.encounterForm.removeAdditionalContactIds}').value = removeContacts.join();
 					}
 
-				});
-
-			}, { escape: false });
-
-			SalesHD_Event.getAccounts(function (callback, event) {
-				var data = JSON.parse(callback);
-				$("#accountList").html('');
-				for (var account of data) {
-					$("#accountList").append('<li data-accountid="' + account.AccountId + '">' + account.Account.Name + '</li>');
+					document.getElementById('{!$Component.encounterForm.additionalContactIds}').value = addedContacts.join();
 				}
-				$(document).on("click", '#accountList li', function () {
-					$('#account').val($(this).text()).data('accountid', $(this).data('accountid'));
-					document.getElementById('{!$Component.encounterForm.accountId}').value = $(this).data('accountid');
 
-					SalesHD_Event.getUnits($(this).data('accountid'), function (callback, event) {
-						var data = JSON.parse(callback);
-						$("#unitList").html('');
-						for (var unit of data) {
-							// $("#unitList").append('<li data-unitid="'+unit.Id+'">'+unit.Unit__r.Name+'</li>');
-							if (unit.Unit__r.Name == 'Administrative') $("#unitList").append('<li data-unitid="' + unit.Id + '">Global / Director</li>');
-							else $("#unitList").append('<li data-unitid="' + unit.Id + '">' + unit.Unit__r.Name + '</li>');
-						}
-						$(document).on("click", '#unitList li', function () {
-							$('#unit').val($(this).text()).data('unitid', $(this).data('unitid'));
-							document.getElementById('{!$Component.encounterForm.unitId}').value = $(this).data('unitid');
-						});
-					}, { escape: false });
+			});
 
-				});
-			}, { escape: false });
 }
 
 			function isEmpty(obj) {

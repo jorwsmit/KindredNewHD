@@ -722,12 +722,11 @@
 							<label>POST CALL</label>
 
 
-							<apex:outputPanel rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}">
+							<!-- <apex:outputPanel rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}">
 								<label style="width: 100%;" class="required">*Close / Customer Commitment</label>
 							<apex:inputField styleClass="form-control" value="{!event.SalesHD_Close_Customer_Commitment__c}" html-placeholder="Close / Customer Commitment"
 							 required="true" />
-							<!-- <script>replaceMultiselectButtons();</script> -->
-							</apex:outputPanel>
+							</apex:outputPanel> -->
 							
 
 							<label style="width: 100%;" class="required">*Summary and Results
