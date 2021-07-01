@@ -371,6 +371,7 @@ public PageReference saveEvent(){
 		if(ApexPages.CurrentPage().getparameters().get('duplicate')=='true') {
 			Event tempEvent = new Event();
 			tempEvent = thisEvent.clone(false, true);
+			tempEvent.SalesHD_Planned__c = thisEvent.SalesHD_Planned__c;
 			tempEvent.Result__c=null;
 			tempEvent.SalesHD_Results_Continued__c=null;
 			tempEvent.SalesHD_Close_Customer_Commitment__c=null;
@@ -579,6 +580,7 @@ public PageReference saveAndNext() {
 		if(ApexPages.CurrentPage().getparameters().get('duplicate')=='true') {
 			Event tempEvent = new Event();
 			tempEvent = thisEvent.clone(false, true);
+			tempEvent.SalesHD_Planned__c = thisEvent.SalesHD_Planned__c;
 			insert tempEvent;
 			additionalRelatedContacts(tempEvent);
 			removeRelatedContacts(tempEvent);
@@ -587,6 +589,7 @@ public PageReference saveAndNext() {
 			removeRelatedTeamMembers(tempEvent);
 			Event tempEvent2 = new Event();
 			tempEvent2 = tempEvent.clone(false, true);
+			tempEvent2.SalesHD_Planned__c = thisEvent.SalesHD_Planned__c;
 			tempEvent2.SalesHD_Next_Encounter__c = null;
 			tempEvent2.Result__c=null;
 			tempEvent2.SalesHD_Results_Continued__c=null;

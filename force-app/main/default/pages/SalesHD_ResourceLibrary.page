@@ -38,7 +38,7 @@
         body {
             font-family: "Salesforce Sans", Arial, sans-serif !important;
             margin: 0px;
-            background-color: #E0E2E7 !important;
+            background-color: #fff !important;
         }
 
         input {
@@ -640,9 +640,32 @@
         .btn {
             border-radius: 25px !important;
         }
+
+        .type-list {
+            background-color: #E0E2E7 !important;
+        }
+
+        .resource-category-link {
+            display: block;
+            padding: 5px;
+        }
+
+       
+
+        .resource-category-link:focus {
+            color: #fff;
+            background-color: #208FFF; !important;
+            border-radius: 25px;
+        }
+        .selected-resource {
+            color: #fff !important;
+            background-color: #208FFF !important;
+            font-weight: bold;
+            border-radius: 25px;
+        }
     </style>
 
-    <body>
+    <body class="bg-white">
 
         <!-- REQUIRED SLDS WRAPPER -->
         <div class="LightningDesign">
@@ -650,7 +673,74 @@
             <c:SalesHD_RedesignNav rendered="{!Not(Contains($Profile.Name, 'Managed Care'))}" />
             <c:SalesHD_ManagedCareNav rendered="{!Contains($Profile.Name, 'Managed Care')}" />
 
-            <div class="container white-bg shadow">
+            <div class="row w-100 p-0" style="margin-top:-11px;">
+                <div class="col-md-3 type-list d-none d-md-block" style="height: 100vh; overflow:auto; margin-top:-40px; padding-top: 50px;">
+                    <apex:repeat value="{!resourceTypes}" var="type">
+                        <a class="resource-category-link" href="#">{!type}</a>
+                    </apex:repeat>
+                </div>
+                <div class="col-md-9">
+                    <div class="row inner-container mt-2">
+                        <div class="col-md-12 no-pad">
+                            <h3 class="thin italic">
+                                <i class="fas fa-paste icon icon-blue" style="margin-left:0px;padding:9px 11px;" aria-hidden="true"></i> Resource Library</h3>
+                        </div>
+                    </div>
+                    <div class="row inner-container" style="font-size:12px; margin:10px 15px 5px 5px !important;">
+                        <p>Type in the search or select a category to see the list of resources.</p>
+                    </div>
+                    <div class="row inner-container" style="margin:10px 15px 5px 15px !important;">
+                        <input style="border-radius:25px;" placeholder="Search" class="form-control" id="resourceSearch" />
+                    </div>
+
+                    <div class="row inner-container d-block d-md-none" style="margin-top:10px;margin-bottom:5px;">
+
+                        <div class="col-md-6" style="text-align:center;">
+                            <div class="dropdown" id="typeDropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="typeDropdownButton" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false" style="width:100%;">
+                                    Select a Category
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <apex:repeat value="{!resourceTypes}" var="type">
+                                        <a class="resource-category-link" href="#">{!type}</a>
+                                    </apex:repeat>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <ul id="resources">
+                        <apex:repeat value="{!ResourceList}" var="resource">
+
+                            <a href="#" style="text-decoration:none!important;color:rgb(8, 7, 7)!important;" onclick="openResource('{!resource.resourceId}')">
+
+                                <li data-type="{!LOWER(SUBSTITUTE(resource.category, ' ', ''))}">
+
+                                    <div class="row">
+                                        <div class="col-md-1 blue" style="font-size:40px;text-align:center;width:100%;">
+                                            <apex:outputText value="{!resource.icon}" escape="false" /> </div>
+                                        <div class="col-md-11">
+                                            <div class="resource-title">
+                                                <b>{!resource.name}</b>
+                                            </div>
+                                            <div style="font-size:14px;">
+                                                {!resource.category}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                            </a>
+
+                        </apex:repeat>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- <div class="container white-bg shadow">
                 <div class="row inner-container">
                     <div class="col-md-12 no-pad">
                         <h3 class="thin italic">
@@ -671,7 +761,7 @@
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <apex:repeat value="{!resourceTypes}" var="type">
-                                    <a class="dropdown-item" href="#">{!type}</a>
+                                    <a class="resource-category-link" href="#">{!type}</a>
                                 </apex:repeat>
                             </div>
                         </div>
@@ -690,9 +780,6 @@
                                     <li data-type="{!LOWER(SUBSTITUTE(resource.category, ' ', ''))}">
 
                                         <div class="row">
-                                            <!-- <apex:outputPanel rendered="{!resource.favorited}">
-                                        <i style="position:absolute;margin-top:10px;" class="fas fa-star yellow"></i>
-                                    </apex:outputPanel> -->
 
                                             <div class="col-md-1 blue" style="font-size:40px;text-align:center;width:100%;">
                                                 <apex:outputText value="{!resource.icon}" escape="false" /> </div>
@@ -713,7 +800,7 @@
                         </ul>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
 
         </div>
@@ -730,7 +817,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script>
 
-        $(document).on("click", '#typeDropdown .dropdown-menu .dropdown-item', function () {
+        $(document).ready(function () {
+
+            $('#resources a li').hide();
+
+        });
+
+        $(document).on("click", '.resource-category-link', function () {
+            $('.resource-category-link').removeClass('selected-resource');
+            $(this).addClass('selected-resource');
             $("#typeDropdownButton").text($(this).text());
             collateralFilter();
         });

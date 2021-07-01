@@ -672,6 +672,38 @@
 				max-height: 245px;
 				overflow: auto;
 			}
+			.multiSelectPicklistRow td:not(.multiSelectPicklistCell) {
+                width: 45%;
+            }
+
+            .multiSelectPicklistRow td select {
+                width: 100% !important;
+            }
+
+            .multiSelectPicklistRow {
+                font-size: 16px;
+            }
+
+            .multiSelectPicklistTable tbody tr:not(multiSelectPicklistRow) td {
+                border: none;
+            }
+
+            .multiSelectPicklistCell a {
+                margin: auto !important;
+            }
+
+            .multiSelectPicklistCell a:first-child {
+                margin-bottom: 30px !important;
+            }
+
+            .multiSelectPicklistCell {
+                border: none;
+            }
+
+            .multiSelectPicklistCell img {
+                width: 50px;
+                margin: auto !important;
+            }
 		</style>
 	</head>
 
@@ -825,7 +857,7 @@
 									<apex:inputField styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
 									/>
 
-									<label style="width: 100%;">*Marketing Tool</label>
+									<label style="width: 100%;">Marketing Tool</label>
 									<apex:inputField styleClass="form-control collateral-picklist" value="{!event.SalesHD_Marketing_Collateral__c}" html-placeholder="Marketing Collateral"
 									/>
 									<label style="width: 100%;">Agenda
@@ -853,8 +885,8 @@
 									<apex:inputField required="true" styleClass="form-control" value="{!event.SalesHD_Open_Ended_Questions__c}" html-placeholder="Open Ended Questions"
 									/>
 
-									<label class="required" style="width: 100%;">*Marketing Tool</label>
-									<apex:inputField required="true" styleClass="form-control collateral-picklist" value="{!event.SalesHD_Marketing_Collateral__c}"
+									<label style="width: 100%;">Marketing Tool</label>
+									<apex:inputField styleClass="form-control collateral-picklist" value="{!event.SalesHD_Marketing_Collateral__c}"
 									 html-placeholder="Marketing Collateral" />
 
 									<label class="required" style="width: 100%;">*Agenda
@@ -864,12 +896,12 @@
 									</label>
 									<apex:inputField required="true" styleClass="form-control" value="{!event.SalesHD_Agenda_Preparation__c}" html-placeholder="Agenda Preparation"
 									/>
-									<label class="required" style="width: 100%;">*Data
+									<label style="width: 100%;">Data
 										<span class="educationtip" id="data">
 											<i class="fas fa-question-circle blue pointer"></i>
 										</span>
 									</label>
-									<apex:inputField required="true" styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
+									<apex:inputField styleClass="form-control" value="{!event.SalesHD_Data_Preparation__c}" html-placeholder="Data Preparation"
 									/>
 								</apex:outputPanel>
 
@@ -948,6 +980,7 @@
 						<apex:pageMessages />
 
 					</apex:form>
+					
 				</div>
 			</div>
 
@@ -985,8 +1018,8 @@
 
 			$(document).ready(function () {
 
-
-				$(".collateral-picklist").on('click', function () {
+				
+				$(document).on("click", ".collateral-picklist", function () {					
 					$(this).find("option").each(function (index, value) {
 						if ($(value).val().indexOf('FLYER -') < 0 && $(value).val().indexOf('WHITEPAPER -') < 0) {
 							$(value).css('font-weight', 'bold');
